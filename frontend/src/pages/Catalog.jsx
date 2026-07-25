@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import { playFlyToCartAnimation } from '../utils/animation';
 
 const Catalog = () => {
   const { addToCart, openCart } = useCart();
@@ -10,6 +11,12 @@ const Catalog = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleAddToCart = (e, product, qty = 1) => {
+    const imgUrl = product.gambar ? getApiUrl(product.gambar) : '';
+    playFlyToCartAnimation(e.currentTarget, imgUrl);
+    addToCart(product, qty);
+  };
 
   // Filter and Sort states
   const [searchQuery, setSearchQuery] = useState('');
@@ -306,7 +313,7 @@ const Catalog = () => {
             <div id="catalog-results" className="catalog-results">
               {filtered.map((p) => (
                 <div key={p.id} className="product-card">
-                  <div className="product-img-wrap">
+                  <div className="product-img-wrap" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
                     <img src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} loading="lazy" />
                     <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>
                       {p.kategori}{p.subkategori ? ' • ' + p.subkategori : ''}
@@ -318,14 +325,11 @@ const Catalog = () => {
                     )}
                   </div>
                   <div className="product-body">
-                    <h3>{p.nama}</h3>
+                    <h3 onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>{p.nama}</h3>
                     <div className="product-price">Rp {p.harga.toLocaleString()}</div>
                     <p className="product-desc">{p.deskripsi}</p>
                     <div className="product-actions">
-                      <button className="btn-outline btn-sm" onClick={() => handleOpenModal(p)}>
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn-primary btn-sm" onClick={() => addToCart(p)}>
+                       <button className="btn-primary btn-sm" onClick={(e) => handleAddToCart(e, p)}>
                         <i className="fas fa-shopping-cart"></i> Tambah
                       </button>
                     </div>
@@ -381,10 +385,14 @@ const Catalog = () => {
                 <div className="modal-actions" style={{ marginTop: '24px' }}>
                   <button 
                     className="btn-primary" 
-                    onClick={() => {
-                      addToCart(selectedProduct, modalQty);
-                      handleCloseModal();
-                      openCart();
+                    onClick={(e) => {
+                      handleAddToCart(e, selectedProduct, modalQty);
+                      setTimeout(() => {
+                        handleCloseModal();
+                      }, 450);
+                      setTimeout(() => {
+                        openCart();
+                      }, 1000);
                     }}
                   >
                     <i className="fas fa-shopping-cart"></i> Tambah ke Keranjang

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { apiFetch } from '../utils/api';
 
 const AdminLayout = ({ children, title }) => {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ const AdminLayout = ({ children, title }) => {
   const role = localStorage.getItem('kopma_admin_role') || 'petugas';
 
   const [openMenus, setOpenMenus] = useState({
+    transaksi: pathname.includes('/admin/pesanan'),
     master: pathname.includes('/admin/produk') || pathname.includes('/admin/kategori'),
     website: pathname.includes('/admin/pengurus') || pathname.includes('/admin/settings'),
     security: pathname.includes('/admin/users'),
@@ -23,16 +26,70 @@ const AdminLayout = ({ children, title }) => {
       if (pathname.includes('/admin/settings') || pathname.includes('/admin/pengurus') || pathname.includes('/admin/users')) {
         navigate('/admin');
       }
+    } else if (role === 'admin') {
+      if (pathname.includes('/admin/users')) {
+        navigate('/admin');
+      }
     }
   }, [token, role, pathname, navigate]);
 
   useEffect(() => {
     setOpenMenus({
+      transaksi: pathname.includes('/admin/pesanan'),
       master: pathname.includes('/admin/produk') || pathname.includes('/admin/kategori'),
       website: pathname.includes('/admin/pengurus') || pathname.includes('/admin/settings'),
       security: pathname.includes('/admin/users'),
     });
   }, [pathname]);
+
+  // Real-time Order Notification System
+  const [toastMessage, setToastMessage] = useState(null);
+  const latestOrderId = useRef(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    let isInitialLoad = true;
+
+    const checkNewOrders = async () => {
+      try {
+        const res = await apiFetch('/api/orders');
+        if (res.ok) {
+          const data = await res.json();
+          const orders = data.data || [];
+          
+          if (orders.length > 0) {
+            const currentLatest = orders[0].id;
+            
+            if (!isInitialLoad && latestOrderId.current !== null && currentLatest > latestOrderId.current) {
+              // New order detected!
+              setToastMessage(`Pesanan Baru dari ${orders[0].nama}! (Order #${currentLatest})`);
+              
+              // Play notification sound
+              try {
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                audio.play().catch(e => console.log('Audio autoplay blocked', e));
+              } catch (e) {}
+
+              // Hide toast after 5 seconds
+              setTimeout(() => {
+                setToastMessage(null);
+              }, 5000);
+            }
+            latestOrderId.current = currentLatest;
+          }
+          isInitialLoad = false;
+        }
+      } catch (err) {
+        console.error('Error checking new orders:', err);
+      }
+    };
+
+    checkNewOrders();
+    const interval = setInterval(checkNewOrders, 5000); // Check every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [token]);
 
   const toggleMenu = (menu) => {
     setOpenMenus(prev => ({
@@ -53,6 +110,40 @@ const AdminLayout = ({ children, title }) => {
 
   return (
     <div className="admin-body">
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -50, x: '-50%' }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: 'fixed',
+              top: '30px',
+              left: '50%',
+              zIndex: 99999,
+              background: 'var(--primary)',
+              color: '#fff',
+              padding: '16px 24px',
+              borderRadius: '12px',
+              boxShadow: '0 10px 30px rgba(15,81,50,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            onClick={() => {
+              setToastMessage(null);
+              navigate('/admin/pesanan');
+            }}
+          >
+            <i className="fas fa-bell" style={{ fontSize: '20px', animation: 'ring 2s infinite' }}></i>
+            {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="admin-wrapper">
         <div 
           className={`admin-sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
@@ -69,6 +160,19 @@ const AdminLayout = ({ children, title }) => {
             <NavLink to="/admin" end className={({ isActive }) => isActive ? 'active' : ''}>
               <i className="fas fa-tachometer-alt"></i> <span>Dashboard</span>
             </NavLink>
+
+            {/* Collapse Transaksi */}
+            <div className={`admin-sidebar-collapse ${openMenus.transaksi ? 'open' : ''}`}>
+              <button type="button" className="collapse-trigger" onClick={() => toggleMenu('transaksi')}>
+                <i className="fas fa-shopping-cart"></i> <span>Transaksi</span>
+                <i className={`fas fa-chevron-${openMenus.transaksi ? 'down' : 'right'} chevron-icon`}></i>
+              </button>
+              <div className="collapse-menu">
+                <NavLink to="/admin/pesanan" className={({ isActive }) => isActive ? 'active' : ''}>
+                  <i className="fas fa-inbox"></i> <span>Pesanan Masuk</span>
+                </NavLink>
+              </div>
+            </div>
 
             {/* Collapse Master Data */}
             <div className={`admin-sidebar-collapse ${openMenus.master ? 'open' : ''}`}>
@@ -122,8 +226,8 @@ const AdminLayout = ({ children, title }) => {
             </div>
             )}
 
-            {/* Collapse Security (Hidden for petugas) */}
-            {role !== 'petugas' && (
+            {/* Collapse Security (Hidden for petugas and admin) */}
+            {role === 'super_admin' && (
               <div className={`admin-sidebar-collapse ${openMenus.security ? 'open' : ''}`}>
               <button type="button" className="collapse-trigger" onClick={() => toggleMenu('security')}>
                 <i className="fas fa-shield-alt"></i> <span>Keamanan</span>

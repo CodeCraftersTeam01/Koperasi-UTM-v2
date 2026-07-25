@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import Contact from './pages/Contact';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
+import ManagePesanan from './pages/admin/ManagePesanan';
 import ManageProduk from './pages/admin/ManageProduk';
 import ManageKategori from './pages/admin/ManageKategori';
 import ManageUser from './pages/admin/ManageUser';
@@ -25,6 +26,7 @@ import ManageSettingsGaleri from './pages/admin/ManageSettingsGaleri';
 import ManageSettingsKontak from './pages/admin/ManageSettingsKontak';
 import ManageSettingsLayanan from './pages/admin/ManageSettingsLayanan';
 import Checkout from './pages/Checkout';
+import Riwayat from './pages/Riwayat';
 import NotFound from './pages/NotFound';
 
 const PageWrapper = ({ children }) => (
@@ -50,10 +52,12 @@ const AnimatedRoutes = () => {
         <Route path="/katalog" element={<PageWrapper><Catalog /></PageWrapper>} />
         <Route path="/kontak" element={<PageWrapper><Contact /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><Checkout /></PageWrapper>} />
+        <Route path="/riwayat" element={<PageWrapper><Riwayat /></PageWrapper>} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/admin" element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path="/admin/pesanan" element={<PageWrapper><ManagePesanan /></PageWrapper>} />
         <Route path="/admin/produk" element={<PageWrapper><ManageProduk /></PageWrapper>} />
         <Route path="/admin/kategori" element={<PageWrapper><ManageKategori /></PageWrapper>} />
         <Route path="/admin/users" element={<PageWrapper><ManageUser /></PageWrapper>} />
