@@ -14,19 +14,28 @@ class KategoriTableSeeder extends Seeder
      */
     public function run()
     {
-        $categories = [
-            ['nama' => 'Retail', 'tipe' => 'utama'],
-            ['nama' => 'Makanan', 'tipe' => 'sub'],
-            ['nama' => 'Minuman', 'tipe' => 'sub'],
-            ['nama' => 'Konsinyasi', 'tipe' => 'utama'],
-            ['nama' => 'Lainnya', 'tipe' => 'utama']
-        ];
+        // Main categories
+        $retail = Kategori::updateOrCreate(
+            ['nama' => 'Retail'],
+            ['tipe' => 'utama', 'parent_id' => null]
+        );
+        $konsinyasi = Kategori::updateOrCreate(
+            ['nama' => 'Konsinyasi'],
+            ['tipe' => 'utama', 'parent_id' => null]
+        );
+        $lainnya = Kategori::updateOrCreate(
+            ['nama' => 'Lainnya'],
+            ['tipe' => 'utama', 'parent_id' => null]
+        );
 
-        foreach ($categories as $cat) {
-            Kategori::updateOrCreate(
-                ['nama' => $cat['nama']],
-                ['tipe' => $cat['tipe']]
-            );
-        }
+        // Subcategories linked to parent
+        Kategori::updateOrCreate(
+            ['nama' => 'Makanan'],
+            ['tipe' => 'sub', 'parent_id' => $retail->id]
+        );
+        Kategori::updateOrCreate(
+            ['nama' => 'Minuman'],
+            ['tipe' => 'sub', 'parent_id' => $retail->id]
+        );
     }
 }

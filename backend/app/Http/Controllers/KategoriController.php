@@ -9,7 +9,7 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategori = Kategori::orderBy('id', 'asc')->get();
+        $kategori = Kategori::with('parent')->orderBy('id', 'asc')->get();
         return response()->json($kategori);
     }
 
@@ -18,12 +18,19 @@ class KategoriController extends Controller
         $this->validate($request, [
             'nama' => 'required|string|max:100',
             'tipe' => 'required|in:utama,sub',
+            'parent_id' => 'nullable|integer|exists:kategori,id',
         ]);
 
-        $kategori = Kategori::create([
+        $data = [
             'nama' => $request->input('nama'),
             'tipe' => $request->input('tipe'),
-        ]);
+        ];
+
+        if ($request->has('parent_id')) {
+            $data['parent_id'] = $request->input('parent_id');
+        }
+
+        $kategori = Kategori::create($data);
 
         return response()->json([
             'id' => $kategori->id,
@@ -31,7 +38,7 @@ class KategoriController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $kategori = Kategori::find($id);
 
@@ -42,17 +49,26 @@ class KategoriController extends Controller
         $this->validate($request, [
             'nama' => 'required|string|max:100',
             'tipe' => 'required|in:utama,sub',
+            'parent_id' => 'nullable|integer|exists:kategori,id',
         ]);
 
-        $kategori->update([
+        $data = [
             'nama' => $request->input('nama'),
             'tipe' => $request->input('tipe'),
-        ]);
+        ];
+
+        if ($request->has('parent_id')) {
+            $data['parent_id'] = $request->input('parent_id');
+        } else {
+            $data['parent_id'] = null;
+        }
+
+        $kategori->update($data);
 
         return response()->json(['message' => 'Kategori berhasil diperbarui']);
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $kategori = Kategori::find($id);
 
@@ -69,7 +85,7 @@ class KategoriController extends Controller
     {
         $this->validate($request, [
             'ids' => 'required|array',
-            'ids.*' => 'integer|exists:kategoris,id',
+            'ids.*' => 'integer|exists:kategori,id',
         ]);
 
         Kategori::whereIn('id', $request->input('ids'))->delete();

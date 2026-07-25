@@ -47,7 +47,7 @@ class PengurusController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $pengurus = Pengurus::find($id);
 
@@ -86,7 +86,7 @@ class PengurusController extends Controller
         return response()->json(['message' => 'Pengurus berhasil diperbarui']);
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $pengurus = Pengurus::find($id);
 

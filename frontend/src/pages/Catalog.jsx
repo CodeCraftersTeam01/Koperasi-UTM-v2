@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
@@ -9,6 +9,7 @@ const Catalog = () => {
   const location = useLocation();
 
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleAddToCart = (e, product, qty = 1) => {
@@ -23,13 +24,20 @@ const Catalog = () => {
   const [currentSubFilter, setCurrentSubFilter] = useState('Semua');
   const [currentSort, setCurrentSort] = useState('terbaru');
 
+  // Build filter tree from categories
+  const filterTree = useMemo(() => {
+    const utama = categories.filter(c => c.tipe === 'utama');
+    return utama.map(u => ({
+      ...u,
+      children: categories.filter(c => c.parent_id === u.id),
+    }));
+  }, [categories]);
+
+  const utamaNames = useMemo(() => filterTree.map(f => f.nama), [filterTree]);
+
   // Custom Select dropdown toggle states
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState({
-    Retail: false,
-    Konsinyasi: false,
-    Cafe: false,
-  });
+  const [isFilterOpen, setIsFilterOpen] = useState({});
 
   // Modal detail states
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -41,31 +49,47 @@ const Catalog = () => {
     // Parse query parameters
     const params = new URLSearchParams(location.search);
     const filterParam = params.get('filter');
-    if (filterParam && ['Retail', 'Konsinyasi', 'Cafe'].includes(filterParam)) {
+    if (filterParam && utamaNames.includes(filterParam)) {
       setCurrentFilter(filterParam);
       setCurrentSubFilter('Semua');
     }
 
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await apiFetch('/api/produk?arsip=0');
-        const data = await res.json();
-        setProducts(Array.isArray(data) ? data : (data.data || []));
+        const [prodRes, catRes] = await Promise.all([
+          apiFetch('/api/produk?arsip=0'),
+          apiFetch('/api/kategori'),
+        ]);
+        if (prodRes.ok) {
+          const data = await prodRes.json();
+          setProducts(Array.isArray(data) ? data : (data.data || []));
+        }
+        if (catRes.ok) {
+          const data = await catRes.json();
+          setCategories(data || []);
+        }
       } catch (err) {
-        console.error('Error fetching products:', err);
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, [location.search]);
+    fetchData();
+  }, [location.search, utamaNames]);
+
+  // Reset filter dropdown state when filterTree changes
+  useEffect(() => {
+    const state = {};
+    filterTree.forEach(f => { state[f.nama] = false; });
+    setIsFilterOpen(state);
+  }, [filterTree]);
 
   // Handle outside click to close custom dropdowns
   useEffect(() => {
     const handleOutsideClick = () => {
       setIsSortOpen(false);
-      setIsFilterOpen({ Retail: false, Konsinyasi: false, Cafe: false });
+      setIsFilterOpen(prev => { const next = {}; Object.keys(prev).forEach(k => { next[k] = false; }); return next; });
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
@@ -79,6 +103,16 @@ const Catalog = () => {
   const handleSubFilterSelect = (category, subCategory) => {
     setCurrentFilter(category);
     setCurrentSubFilter(subCategory);
+  };
+
+  const toggleFilter = (name) => {
+    setIsFilterOpen(prev => {
+      const next = {};
+      Object.keys(prev).forEach(k => { next[k] = false; });
+      next[name] = !prev[name];
+      return next;
+    });
+    setIsSortOpen(false);
   };
 
   // Perform search, filtering, and sorting
@@ -232,128 +266,38 @@ const Catalog = () => {
               Semua Produk
             </button>
 
-            {/* RETAIL FILTER */}
-            <div 
-              className="custom-select filter-select"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFilterOpen({
-                  Retail: !isFilterOpen.Retail,
-                  Konsinyasi: false,
-                  Cafe: false,
-                });
-                setIsSortOpen(false);
-              }}
-            >
-              <button type="button" className={`filter-btn ${currentFilter === 'Retail' ? 'active' : ''}`}>
-                <span>{currentFilter === 'Retail' && currentSubFilter !== 'Semua' ? `Retail • ${currentSubFilter}` : 'Retail'}</span>
-                <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
-              </button>
-              <div className={`custom-select-menu ${isFilterOpen.Retail ? 'open' : ''}`}>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Retail' && currentSubFilter === 'Semua' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Retail', 'Semua')}
-                >
-                  <span>Semua</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Retail' && currentSubFilter === 'Makanan' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Retail', 'Makanan')}
-                >
-                  <span>Makanan</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Retail' && currentSubFilter === 'Minuman' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Retail', 'Minuman')}
-                >
-                  <span>Minuman</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Retail' && currentSubFilter === 'Lainnya' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Retail', 'Lainnya')}
-                >
-                  <span>Lainnya</span>
+            {filterTree.map((utama) => (
+              <div 
+                key={utama.id}
+                className="custom-select filter-select"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFilter(utama.nama);
+                }}
+              >
+                <button type="button" className={`filter-btn ${currentFilter === utama.nama ? 'active' : ''}`}>
+                  <span>{currentFilter === utama.nama && currentSubFilter !== 'Semua' ? `${utama.nama} • ${currentSubFilter}` : utama.nama}</span>
+                  <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
+                </button>
+                <div className={`custom-select-menu ${isFilterOpen[utama.nama] ? 'open' : ''}`}>
+                  <div 
+                    className={`custom-select-option ${currentFilter === utama.nama && currentSubFilter === 'Semua' ? 'selected' : ''}`}
+                    onClick={() => handleSubFilterSelect(utama.nama, 'Semua')}
+                  >
+                    <span>Semua</span>
+                  </div>
+                  {utama.children.map((sub) => (
+                    <div 
+                      key={sub.id}
+                      className={`custom-select-option ${currentFilter === utama.nama && currentSubFilter === sub.nama ? 'selected' : ''}`}
+                      onClick={() => handleSubFilterSelect(utama.nama, sub.nama)}
+                    >
+                      <span>{sub.nama}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-
-            {/* KONSINYASI FILTER */}
-            <div 
-              className="custom-select filter-select"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFilterOpen({
-                  Retail: false,
-                  Konsinyasi: !isFilterOpen.Konsinyasi,
-                  Cafe: false,
-                });
-                setIsSortOpen(false);
-              }}
-            >
-              <button type="button" className={`filter-btn ${currentFilter === 'Konsinyasi' ? 'active' : ''}`}>
-                <span>{currentFilter === 'Konsinyasi' && currentSubFilter !== 'Semua' ? `Konsinyasi • ${currentSubFilter}` : 'Konsinyasi'}</span>
-                <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
-              </button>
-              <div className={`custom-select-menu ${isFilterOpen.Konsinyasi ? 'open' : ''}`}>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Konsinyasi' && currentSubFilter === 'Semua' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Konsinyasi', 'Semua')}
-                >
-                  <span>Semua</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Konsinyasi' && currentSubFilter === 'Makanan' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Konsinyasi', 'Makanan')}
-                >
-                  <span>Makanan</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Konsinyasi' && currentSubFilter === 'Minuman' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Konsinyasi', 'Minuman')}
-                >
-                  <span>Minuman</span>
-                </div>
-              </div>
-            </div>
-
-            {/* CAFE FILTER */}
-            <div 
-              className="custom-select filter-select"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFilterOpen({
-                  Retail: false,
-                  Konsinyasi: false,
-                  Cafe: !isFilterOpen.Cafe,
-                });
-                setIsSortOpen(false);
-              }}
-            >
-              <button type="button" className={`filter-btn ${currentFilter === 'Cafe' ? 'active' : ''}`}>
-                <span>{currentFilter === 'Cafe' && currentSubFilter !== 'Semua' ? `Cafe • ${currentSubFilter}` : 'Cafe'}</span>
-                <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
-              </button>
-              <div className={`custom-select-menu ${isFilterOpen.Cafe ? 'open' : ''}`}>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Cafe' && currentSubFilter === 'Semua' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Cafe', 'Semua')}
-                >
-                  <span>Semua</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Cafe' && currentSubFilter === 'Makanan' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Cafe', 'Makanan')}
-                >
-                  <span>Makanan</span>
-                </div>
-                <div 
-                  className={`custom-select-option ${currentFilter === 'Cafe' && currentSubFilter === 'Minuman' ? 'selected' : ''}`}
-                  onClick={() => handleSubFilterSelect('Cafe', 'Minuman')}
-                >
-                  <span>Minuman</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* RESULTS */}

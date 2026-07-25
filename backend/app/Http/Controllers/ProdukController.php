@@ -9,15 +9,14 @@ class ProdukController extends Controller
 {
     public function index(Request $request)
     {
-        $arsip = $request->has('arsip') ? intval($request->input('arsip')) : null;
         $search = trim($request->input('search', ''));
         $page = $request->has('page') ? max(1, intval($request->input('page'))) : null;
         $perPage = max(1, intval($request->input('per_page', 7)));
 
         $query = Produk::query();
 
-        if ($arsip !== null) {
-            $query->where('arsip', $arsip);
+        if ($request->has('arsip')) {
+            $query->where('arsip', intval($request->input('arsip')));
         }
 
         if ($search !== '') {
@@ -91,7 +90,7 @@ class ProdukController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $produk = Produk::find($id);
 
@@ -132,7 +131,7 @@ class ProdukController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $produk = Produk::find($id);
 
@@ -147,7 +146,7 @@ class ProdukController extends Controller
         ]);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, int $id)
     {
         $produk = Produk::find($id);
 
@@ -162,12 +161,13 @@ class ProdukController extends Controller
         $arsip = $request->input('arsip');
         $produk->update(['arsip' => $arsip]);
 
-        $label = $arsip ? 'diarsipkan' : 'dibuka dari arsip';
+        $label = $arsip ? 'dinonaktifkan' : 'diaktifkan';
 
         return response()->json([
             'message' => "Produk berhasil $label",
         ]);
     }
+
     public function bulkDestroy(Request $request)
     {
         $this->validate($request, [
@@ -182,21 +182,4 @@ class ProdukController extends Controller
         ]);
     }
 
-    public function bulkArchive(Request $request)
-    {
-        $this->validate($request, [
-            'ids' => 'required|array',
-            'ids.*' => 'integer|exists:produks,id',
-            'arsip' => 'required|boolean',
-        ]);
-
-        $arsip = $request->input('arsip');
-        Produk::whereIn('id', $request->input('ids'))->update(['arsip' => $arsip]);
-
-        $label = $arsip ? 'diarsipkan' : 'diaktifkan';
-
-        return response()->json([
-            'message' => "Produk terpilih berhasil $label",
-        ]);
-    }
 }

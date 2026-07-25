@@ -9,7 +9,6 @@ const ManageProduk = () => {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showArsip, setShowArsip] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -41,12 +40,11 @@ const ManageProduk = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const arsipVal = showArsip ? 1 : 0;
-      let url = `/api/produk?arsip=${arsipVal}`;
+      let url = '/api/produk';
       if (searchQuery) {
-        url += `&search=${encodeURIComponent(searchQuery)}`;
+        url += `?search=${encodeURIComponent(searchQuery)}`;
       } else {
-        url += `&page=${currentPage}&per_page=7`;
+        url += `?page=${currentPage}&per_page=7`;
       }
 
       const res = await apiFetch(url);
@@ -85,7 +83,7 @@ const ManageProduk = () => {
     fetchProducts();
     fetchKategoris();
     setSelectedIds([]); // Reset selection when page/search changes
-  }, [showArsip, currentPage, searchQuery]);
+  }, [currentPage, searchQuery]);
 
   const toggleSelectAll = (e) => {
     if (e.target.checked) {
@@ -117,31 +115,6 @@ const ManageProduk = () => {
       } else {
         const data = await res.json();
         alert(data.error || 'Gagal menghapus produk');
-      }
-    } catch (err) {
-      alert('Koneksi gagal');
-    } finally {
-      setIsBulkProcessing(false);
-    }
-  };
-
-  const handleBulkArchive = async (arsipValue) => {
-    const label = arsipValue ? 'arsipkan' : 'aktifkan';
-    if (!window.confirm(`Yakin ingin meng${label} ${selectedIds.length} produk terpilih?`)) return;
-    
-    setIsBulkProcessing(true);
-    try {
-      const res = await apiFetch('/api/produk/bulk-archive', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIds, arsip: arsipValue })
-      });
-      if (res.status === 200) {
-        setSelectedIds([]);
-        fetchProducts();
-      } else {
-        const data = await res.json();
-        alert(data.error || `Gagal meng${label} produk`);
       }
     } catch (err) {
       alert('Koneksi gagal');
@@ -269,35 +242,54 @@ const ManageProduk = () => {
 
   const handleArsipProduk = (id, currentArsip) => {
     const newArsip = currentArsip ? 0 : 1;
-    const label = newArsip ? 'diarsipkan' : 'diaktifkan';
+    const label = newArsip ? 'nonaktifkan' : 'aktifkan';
+    const labelTitle = newArsip ? 'Nonaktifkan' : 'Aktifkan';
+
+    const action = async () => {
+      try {
+        const res = await apiFetch(`/api/produk/${id}/archive`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ arsip: newArsip }),
+        });
+        if (!res.ok) {
+          let msg;
+          try {
+            const err = await res.json();
+            msg = err.error || err.message || `HTTP ${res.status}`;
+          } catch {
+            msg = await res.text().catch(() => `HTTP ${res.status}`);
+          }
+          throw new Error(msg);
+        }
+        if (window.Swal) {
+          window.Swal.fire('Berhasil!', `Produk berhasil di${label}.`, 'success');
+        }
+        fetchProducts();
+      } catch (err) {
+        if (window.Swal) {
+          window.Swal.fire('Gagal', err.message, 'error');
+        } else {
+          alert(err.message);
+        }
+      }
+    };
 
     if (window.Swal) {
       window.Swal.fire({
-        title: `${newArsip ? 'Arsipkan' : 'Aktifkan'} produk ini?`,
-        text: `Produk akan ${label}.`,
+        title: `${labelTitle} produk ini?`,
+        text: `Produk akan di${label}. Produk ${newArsip ? 'tidak akan' : 'akan'} muncul di halaman utama.`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: newArsip ? '#6C757D' : '#0F5132',
         cancelButtonColor: '#6C757D',
         confirmButtonText: `Ya, ${label}!`,
         cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          await apiFetch(`/api/produk/${id}/archive`, {
-            method: 'POST',
-            body: JSON.stringify({ arsip: newArsip }),
-          });
-          window.Swal.fire('Berhasil!', `Produk berhasil ${label}.`, 'success');
-          fetchProducts();
-        }
+      }).then((result) => {
+        if (result.isConfirmed) action();
       });
-    } else {
-      if (window.confirm(`Yakin ingin ${newArsip ? 'mengarsipkan' : 'mengaktifkan'} produk ini?`)) {
-        apiFetch(`/api/produk/${id}/archive`, {
-          method: 'POST',
-          body: JSON.stringify({ arsip: newArsip }),
-        }).then(() => fetchProducts());
-      }
+    } else if (window.confirm(`Yakin ingin meng${label} produk ini?`)) {
+      action();
     }
   };
 
@@ -356,15 +348,6 @@ const ManageProduk = () => {
         <div className="admin-table-header">
           <h3><i className="fas fa-box" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Daftar Produk</h3>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button 
-              className="btn-outline btn-sm" 
-              onClick={() => {
-                setShowArsip(!showArsip);
-                setCurrentPage(1);
-              }}
-            >
-              <i className="fas fa-archive"></i> {showArsip ? 'Lihat Produk Aktif' : 'Lihat Arsip'}
-            </button>
             <button className="btn-primary btn-sm" onClick={handleOpenTambahModal}>
               <i className="fas fa-plus"></i> Tambah Produk
             </button>
@@ -388,14 +371,6 @@ const ManageProduk = () => {
           <div style={{ background: 'rgba(15, 81, 50, 0.1)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '14px' }}>{selectedIds.length} produk terpilih</span>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button 
-                className="btn-outline btn-sm" 
-                onClick={() => handleBulkArchive(!showArsip)} 
-                disabled={isBulkProcessing}
-                style={{ borderColor: '#6c757d', color: '#6c757d' }}
-              >
-                <i className={`fas ${!showArsip ? 'fa-archive' : 'fa-eye'}`}></i> {!showArsip ? 'Arsipkan' : 'Aktifkan'}
-              </button>
               <button 
                 className="btn-primary btn-sm" 
                 onClick={handleBulkDelete} 
@@ -478,7 +453,7 @@ const ManageProduk = () => {
                       <td>
                         {p.arsip ? (
                           <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                            <i className="fas fa-archive"></i> Diarsipkan
+                            <i className="fas fa-minus-circle"></i> Non Aktif
                           </span>
                         ) : (
                           <span style={{ color: 'var(--primary)', fontSize: '13px' }}>
@@ -498,10 +473,10 @@ const ManageProduk = () => {
                         <button 
                           className={`admin-btn-sm ${p.arsip ? 'admin-btn-edit' : 'admin-btn-delete'}`} 
                           onClick={() => handleArsipProduk(p.id, p.arsip)}
-                          title={p.arsip ? 'Aktifkan' : 'Arsipkan'}
+                          title={p.arsip ? 'Aktifkan' : 'Nonaktifkan'}
                           style={{ marginRight: '4px' }}
                         >
-                          <i className={`fas ${p.arsip ? 'fa-eye' : 'fa-archive'}`}></i>
+                          <i className={`fas ${p.arsip ? 'fa-eye' : 'fa-eye-slash'}`}></i>
                         </button>
                         <button 
                           className="admin-btn-sm admin-btn-delete" 
@@ -620,9 +595,15 @@ const ManageProduk = () => {
                       style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Pilih Subkategori —</option>
-                      {subkategoriList.map(k => (
-                        <option key={k.id} value={k.nama}>{k.nama}</option>
-                      ))}
+                      {(() => {
+                        const selectedMain = kategoriList.find(k => k.nama === kategori);
+                        const filtered = selectedMain
+                          ? subkategoriList.filter(s => s.parent_id === selectedMain.id)
+                          : [];
+                        return filtered.map(k => (
+                          <option key={k.id} value={k.nama}>{k.nama}</option>
+                        ));
+                      })()}
                     </select>
                   </div>
                   <div>

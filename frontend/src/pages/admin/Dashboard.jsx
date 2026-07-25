@@ -99,9 +99,9 @@ const Dashboard = () => {
               </div>
             ))}
             <div className="admin-stat-card">
-              <div className="admin-stat-icon"><i className="fas fa-archive"></i></div>
+              <div className="admin-stat-icon"><i className="fas fa-minus-circle"></i></div>
               <div className="admin-stat-info">
-                <h4>Produk Diarsipkan</h4>
+                <h4>Produk Non Aktif</h4>
                 <strong>{stats.arsipCount}</strong>
               </div>
             </div>

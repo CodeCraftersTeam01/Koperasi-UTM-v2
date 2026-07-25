@@ -28,7 +28,9 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('/api/produk/bulk-archive', 'ProdukController@bulkArchive');
 
     // Produk CRUD
+    // Produk CRUD (static routes BEFORE variable routes)
     $router->post('/api/produk', 'ProdukController@store');
+    $router->post('/api/produk/bulk-delete', 'ProdukController@bulkDestroy');
     $router->post('/api/produk/{id}', 'ProdukController@update'); // POST to support multipart/form-data upload easily
     $router->delete('/api/produk/{id}', 'ProdukController@destroy');
     $router->post('/api/produk/{id}/archive', 'ProdukController@archive');
@@ -47,6 +49,10 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('/api/pengurus/bulk-delete', 'PengurusController@bulkDestroy');
     $router->post('/api/pengurus/reorder', 'PengurusController@reorder');
     $router->post('/api/pengurus', 'PengurusController@store');
+    // Pengurus Management (static routes BEFORE variable routes)
+    $router->post('/api/pengurus', 'PengurusController@store');
+    $router->post('/api/pengurus/bulk-delete', 'PengurusController@bulkDestroy');
+    $router->post('/api/pengurus/reorder', 'PengurusController@reorder');
     $router->post('/api/pengurus/{id}', 'PengurusController@update');
     $router->delete('/api/pengurus/{id}', 'PengurusController@destroy');
 
