@@ -79,7 +79,6 @@ const Profile = () => {
       <section className="profile-about">
         <div className="container">
           <div className="profile-content">
-            <span className="section-tag">{settings.about_tag}</span>
             <h2>{settings.about_title}</h2>
             <div className="profile-img-wrap">
               <img src={getApiUrl('img/layanan/cakra.jpeg')} alt="Kegiatan Koperasi UTM" loading="lazy" />
@@ -95,7 +94,6 @@ const Profile = () => {
       <section className="visimisi">
         <div className="container">
           <div className="section-header">
-            <span className="section-tag">Visi & Misi</span>
             <h2>Visi dan Misi Koperasi UTM</h2>
             <p>Pedoman dan arah pengembangan koperasi dalam melayani mahasiswa Universitas Trunojoyo Madura.</p>
           </div>
@@ -124,7 +122,6 @@ const Profile = () => {
         <section className="struktur">
           <div className="container">
             <div className="section-header">
-              <span className="section-tag">Struktur Organisasi</span>
               <h2>Susunan Pengurus</h2>
               <p>Susunan kepengurusan Koperasi Universitas Trunojoyo Madura.</p>
             </div>
@@ -199,7 +196,6 @@ const Profile = () => {
           <section className="gallery">
             <div className="container">
               <div className="section-header">
-                <span className="section-tag">Galeri</span>
                 <h2>{settings.galeri_judul}</h2>
                 <p>{settings.galeri_deskripsi}</p>
               </div>

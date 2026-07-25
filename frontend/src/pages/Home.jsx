@@ -144,7 +144,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="scroll-indicator">
+        <div className="scroll-indicator" onClick={() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
           <span>Scroll</span>
           <i className="fas fa-chevron-down"></i>
         </div>
@@ -164,7 +164,6 @@ const Home = () => {
               </div>
             </div>
             <div className="about-text">
-              <span className="section-tag">{settings.about_tag}</span>
               <h2>{settings.about_title}</h2>
               <div style={{ whiteSpace: 'pre-line', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '20px' }}>
                 {settings.about_desc}
@@ -191,7 +190,6 @@ const Home = () => {
           <section id="layanan" className="section services">
             <div className="container">
               <div className="section-header">
-                <span className="section-tag">Layanan</span>
                 <h2>{settings.layanan_judul || 'Layanan Koperasi UTM'}</h2>
                 <p>{settings.layanan_deskripsi || ''}</p>
               </div>
@@ -221,7 +219,6 @@ const Home = () => {
       <section id="kategori" className="section categories">
         <div className="container">
           <div className="section-header">
-            <span className="section-tag">Kategori</span>
             <h2>Kategori Produk</h2>
             <p>Berbagai pilihan produk yang tersedia untuk memenuhi kebutuhan Anda di lingkungan kampus.</p>
           </div>
@@ -230,19 +227,16 @@ const Home = () => {
               <div className="category-icon"><i class="fas fa-shopping-bag"></i></div>
               <h3>Retail</h3>
               <p>Produk kebutuhan sehari-hari seperti makanan ringan, minuman, dan perlengkapan kuliah yang tersedia langsung.</p>
-              <Link to="/katalog?filter=Retail" className="btn-outline btn-sm" style={{ marginTop: '16px' }}>Lihat Produk</Link>
             </div>
             <div className="category-card">
               <div className="category-icon"><i class="fas fa-handshake"></i></div>
               <h3>Konsinyasi</h3>
               <p>Produk titipan UMKM dan mitra lokal Madura, mendukung ekonomi kreatif mahasiswa dan masyarakat sekitar.</p>
-              <Link to="/katalog?filter=Konsinyasi" className="btn-outline btn-sm" style={{ marginTop: '16px' }}>Lihat Produk</Link>
             </div>
             <div className="category-card">
               <div className="category-icon"><i class="fas fa-coffee"></i></div>
               <h3>Cafe</h3>
               <p>Menu kopi, minuman kekinian, dan cemilan ringan yang tersedia di area kampus.</p>
-              <Link to="/katalog?filter=Cafe" className="btn-outline btn-sm" style={{ marginTop: '16px' }}>Lihat Produk</Link>
             </div>
           </div>
         </div>
@@ -252,7 +246,6 @@ const Home = () => {
       <section id="produk" className="section latest-products">
         <div className="container">
           <div className="section-header">
-            <span className="section-tag">Produk</span>
             <h2>Produk Terbaru</h2>
             <p>Beberapa produk pilihan yang tersedia di Koperasi UTM. Klik untuk melihat detail dan melakukan pemesanan.</p>
           </div>
