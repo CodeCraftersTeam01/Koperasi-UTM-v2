@@ -46,12 +46,12 @@ const ManageSettingsIdentity = () => {
         body: JSON.stringify({ settings })
       });
       if (res.ok) {
-        alert('Setelan Identitas (Visi & Misi) berhasil disimpan');
+        window.Swal.fire('Berhasil', 'Setelan Identitas (Visi & Misi) berhasil disimpan', 'success');
       } else {
-        alert('Gagal menyimpan setelan');
+        window.Swal.fire('Gagal', 'Gagal menyimpan setelan', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setSaving(false);
     }

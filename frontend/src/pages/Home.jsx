@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import LazyImage from '../components/LazyImage';
 import { playFlyToCartAnimation } from '../utils/animation';
 
 const Home = () => {
@@ -225,7 +226,7 @@ const Home = () => {
           <div className="about-grid">
             <div className="about-image">
               <div className="about-img-wrapper">
-                <img src={getApiUrl('img/layanan/koperasi.jpeg')} alt="Kegiatan Koperasi Mahasiswa" loading="lazy" />
+                <LazyImage src={getApiUrl('img/layanan/koperasi.jpeg')} alt="Kegiatan Koperasi Mahasiswa" wrapperStyle={{ width: '100%', height: '100%' }} />
                 <div className="about-badge-exp">
                   <strong>Sejak {settings.about_year}</strong>
                   <span>{settings.about_badge_text}</span>
@@ -267,7 +268,7 @@ const Home = () => {
                   <div key={idx} className="service-card">
                     <div className="service-img">
                       {item.gambar ? (
-                        <img src={getApiUrl(item.gambar)} alt={item.judul} loading="lazy" />
+                        <LazyImage src={getApiUrl(item.gambar)} alt={item.judul} wrapperStyle={{ width: '100%', height: '100%' }} />
                       ) : (
                         <i className={`fas ${item.ikon || 'fa-cogs'}`} style={{ fontSize: '32px', color: '#0F5132', margin: '20px auto 0' }}></i>
                       )}
@@ -329,7 +330,7 @@ const Home = () => {
               {latestProducts.map((p) => (
                 <div key={p.id} className="product-card">
                   <div className="product-img-wrap" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
-                    <img src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} loading="lazy" />
+                    <LazyImage src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
                     <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>{p.kategori}</span>
                     {p.tag && (
                       <span className={`product-tag tag-${p.tag.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -377,10 +378,11 @@ const Home = () => {
             <button id="modal-close" className="modal-close" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div className="product-modal-body">
               <div className="product-modal-img-container">
-                <img 
-                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'} 
-                  alt={selectedProduct.nama} 
-                  className="modal-img" 
+                <LazyImage
+                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'}
+                  alt={selectedProduct.nama}
+                  className="modal-img"
+                  wrapperStyle={{ width: '100%', height: '100%' }}
                 />
               </div>
               <div className="product-modal-content">

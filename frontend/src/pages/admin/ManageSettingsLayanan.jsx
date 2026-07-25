@@ -90,11 +90,11 @@ const ManageSettingsLayanan = () => {
         handleItemChange(index, 'gambar', data.url);
         handleItemChange(index, 'ikon', '');
       } else {
-        alert('Gagal mengupload gambar');
+        window.Swal.fire('Gagal', 'Gagal mengupload gambar', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Koneksi gagal saat upload');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setUploadingIndex(null);
     }
@@ -130,12 +130,12 @@ const ManageSettingsLayanan = () => {
         })
       });
       if (res.ok) {
-        alert('Setelan Layanan berhasil disimpan');
+        window.Swal.fire('Berhasil', 'Setelan Layanan berhasil disimpan', 'success');
       } else {
-        alert('Gagal menyimpan setelan');
+        window.Swal.fire('Gagal', 'Gagal menyimpan setelan', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setSaving(false);
     }

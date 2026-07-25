@@ -48,31 +48,42 @@ const ManagePesanan = () => {
       if (res.ok) {
         fetchOrders();
       } else {
-        alert('Gagal memperbarui status');
+        window.Swal.fire('Gagal', 'Gagal memperbarui status', 'error');
       }
     } catch (err) {
       console.error('Error updating order:', err);
-      alert('Terjadi kesalahan jaringan');
+      window.Swal.fire('Koneksi Gagal', 'Terjadi kesalahan jaringan', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) return;
+    window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Pesanan yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+      try {
+        const res = await apiFetch(`/api/orders/${id}`, {
+          method: 'DELETE'
+        });
 
-    try {
-      const res = await apiFetch(`/api/orders/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (res.ok) {
-        fetchOrders();
-      } else {
-        alert('Gagal menghapus pesanan');
+        if (res.ok) {
+          window.Swal.fire('Terhapus!', 'Pesanan berhasil dihapus.', 'success');
+          fetchOrders();
+        } else {
+          window.Swal.fire('Gagal', 'Gagal menghapus pesanan', 'error');
+        }
+      } catch (err) {
+        console.error('Error deleting order:', err);
+        window.Swal.fire('Koneksi Gagal', 'Terjadi kesalahan jaringan', 'error');
       }
-    } catch (err) {
-      console.error('Error deleting order:', err);
-      alert('Terjadi kesalahan jaringan');
-    }
+    });
   };
 
   const getStatusBadge = (status) => {

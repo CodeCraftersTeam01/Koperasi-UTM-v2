@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch, getApiUrl } from '../utils/api';
+import LazyImage from '../components/LazyImage';
 
 const Profile = () => {
   const [pengurusList, setPengurusList] = useState([]);
@@ -81,7 +82,7 @@ const Profile = () => {
           <div className="profile-content">
             <h2>{settings.about_title}</h2>
             <div className="profile-img-wrap">
-              <img src={getApiUrl('img/layanan/cakra.jpeg')} alt="Kegiatan Koperasi UTM" loading="lazy" />
+              <LazyImage src={getApiUrl('img/layanan/cakra.jpeg')} alt="Kegiatan Koperasi UTM" wrapperStyle={{ width: '100%', height: '100%' }} />
             </div>
             <div className="profile-text" style={{ whiteSpace: 'pre-line' }}>
               {settings.about_desc}
@@ -133,7 +134,7 @@ const Profile = () => {
                     <div key={p.id} className="tree-node">
                       <div className="struktur-card ketua">
                         <div className="struktur-avatar">
-                          <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
                         <h4>{p.jabatan}</h4>
                         <p className="struktur-nama">{p.nama}</p>
@@ -152,7 +153,7 @@ const Profile = () => {
                       <div key={p.id} className="tree-node">
                         <div className="struktur-card bendahara">
                           <div className="struktur-avatar">
-                            <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
+                            <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
                           </div>
                           <h4>{p.jabatan}</h4>
                           <p className="struktur-nama">{p.nama}</p>
@@ -172,7 +173,7 @@ const Profile = () => {
                       <div key={p.id} className="tree-node">
                         <div className="struktur-card sie1">
                           <div className="struktur-avatar">
-                            <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
+                            <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
                           </div>
                           <h4>{p.jabatan}</h4>
                           <p className="struktur-nama">{p.nama}</p>
@@ -202,7 +203,7 @@ const Profile = () => {
               <div className="gallery-grid">
                 {galeriItems.map((item, i) => (
                   <div className="gallery-item" key={i}>
-                    <img src={getApiUrl(item.gambar)} alt={item.judul} loading="lazy" />
+                    <LazyImage src={getApiUrl(item.gambar)} alt={item.judul} wrapperStyle={{ width: '100%', height: '100%' }} />
                     <div className="gallery-overlay"><span>{item.judul}</span></div>
                   </div>
                 ))}

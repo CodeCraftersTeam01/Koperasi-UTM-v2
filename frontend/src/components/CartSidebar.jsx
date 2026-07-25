@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { getApiUrl } from '../utils/api';
+import LazyImage from '../components/LazyImage';
 
 const CartSidebar = () => {
   const navigate = useNavigate();
@@ -52,11 +53,11 @@ const CartSidebar = () => {
           ) : (
             cart.map((item, index) => (
               <div key={item.id} className="cart-item" style={{ '--delay': `${index * 0.08}s` }}>
-                <img 
-                  src={getApiUrl(item.gambar) || '/img/placeholder.jpg'} 
-                  alt={item.nama} 
-                  className="cart-item-img" 
-                  loading="lazy" 
+                <LazyImage
+                  src={getApiUrl(item.gambar) || '/img/placeholder.jpg'}
+                  alt={item.nama}
+                  className="cart-item-img"
+                  wrapperStyle={{ width: '60px', height: '60px' }}
                 />
                 <div className="cart-item-info">
                   <h4>{item.nama}</h4>

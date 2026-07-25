@@ -62,14 +62,14 @@ const ManageSettingsKontak = () => {
         body: JSON.stringify({ settings: payload })
       });
       if (res.ok) {
-        alert('Setelan Kontak berhasil disimpan');
+        window.Swal.fire('Berhasil', 'Setelan Kontak berhasil disimpan', 'success');
       } else {
         const errData = await res.json().catch(() => ({}));
-        alert(errData.message || 'Gagal menyimpan setelan (HTTP ' + res.status + ')');
+        window.Swal.fire('Gagal', errData.message || 'Gagal menyimpan setelan (HTTP ' + res.status + ')', 'error');
       }
     } catch (err) {
       console.error('Kontak save error:', err);
-      alert('Koneksi gagal. Pastikan server backend berjalan di ' + (import.meta.env.VITE_API_URL || 'http://localhost:8000'));
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan di ' + (import.meta.env.VITE_API_URL || 'http://localhost:8000'), 'error');
     } finally {
       setSaving(false);
     }
