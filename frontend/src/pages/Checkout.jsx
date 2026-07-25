@@ -69,7 +69,7 @@ const Checkout = () => {
 
   if (success) {
     return (
-      <section className="checkout-success-page" style={{ padding: '80px 0 100px', background: 'var(--bg)', textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <section className="checkout-success-page" style={{ padding: '140px 0 100px', background: 'var(--bg)', textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="container" style={{ maxWidth: '600px' }}>
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(15,81,50,0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px' }}>
             <i className="fas fa-check-double"></i>

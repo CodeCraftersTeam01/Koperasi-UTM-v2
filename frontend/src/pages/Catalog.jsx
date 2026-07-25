@@ -46,14 +46,15 @@ const Catalog = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Parse query parameters
     const params = new URLSearchParams(location.search);
     const filterParam = params.get('filter');
     if (filterParam && utamaNames.includes(filterParam)) {
       setCurrentFilter(filterParam);
       setCurrentSubFilter('Semua');
     }
+  }, [location.search, utamaNames]);
 
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [prodRes, catRes] = await Promise.all([
@@ -76,7 +77,7 @@ const Catalog = () => {
     };
 
     fetchData();
-  }, [location.search, utamaNames]);
+  }, []);
 
   // Reset filter dropdown state when filterTree changes
   useEffect(() => {

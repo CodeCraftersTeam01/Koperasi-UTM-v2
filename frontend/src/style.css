@@ -77,19 +77,6 @@ button {
   line-height: 1.8;
 }
 
-.section-tag {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 12px;
-  background: rgba(15, 81, 50, 0.08);
-  padding: 6px 18px;
-  border-radius: 100px;
-}
-
 /* ===== CSS VARIABLES ===== */
 :root {
   --primary: #0F5132;
@@ -859,7 +846,7 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
-  align-items: center;
+  align-items: start;
 }
 
 .about-img-wrapper {
@@ -909,7 +896,7 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   font-family: 'Montserrat', sans-serif;
   font-size: clamp(24px, 3vw, 36px);
   color: var(--text);
-  margin: 12px 0 16px;
+  margin: 0 0 16px;
   line-height: 1.25;
 }
 
@@ -1018,56 +1005,24 @@ body:has(.hero) #navbar.scrolled .nav-logo {
 
 .category-card {
   background: var(--card-bg);
-  padding: 40px 32px;
-  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  border-radius: var(--radius);
   text-align: center;
   border: 1px solid var(--border);
-  transition: all 0.4s;
-  position: relative;
-  overflow: hidden;
-}
-
-.category-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s;
-}
-
-.category-card:hover::before {
-  transform: scaleX(1);
-}
-
-.category-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(15, 81, 50, 0.12);
+  transition: border-color 0.25s;
 }
 
 .category-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 20px;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
   background: var(--primary-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 20px;
   color: var(--primary);
-  transition: all 0.4s;
-}
-
-.category-card:hover .category-icon {
-  background: var(--primary);
-  color: #fff;
-  transform: scale(1.1);
 }
 
 .category-card h3 {
@@ -3689,12 +3644,12 @@ body:has(.hero) #navbar.scrolled .nav-logo {
     height: 280px;
   }
   .category-card {
-    padding: 20px 12px;
+    padding: 20px 16px;
   }
   .category-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     margin: 0 auto 12px;
   }
   .category-card h3 {
