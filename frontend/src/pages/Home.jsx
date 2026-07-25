@@ -88,37 +88,106 @@ const Home = () => {
         {loading && (
           <motion.div
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            exit={{ 
+              opacity: 0,
+              transition: { duration: 0.6, ease: 'easeInOut' }
+            }}
             style={{
               position: 'fixed',
               top: 0, left: 0, width: '100%', height: '100vh',
               backgroundColor: 'var(--bg)',
               zIndex: 9999,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              overflow: 'hidden'
             }}
           >
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            {/* Ambient Background Glow */}
+            <motion.div
+              animate={{ 
+                scale: [1, 1.15, 1], 
+                opacity: [0.15, 0.25, 0.15] 
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 3, 
+                ease: 'easeInOut' 
+              }}
               style={{
-                width: '60px', height: '60px',
-                border: '4px solid var(--border)',
-                borderTopColor: 'var(--accent)',
+                position: 'absolute',
+                width: '350px',
+                height: '350px',
                 borderRadius: '50%',
-                marginBottom: '20px'
+                background: 'radial-gradient(circle, var(--accent) 0%, rgba(255,255,255,0) 70%)',
+                filter: 'blur(30px)',
+                pointerEvents: 'none',
+                zIndex: 1
               }}
             />
-            <motion.h2
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              style={{ fontFamily: 'var(--heading)', color: 'var(--text-h)', letterSpacing: '4px', margin: 0, fontSize: '18px', fontWeight: 'bold' }}
-            >
-              MEMUAT...
-            </motion.h2>
+
+            {/* Central Logo Container */}
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              
+              {/* Outer Slow Rotating Dashed Ring */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
+                style={{
+                  position: 'absolute',
+                  width: '140px',
+                  height: '140px',
+                  borderRadius: '50%',
+                  border: '2px dashed var(--accent)',
+                  opacity: 0.35,
+                }}
+              />
+              
+              {/* Inner Soft Pulsing Glowing Ring */}
+              <motion.div
+                animate={{ 
+                  scale: [0.93, 1.05, 0.93],
+                  opacity: [0.3, 0.7, 0.3]
+                }}
+                transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+                style={{
+                  position: 'absolute',
+                  width: '115px',
+                  height: '115px',
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent)',
+                  boxShadow: '0 0 20px var(--accent-bg)',
+                }}
+              />
+
+              {/* Logo itself with elegant pulsing scale */}
+              <motion.img
+                src="/img/logo-koperasi.png"
+                alt="Koperasi UTM Logo"
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  opacity: 1
+                }}
+                transition={{ 
+                  scale: {
+                    repeat: Infinity,
+                    duration: 2.2,
+                    ease: 'easeInOut'
+                  },
+                  opacity: {
+                    duration: 0.4
+                  }
+                }}
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  objectFit: 'contain',
+                  zIndex: 3,
+                  filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.12))'
+                }}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
