@@ -10,26 +10,14 @@ const Checkout = () => {
   // Form details
   const [nama, setNama] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
-  const [email, setEmail] = useState('');
 
   // Request State
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [checkoutMethod, setCheckoutMethod] = useState('direct');
 
   useEffect(() => {
     // Scroll to top
     window.scrollTo(0, 0);
-
-    // Fetch checkout method to determine if we need email
-    apiFetch('/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data.checkout_method) {
-          setCheckoutMethod(data.checkout_method);
-        }
-      })
-      .catch(() => console.error('Failed to fetch settings'));
 
     // Redirect to home if cart empty (unless success is true)
     if (cart.length === 0 && !success) {
@@ -50,7 +38,6 @@ const Checkout = () => {
         body: JSON.stringify({
           nama,
           whatsapp,
-          email,
           items: cart.map(item => ({
             nama: item.nama,
             harga: item.harga,
@@ -61,14 +48,14 @@ const Checkout = () => {
 
       if (res.ok) {
         const data = await res.json();
-        clearCart();
-        
-        if (data.checkout_method === 'direct' && data.redirect_url) {
-          window.open(data.redirect_url, '_blank');
-          navigate('/');
-        } else {
-          setSuccess(true);
+        if (data.order_id) {
+          const currentOrders = JSON.parse(localStorage.getItem('kopma_user_orders') || '[]');
+          // Add to start of array so latest shows first
+          currentOrders.unshift(data.order_id);
+          localStorage.setItem('kopma_user_orders', JSON.stringify(currentOrders));
         }
+        clearCart();
+        setSuccess(true);
       } else {
         const errData = await res.json();
         alert(errData.error || 'Gagal memproses checkout. Silakan coba lagi.');
@@ -82,14 +69,15 @@ const Checkout = () => {
 
   if (success) {
     return (
-      <section className="checkout-success-page" style={{ padding: '160px 0 100px', background: 'var(--bg)', textAlign: 'center', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <section className="checkout-success-page" style={{ padding: '80px 0 100px', background: 'var(--bg)', textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="container" style={{ maxWidth: '600px' }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(15,81,50,0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifycontent: 'center', margin: '0 auto 24px', fontSize: '36px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(15,81,50,0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px' }}>
             <i className="fas fa-check-double"></i>
           </div>
-          <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>Pesanan Berhasil Diproses!</h2>
+          <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>Pesanan Berhasil Dibuat!</h2>
           <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '32px' }}>
-            Terima kasih telah berbelanja. Detail pesanan dan invoice resmi telah dikirim ke WhatsApp (via Fonnte) dan email <strong>{email}</strong> Anda secara otomatis. Admin kami akan segera memproses barang pesanan Anda.
+            Terima kasih telah berbelanja di Koperasi UTM. Pesanan Anda telah masuk ke sistem kami dan akan segera diproses oleh Admin. 
+            Silakan tunggu konfirmasi lebih lanjut.
           </p>
           <button onClick={() => navigate('/')} className="btn-primary" style={{ padding: '14px 32px', fontSize: '15px' }}>
             Kembali Ke Beranda
@@ -100,12 +88,22 @@ const Checkout = () => {
   }
 
   return (
-    <section className="checkout-page" style={{ padding: '160px 0 100px', background: 'var(--bg)', minHeight: '80vh' }}>
-      <div className="container" style={{ maxWidth: '1000px' }}>
-        <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '32px', fontWeight: 800, color: 'var(--text)', marginBottom: '8px' }}>Konfirmasi Pemesanan</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '40px' }}>Lengkapi data diri Anda untuk menyelesaikan pemesanan barang koperasi.</p>
+    <>
+      <section className="page-hero">
+        <div className="container">
+          <h1>Konfirmasi Pemesanan</h1>
+          <p>Lengkapi data diri Anda untuk menyelesaikan pesanan</p>
+          <div className="breadcrumb">
+            <span>Beranda</span>
+            <i className="fas fa-chevron-right"></i>
+            <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Checkout</span>
+          </div>
+        </div>
+      </section>
 
-        <div className="checkout-grid-mobile">
+      <section className="checkout-page" style={{ padding: '60px 0 100px', background: 'var(--bg)' }}>
+        <div className="container" style={{ maxWidth: '1000px' }}>
+          <div className="checkout-grid-mobile">
           
           {/* BUYER DATA FORM */}
           <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)' }}>
@@ -136,23 +134,8 @@ const Checkout = () => {
                   required
                   style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                 />
-                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Pastikan nomor WhatsApp aktif untuk menerima update status pesanan.</p>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Pastikan nomor WhatsApp aktif untuk menerima update status pesanan dari Admin.</p>
               </div>
-
-              {checkoutMethod === 'advanced' && (
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>Alamat Email</label>
-                  <input 
-                    type="email" 
-                    placeholder="Contoh: nama@domain.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={checkoutMethod === 'advanced'}
-                    style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
-                  />
-                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Invoice resmi akan dikirimkan secara otomatis ke email ini.</p>
-                </div>
-              )}
             </form>
           </div>
 
@@ -212,6 +195,7 @@ const Checkout = () => {
         </div>
       </div>
     </section>
+  </>
   );
 };
 

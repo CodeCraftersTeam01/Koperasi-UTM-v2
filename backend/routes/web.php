@@ -13,6 +13,7 @@ $router->post('/api/login', 'AuthController@login');
 $router->get('/api/pengurus', 'PengurusController@index');
 $router->get('/api/settings', 'SettingController@index');
 $router->post('/api/checkout', 'CheckoutController@process');
+$router->get('/api/orders/track', 'OrderController@track');
 
 // Admin protected API routes
 $router->group(['middleware' => 'auth'], function () use ($router) {
@@ -22,15 +23,15 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->delete('/api/kategori/{id}', 'KategoriController@destroy');
     $router->post('/api/kategori/bulk-delete', 'KategoriController@bulkDestroy');
 
+    // Bulk Produk Actions
+    $router->post('/api/produk/bulk-delete', 'ProdukController@bulkDestroy');
+    $router->post('/api/produk/bulk-archive', 'ProdukController@bulkArchive');
+
     // Produk CRUD
     $router->post('/api/produk', 'ProdukController@store');
     $router->post('/api/produk/{id}', 'ProdukController@update'); // POST to support multipart/form-data upload easily
     $router->delete('/api/produk/{id}', 'ProdukController@destroy');
     $router->post('/api/produk/{id}/archive', 'ProdukController@archive');
-    
-    // Bulk Produk Actions
-    $router->post('/api/produk/bulk-delete', 'ProdukController@bulkDestroy');
-    $router->post('/api/produk/bulk-archive', 'ProdukController@bulkArchive');
 
     // Dashboard Stats
     $router->get('/api/stats', 'StatsController@index');
@@ -43,16 +44,20 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('/api/users/bulk-delete', 'UserController@bulkDestroy');
 
     // Pengurus Management
+    $router->post('/api/pengurus/bulk-delete', 'PengurusController@bulkDestroy');
+    $router->post('/api/pengurus/reorder', 'PengurusController@reorder');
     $router->post('/api/pengurus', 'PengurusController@store');
     $router->post('/api/pengurus/{id}', 'PengurusController@update');
     $router->delete('/api/pengurus/{id}', 'PengurusController@destroy');
-    $router->post('/api/pengurus/bulk-delete', 'PengurusController@bulkDestroy');
-    $router->post('/api/pengurus/reorder', 'PengurusController@reorder');
 
     // Settings Management
     $router->post('/api/settings', 'SettingController@updateBatch');
 
     // File Upload
     $router->post('/api/upload', 'UploadController@uploadImage');
-});
 
+    // Orders Management
+    $router->get('/api/orders', 'OrderController@index');
+    $router->put('/api/orders/{id}', 'OrderController@update');
+    $router->delete('/api/orders/{id}', 'OrderController@destroy');
+});

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import { playFlyToCartAnimation } from '../utils/animation';
 
 const Home = () => {
   const { addToCart, openCart } = useCart();
@@ -9,6 +11,12 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalQty, setModalQty] = useState(1);
+
+  const handleAddToCart = (e, product, qty = 1) => {
+    const imgUrl = product.gambar ? getApiUrl(product.gambar) : '';
+    playFlyToCartAnimation(e.currentTarget, imgUrl);
+    addToCart(product, qty);
+  };
   const [settings, setSettings] = useState({
     hero_title_accent: 'Koperasi',
     hero_title_sub: 'Universitas Trunojoyo Madura',
@@ -76,6 +84,45 @@ const Home = () => {
 
   return (
     <>
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, width: '100%', height: '100vh',
+              backgroundColor: 'var(--bg)',
+              zIndex: 9999,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              style={{
+                width: '60px', height: '60px',
+                border: '4px solid var(--border)',
+                borderTopColor: 'var(--accent)',
+                borderRadius: '50%',
+                marginBottom: '20px'
+              }}
+            />
+            <motion.h2
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              style={{ fontFamily: 'var(--heading)', color: 'var(--text-h)', letterSpacing: '4px', margin: 0, fontSize: '18px', fontWeight: 'bold' }}
+            >
+              MEMUAT...
+            </motion.h2>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* HERO */}
       <section id="hero" className="hero">
         <div className="hero-decor-circle"></div>
@@ -211,12 +258,15 @@ const Home = () => {
           </div>
           
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Memuat produk...</div>
+            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+              <i className="fas fa-spinner fa-spin" style={{ fontSize: '24px', marginBottom: '10px' }}></i>
+              <p>Menyiapkan produk...</p>
+            </div>
           ) : (
             <div id="products-grid" className="products-grid">
               {latestProducts.map((p) => (
                 <div key={p.id} className="product-card">
-                  <div className="product-img-wrap">
+                  <div className="product-img-wrap" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
                     <img src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} loading="lazy" />
                     <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>{p.kategori}</span>
                     {p.tag && (
@@ -226,14 +276,11 @@ const Home = () => {
                     )}
                   </div>
                   <div className="product-body">
-                    <h3>{p.nama}</h3>
+                    <h3 onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>{p.nama}</h3>
                     <div className="product-price">Rp {p.harga.toLocaleString()}</div>
                     <p className="product-desc">{p.deskripsi}</p>
                     <div className="product-actions">
-                      <button className="btn-outline btn-sm" onClick={() => handleOpenModal(p)}>
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn-primary btn-sm" onClick={() => addToCart(p)}>
+                       <button className="btn-primary btn-sm" onClick={(e) => handleAddToCart(e, p)}>
                         <i className="fas fa-shopping-cart"></i> Tambah
                       </button>
                     </div>
@@ -304,10 +351,15 @@ const Home = () => {
                 <div className="modal-actions" style={{ marginTop: '24px' }}>
                   <button 
                     className="btn-primary" 
-                    onClick={() => {
-                      addToCart(selectedProduct, modalQty);
-                      handleCloseModal();
-                      openCart();
+                    onClick={(e) => {
+                      handleAddToCart(e, selectedProduct, modalQty);
+                      setTimeout(() => {
+                        handleCloseModal();
+                      }, 450);
+                      // Wait a bit for the flyer to finish before opening cart sidebar (optional, or open immediately)
+                      setTimeout(() => {
+                        openCart();
+                      }, 1000);
                     }}
                   >
                     <i className="fas fa-shopping-cart"></i> Tambah ke Keranjang

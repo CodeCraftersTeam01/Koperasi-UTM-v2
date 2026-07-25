@@ -76,6 +76,15 @@ const Navbar = () => {
             </ul>
           </div>
           <div className="nav-actions">
+            <Link 
+              to="/riwayat" 
+              className="cart-btn" 
+              aria-label="Riwayat Transaksi" 
+              style={{ marginRight: '8px' }}
+              title="Riwayat Pesanan"
+            >
+              <i className="fas fa-history"></i>
+            </Link>
             <button className="cart-btn" aria-label="Keranjang" onClick={openCart}>
               <i className="fas fa-shopping-bag"></i>
               <span className={`cart-badge ${cartCount > 0 ? 'show' : ''}`}>{cartCount}</span>
