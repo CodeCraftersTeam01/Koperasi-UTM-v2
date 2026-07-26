@@ -53,7 +53,17 @@ const ManageUser = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} admin terpilih?`)) return;
+    const result = await window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: `${selectedIds.length} admin akan dihapus secara permanen.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+    if (!result.isConfirmed) return;
     
     setIsBulkProcessing(true);
     try {
@@ -67,10 +77,10 @@ const ManageUser = () => {
         fetchUsers();
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menghapus admin');
+        window.Swal.fire('Gagal', data.error || 'Gagal menghapus admin', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setIsBulkProcessing(false);
     }
@@ -123,59 +133,40 @@ const ManageUser = () => {
 
       const result = await response.json();
       if (response.status === 200 || response.status === 201) {
-        if (window.Swal) {
-          window.Swal.fire('Berhasil', result.message, 'success');
-        } else {
-          alert(result.message);
-        }
+        window.Swal.fire('Berhasil', result.message, 'success');
         handleCloseModal();
         fetchUsers();
       } else {
-        if (window.Swal) {
-          window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
-        } else {
-          alert(result.error || 'Terjadi kesalahan');
-        }
+        window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     }
   };
 
   const handleHapusUser = (id) => {
-    if (window.Swal) {
-      window.Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: 'Admin ini tidak akan bisa login lagi.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6C757D',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const res = await apiFetch(`/api/users/${id}`, { method: 'DELETE' });
-          const data = await res.json();
-          if (res.status === 200) {
-            window.Swal.fire('Terhapus!', data.message, 'success');
-            fetchUsers();
-          } else {
-            window.Swal.fire('Gagal!', data.error, 'error');
-          }
+    window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Admin ini tidak akan bisa login lagi.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await apiFetch(`/api/users/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.status === 200) {
+          window.Swal.fire('Terhapus!', data.message, 'success');
+          fetchUsers();
+        } else {
+          window.Swal.fire('Gagal!', data.error, 'error');
         }
-      });
-    } else {
-      if (window.confirm('Yakin ingin menghapus admin ini?')) {
-        apiFetch(`/api/users/${id}`, { method: 'DELETE' })
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) alert(data.error);
-            else fetchUsers();
-          });
       }
-    }
+    });
   };
 
   const renderSkeletonRows = () => (

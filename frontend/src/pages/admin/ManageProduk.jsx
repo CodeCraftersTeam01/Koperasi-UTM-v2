@@ -100,7 +100,17 @@ const ManageProduk = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} produk terpilih?`)) return;
+    const result = await window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: `${selectedIds.length} produk akan dihapus secara permanen.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+    if (!result.isConfirmed) return;
     
     setIsBulkProcessing(true);
     try {
@@ -114,10 +124,10 @@ const ManageProduk = () => {
         fetchProducts();
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menghapus produk');
+        window.Swal.fire('Gagal', data.error || 'Gagal menghapus produk', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setIsBulkProcessing(false);
     }
@@ -220,23 +230,15 @@ const ManageProduk = () => {
 
       const result = await response.json();
       if (response.status === 200 || response.status === 201) {
-        if (window.Swal) {
-          window.Swal.fire('Berhasil', result.message, 'success');
-        } else {
-          alert(result.message);
-        }
+        window.Swal.fire('Berhasil', result.message, 'success');
         handleCloseModal();
         fetchProducts();
       } else {
-        if (window.Swal) {
-          window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
-        } else {
-          alert(result.error || 'Terjadi kesalahan');
-        }
+        window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     }
   };
 
@@ -262,64 +264,46 @@ const ManageProduk = () => {
           }
           throw new Error(msg);
         }
-        if (window.Swal) {
-          window.Swal.fire('Berhasil!', `Produk berhasil di${label}.`, 'success');
-        }
+        window.Swal.fire('Berhasil!', `Produk berhasil di${label}.`, 'success');
         fetchProducts();
       } catch (err) {
-        if (window.Swal) {
-          window.Swal.fire('Gagal', err.message, 'error');
-        } else {
-          alert(err.message);
-        }
+        window.Swal.fire('Gagal', err.message, 'error');
       }
     };
 
-    if (window.Swal) {
-      window.Swal.fire({
-        title: `${labelTitle} produk ini?`,
-        text: `Produk akan di${label}. Produk ${newArsip ? 'tidak akan' : 'akan'} muncul di halaman utama.`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: newArsip ? '#6C757D' : '#0F5132',
-        cancelButtonColor: '#6C757D',
-        confirmButtonText: `Ya, ${label}!`,
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) action();
-      });
-    } else if (window.confirm(`Yakin ingin meng${label} produk ini?`)) {
-      action();
-    }
+    window.Swal.fire({
+      title: `${labelTitle} produk ini?`,
+      text: `Produk akan di${label}. Produk ${newArsip ? 'tidak akan' : 'akan'} muncul di halaman utama.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: newArsip ? '#6C757D' : '#0F5132',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: `Ya, ${label}!`,
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) action();
+    });
   };
 
   const handleHapusProduk = (id) => {
-    if (window.Swal) {
-      window.Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: 'Data yang dihapus tidak dapat dikembalikan!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6C757D',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          await apiFetch(`/api/produk/${id}`, {
-            method: 'DELETE',
-          });
-          window.Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
-          fetchProducts();
-        }
-      });
-    } else {
-      if (window.confirm('Yakin ingin menghapus produk ini?')) {
-        apiFetch(`/api/produk/${id}`, {
+    window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Data yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await apiFetch(`/api/produk/${id}`, {
           method: 'DELETE',
-        }).then(() => fetchProducts());
+        });
+        window.Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
+        fetchProducts();
       }
-    }
+    });
   };
 
   const renderSkeletonRows = () => (

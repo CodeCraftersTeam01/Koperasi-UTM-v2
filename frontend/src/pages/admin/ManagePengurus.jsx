@@ -69,7 +69,7 @@ const ManagePengurus = () => {
       });
       if (res.ok) fetchPengurus();
     } catch (err) {
-      alert('Gagal mengubah urutan');
+      window.Swal.fire('Gagal', 'Gagal mengubah urutan', 'error');
     }
   };
 
@@ -80,7 +80,17 @@ const ManagePengurus = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} pengurus terpilih?`)) return;
+    const result = await window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: `${selectedIds.length} pengurus akan dihapus secara permanen.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+    if (!result.isConfirmed) return;
     
     setIsBulkProcessing(true);
     try {
@@ -94,10 +104,10 @@ const ManagePengurus = () => {
         fetchPengurus();
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menghapus pengurus');
+        window.Swal.fire('Gagal', data.error || 'Gagal menghapus pengurus', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setIsBulkProcessing(false);
     }
@@ -169,15 +179,25 @@ const ManagePengurus = () => {
         fetchPengurus();
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menyimpan pengurus');
+        window.Swal.fire('Gagal', data.error || 'Gagal menyimpan pengurus', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Yakin ingin menghapus pengurus ini?')) return;
+    const confirm = await window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Pengurus yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+    if (!confirm.isConfirmed) return;
     try {
       const res = await apiFetch(`/api/pengurus/${id}`, {
         method: 'DELETE'
@@ -185,10 +205,10 @@ const ManagePengurus = () => {
       if (res.ok) {
         fetchPengurus();
       } else {
-        alert('Gagal menghapus pengurus');
+        window.Swal.fire('Gagal', 'Gagal menghapus pengurus', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     }
   };
 

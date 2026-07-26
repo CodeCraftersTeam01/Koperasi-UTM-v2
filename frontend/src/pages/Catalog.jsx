@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { playFlyToCartAnimation } from '../utils/animation';
+import LazyImage from '../components/LazyImage';
 
 const Catalog = () => {
   const { addToCart, openCart } = useCart();
@@ -315,7 +316,7 @@ const Catalog = () => {
               {filtered.map((p) => (
                 <div key={p.id} className="product-card">
                   <div className="product-img-wrap" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
-                    <img src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} loading="lazy" />
+                    <LazyImage src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
                     <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>
                       {p.kategori}{p.subkategori ? ' • ' + p.subkategori : ''}
                     </span>
@@ -350,10 +351,11 @@ const Catalog = () => {
             <button id="modal-close" className="modal-close" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div className="product-modal-body">
               <div className="product-modal-img-container">
-                <img 
-                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'} 
-                  alt={selectedProduct.nama} 
-                  className="modal-img" 
+                <LazyImage
+                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'}
+                  alt={selectedProduct.nama}
+                  className="modal-img"
+                  wrapperStyle={{ width: '100%', height: '100%' }}
                 />
               </div>
               <div className="product-modal-content">

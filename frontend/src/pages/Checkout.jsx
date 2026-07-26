@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { apiFetch, getApiUrl } from '../utils/api';
+import LazyImage from '../components/LazyImage';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -161,10 +162,11 @@ const Checkout = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px', flex: 1, maxHeight: '350px', overflowY: 'auto', paddingRight: '8px' }}>
               {cart.map(item => (
                 <div key={item.id} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <img 
-                    src={getApiUrl(item.gambar) || '/img/placeholder.jpg'} 
+                  <LazyImage
+                    src={getApiUrl(item.gambar) || '/img/placeholder.jpg'}
                     alt={item.nama}
                     style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--border)' }}
+                    wrapperStyle={{ width: '56px', height: '56px' }}
                   />
                   <div style={{ flex: 1 }}>
                     <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)', margin: '0 0 4px 0' }}>{item.nama}</h4>

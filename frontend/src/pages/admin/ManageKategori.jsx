@@ -43,7 +43,17 @@ const ManageKategori = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} kategori terpilih?`)) return;
+    const result = await window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: `${selectedIds.length} kategori akan dihapus secara permanen.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+    if (!result.isConfirmed) return;
     
     setIsBulkProcessing(true);
     try {
@@ -57,10 +67,10 @@ const ManageKategori = () => {
         fetchKategoris();
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menghapus kategori');
+        window.Swal.fire('Gagal', data.error || 'Gagal menghapus kategori', 'error');
       }
     } catch (err) {
-      alert('Koneksi gagal');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setIsBulkProcessing(false);
     }
@@ -129,33 +139,25 @@ const ManageKategori = () => {
   };
 
   const handleHapusKategori = (id) => {
-    if (window.Swal) {
-      window.Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: 'Kategori yang dihapus tidak dapat dikembalikan!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6C757D',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const res = await apiFetch(`/api/kategori/${id}`, {
-            method: 'DELETE',
-          });
-          const data = await res.json();
-          window.Swal.fire('Terhapus!', data.message || 'Kategori berhasil dihapus.', 'success');
-          fetchKategoris();
-        }
-      });
-    } else {
-      if (window.confirm('Yakin ingin menghapus kategori ini?')) {
-        apiFetch(`/api/kategori/${id}`, {
+    window.Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Kategori yang dihapus tidak dapat dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6C757D',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await apiFetch(`/api/kategori/${id}`, {
           method: 'DELETE',
-        }).then(() => fetchKategoris());
+        });
+        const data = await res.json();
+        window.Swal.fire('Terhapus!', data.message || 'Kategori berhasil dihapus.', 'success');
+        fetchKategoris();
       }
-    }
+    });
   };
 
   const renderKategoriRows = () => {
