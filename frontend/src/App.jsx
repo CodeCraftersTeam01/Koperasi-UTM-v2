@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartProvider } from './context/CartContext';
@@ -76,15 +76,135 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time or wait for assets
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 1500); // 1.5s loading time
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <CartProvider>
-      <Router>
-        <Navbar />
-        <CartSidebar />
-        <AnimatedRoutes />
-        <Footer />
-      </Router>
-    </CartProvider>
+    <>
+      <AnimatePresence>
+        {isInitialLoad && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ 
+              opacity: 0,
+              transition: { duration: 0.6, ease: 'easeInOut' }
+            }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, width: '100%', height: '100vh',
+              backgroundColor: 'var(--bg)',
+              zIndex: 999999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Ambient Background Glow */}
+            <motion.div
+              animate={{ 
+                scale: [1, 1.15, 1], 
+                opacity: [0.15, 0.25, 0.15] 
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 3, 
+                ease: 'easeInOut' 
+              }}
+              style={{
+                position: 'absolute',
+                width: '350px',
+                height: '350px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, var(--accent) 0%, rgba(255,255,255,0) 70%)',
+                filter: 'blur(30px)',
+                pointerEvents: 'none',
+                zIndex: 1
+              }}
+            />
+
+            {/* Central Logo Container */}
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              
+              {/* Outer Slow Rotating Dashed Ring */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
+                style={{
+                  position: 'absolute',
+                  width: '140px',
+                  height: '140px',
+                  borderRadius: '50%',
+                  border: '2px dashed var(--accent)',
+                  opacity: 0.35,
+                }}
+              />
+              
+              {/* Inner Soft Pulsing Glowing Ring */}
+              <motion.div
+                animate={{ 
+                  scale: [0.93, 1.05, 0.93],
+                  opacity: [0.3, 0.7, 0.3]
+                }}
+                transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+                style={{
+                  position: 'absolute',
+                  width: '115px',
+                  height: '115px',
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent)',
+                  boxShadow: '0 0 20px var(--accent-bg)',
+                }}
+              />
+
+              {/* Logo itself with elegant pulsing scale */}
+              <motion.img
+                src="/img/logo-koperasi.png"
+                alt="Koperasi UTM Logo"
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  opacity: 1
+                }}
+                transition={{ 
+                  scale: {
+                    repeat: Infinity,
+                    duration: 2.2,
+                    ease: 'easeInOut'
+                  },
+                  opacity: {
+                    duration: 0.4
+                  }
+                }}
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  objectFit: 'contain',
+                  zIndex: 3,
+                  filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.12))'
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <CartProvider>
+        <Router>
+          <Navbar />
+          <CartSidebar />
+          <AnimatedRoutes />
+          <Footer />
+        </Router>
+      </CartProvider>
+    </>
   );
 }
 
