@@ -14,6 +14,7 @@ $router->get('/api/pengurus', 'PengurusController@index');
 $router->get('/api/settings', 'SettingController@index');
 $router->post('/api/checkout', 'CheckoutController@process');
 $router->get('/api/orders/track', 'OrderController@track');
+$router->post('/api/contact', 'ContactController@send');
 
 // Admin protected API routes
 $router->group(['middleware' => 'auth'], function () use ($router) {

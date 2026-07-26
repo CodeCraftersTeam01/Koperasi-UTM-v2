@@ -85,9 +85,6 @@ const CartSidebar = () => {
           <button className="btn-primary" onClick={handleCheckout}>
             <i className="fas fa-shopping-cart"></i> Lanjut ke Checkout
           </button>
-          <button className="btn-gold" onClick={closeCart}>
-            <i className="fas fa-shopping-bag"></i> Lanjut Belanja
-          </button>
         </div>
       </div>
     </>

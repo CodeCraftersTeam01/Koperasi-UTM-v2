@@ -80,7 +80,6 @@ const Navbar = () => {
               to="/riwayat" 
               className="cart-btn" 
               aria-label="Riwayat Transaksi" 
-              style={{ marginRight: '8px' }}
               title="Riwayat Pesanan"
             >
               <i className="fas fa-history"></i>

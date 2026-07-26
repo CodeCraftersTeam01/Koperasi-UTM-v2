@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { playFlyToCartAnimation } from '../utils/animation';
@@ -11,6 +11,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalQty, setModalQty] = useState(1);
+
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 350]);
 
   const handleAddToCart = (e, product, qty = 1) => {
     const imgUrl = product.gambar ? getApiUrl(product.gambar) : '';
@@ -194,6 +197,17 @@ const Home = () => {
 
       {/* HERO */}
       <section id="hero" className="hero">
+        <motion.div 
+          style={{ 
+            y, 
+            position: 'absolute', 
+            top: '-20%', left: 0, right: 0, bottom: '-20%',
+            backgroundImage: "url('/img/cakra.jpeg')",
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center', 
+            zIndex: 0 
+          }} 
+        />
         <div className="hero-decor-circle"></div>
         <div className="hero-grid-pattern"></div>
         <div className="hero-decor-line"></div>
