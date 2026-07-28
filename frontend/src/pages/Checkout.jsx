@@ -30,6 +30,19 @@ const Checkout = () => {
     e.preventDefault();
     if (cart.length === 0) return;
 
+    if (nama.trim().length < 3) {
+      alert('Nama lengkap harus terdiri dari minimal 3 karakter.');
+      return;
+    }
+
+    // Phone number validation: only digits, typically starts with 08 or 628, length 10-15
+    const cleanPhone = whatsapp.replace(/\\D/g, '');
+    const phoneRegex = /^(0|62)[0-9]{8,13}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      alert('Format nomor WhatsApp tidak valid. Pastikan nomor diawali dengan 0 atau 62 dan berisi 10-15 digit angka.');
+      return;
+    }
+
     setLoading(true);
 
     try {

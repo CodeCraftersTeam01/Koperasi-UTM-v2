@@ -207,9 +207,6 @@ const AdminLayout = ({ children, title }) => {
                 <NavLink to="/admin/settings-identity" className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-bullseye"></i> <span>Setelan Visi Misi</span>
                 </NavLink>
-                <NavLink to="/admin/settings-checkout" className={({ isActive }) => isActive ? 'active' : ''}>
-                  <i className="fas fa-shopping-bag"></i> <span>Setelan Checkout</span>
-                </NavLink>
                 <NavLink to="/admin/settings-galeri" className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-images"></i> <span>Galeri Kegiatan</span>
                 </NavLink>

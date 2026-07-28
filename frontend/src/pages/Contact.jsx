@@ -15,6 +15,7 @@ const Contact = () => {
     subjek: '',
     pesan: '',
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,11 +31,28 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate sending message
-    alert(`Terima kasih ${formData.nama}, pesan Anda telah dikirim!`);
-    setFormData({ nama: '', email: '', subjek: '', pesan: '' });
+    setLoading(true);
+    try {
+      const res = await apiFetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || `Terima kasih ${formData.nama}, pesan Anda telah dikirim!`);
+        setFormData({ nama: '', email: '', subjek: '', pesan: '' });
+      } else {
+        alert(data.message || 'Gagal mengirim pesan. Silakan coba lagi.');
+      }
+    } catch (err) {
+      alert('Terjadi kesalahan. Gagal menghubungi server.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -134,7 +152,9 @@ const Contact = () => {
                     required
                   ></textarea>
                 </div>
-                <button type="submit" className="btn-primary"><i className="fas fa-paper-plane"></i> Kirim Pesan</button>
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? <><i className="fas fa-spinner fa-spin"></i> Mengirim...</> : <><i className="fas fa-paper-plane"></i> Kirim Pesan</>}
+                </button>
               </form>
             </div>
           </div>
