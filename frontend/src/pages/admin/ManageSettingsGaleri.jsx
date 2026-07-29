@@ -196,8 +196,9 @@ const ManageSettingsGaleri = () => {
               </p>
             )}
 
+            <div className="admin-settings-items">
             {items.map((item, index) => (
-              <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '16px', marginBottom: '12px', background: 'var(--surface)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div key={index} className="admin-settings-item" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '16px', marginBottom: '12px', background: 'var(--surface)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '4px' }}>
                   <button type="button" onClick={() => moveItem(index, -1)} disabled={index === 0} title="Pindah ke atas" style={{ padding: '4px 8px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', cursor: index === 0 ? 'not-allowed' : 'pointer', opacity: index === 0 ? 0.3 : 1, color: 'var(--text)' }}>
                     <i className="fas fa-chevron-up"></i>
@@ -250,6 +251,7 @@ const ManageSettingsGaleri = () => {
                 </button>
               </div>
             ))}
+            </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

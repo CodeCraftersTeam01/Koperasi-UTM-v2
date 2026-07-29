@@ -121,7 +121,7 @@ const ManagePesanan = () => {
           </div>
         </div>
 
-        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div className="admin-search-wrap" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <input 
             type="text" 
             placeholder="Cari berdasarkan nama, WhatsApp, atau ID pesanan..." 

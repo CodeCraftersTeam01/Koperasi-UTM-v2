@@ -46,7 +46,9 @@ const Catalog = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
 
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const filterParam = params.get('filter');
     if (filterParam && utamaNames.includes(filterParam)) {

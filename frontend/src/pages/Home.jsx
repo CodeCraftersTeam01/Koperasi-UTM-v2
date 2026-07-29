@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { apiFetch, getApiUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import LazyImage from '../components/LazyImage';
@@ -12,9 +12,11 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalQty, setModalQty] = useState(1);
+  const [kategoriTampil, setKategoriTampil] = useState([]);
 
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 350]);
+  const yRaw = useTransform(scrollY, [0, 1500], [0, 300]);
+  const y = useSpring(yRaw, { stiffness: 100, damping: 28, mass: 0.4 });
 
   const handleAddToCart = (e, product, qty = 1) => {
     const imgUrl = product.gambar ? getApiUrl(product.gambar) : '';
@@ -57,6 +59,14 @@ const Home = () => {
         if (settingsRes.ok) {
           const settingsData = await settingsRes.json();
           setSettings(prev => ({ ...prev, ...settingsData }));
+          if (settingsData.kategori_tampil) {
+            try {
+              const parsed = JSON.parse(settingsData.kategori_tampil);
+              setKategoriTampil(Array.isArray(parsed) ? parsed : []);
+            } catch {
+              setKategoriTampil([]);
+            }
+          }
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -141,7 +151,7 @@ const Home = () => {
             </div>
             <div className="about-text">
               <h2>{settings.about_title}</h2>
-              <div style={{ whiteSpace: 'pre-line', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '20px' }}>
+              <div style={{ whiteSpace: 'pre-line', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '20px', textAlign: 'justify' }}>
                 {settings.about_desc}
               </div>
               <div className="about-features">
@@ -199,21 +209,13 @@ const Home = () => {
             <p>Berbagai pilihan produk yang tersedia untuk memenuhi kebutuhan Anda di lingkungan kampus.</p>
           </div>
           <div className="categories-grid">
-            <div className="category-card">
-              <div className="category-icon"><i class="fas fa-shopping-bag"></i></div>
-              <h3>Retail</h3>
-              <p>Produk kebutuhan sehari-hari seperti makanan ringan, minuman, dan perlengkapan kuliah yang tersedia langsung.</p>
-            </div>
-            <div className="category-card">
-              <div className="category-icon"><i class="fas fa-handshake"></i></div>
-              <h3>Konsinyasi</h3>
-              <p>Produk titipan UMKM dan mitra lokal Madura, mendukung ekonomi kreatif mahasiswa dan masyarakat sekitar.</p>
-            </div>
-            <div className="category-card">
-              <div className="category-icon"><i class="fas fa-coffee"></i></div>
-              <h3>Cafe</h3>
-              <p>Menu kopi, minuman kekinian, dan cemilan ringan yang tersedia di area kampus.</p>
-            </div>
+            {kategoriTampil.map((kat) => (
+              <div key={kat.id} className="category-card">
+                <div className="category-icon"><i className={`fas ${kat.icon || 'fa-tag'}`}></i></div>
+                <h3>{kat.nama}</h3>
+                <p>{kat.deskripsi || ''}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

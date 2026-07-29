@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { apiFetch } from '../utils/api';
 import GradualBlur from './GradualBlur';
 
 const Navbar = () => {
@@ -8,6 +9,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollWidth, setScrollWidth] = useState(0);
+  const [checkoutSystem, setCheckoutSystem] = useState('toko');
   const location = useLocation();
 
   useEffect(() => {
@@ -21,6 +23,15 @@ const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    apiFetch('/api/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.checkout_system) setCheckoutSystem(data.checkout_system);
+      })
+      .catch(() => {});
   }, []);
 
   // Close menu when navigation happens
@@ -76,14 +87,16 @@ const Navbar = () => {
             </ul>
           </div>
           <div className="nav-actions">
-            <Link 
-              to="/riwayat" 
-              className="cart-btn" 
-              aria-label="Riwayat Transaksi" 
-              title="Riwayat Pesanan"
-            >
-              <i className="fas fa-history"></i>
-            </Link>
+            {checkoutSystem !== 'wa' && (
+              <Link 
+                to="/riwayat" 
+                className="cart-btn" 
+                aria-label="Riwayat Transaksi" 
+                title="Riwayat Pesanan"
+              >
+                <i className="fas fa-history"></i>
+              </Link>
+            )}
             <button className="cart-btn" aria-label="Keranjang" onClick={openCart}>
               <i className="fas fa-shopping-bag"></i>
               <span className={`cart-badge ${cartCount > 0 ? 'show' : ''}`}>{cartCount}</span>

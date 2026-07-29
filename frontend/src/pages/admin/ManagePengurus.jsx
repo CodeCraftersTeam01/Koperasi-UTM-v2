@@ -239,10 +239,10 @@ const ManagePengurus = () => {
 
   return (
     <AdminLayout title="Kelola Struktur Pengurus">
-      <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div className="admin-pengurus-wrap" style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
         
         {/* Header Actions */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        <div className="admin-pengurus-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '20px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>Daftar Pengurus Koperasi UTM</h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Kelola posisi, level struktur, dan foto para pengurus koperasi</p>
@@ -307,6 +307,8 @@ const ManagePengurus = () => {
               if (items.length === 0) return null;
               return (
                 <div key={lvl} style={{ marginBottom: '24px', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden' }}>
+                  <div style={{ overflowX: 'auto' }}>
+                  <div style={{ minWidth: '600px' }}>
                   <div style={{ padding: '14px 20px', background: meta.bg, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <i className={`fas ${meta.icon}`} style={{ color: meta.color, fontSize: '16px' }}></i>
                     <span style={{ fontWeight: 700, fontSize: '15px', color: meta.color }}>{meta.label}</span>
@@ -351,6 +353,8 @@ const ManagePengurus = () => {
                       })}
                     </tbody>
                   </table>
+                  </div>
+                  </div>
                 </div>
               );
             });

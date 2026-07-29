@@ -112,7 +112,7 @@ const Dashboard = () => {
       </div>
 
       {loadingStats ? renderSkeletonCharts() : stats && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
+        <div className="admin-chart-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
           {/* Chart Section */}
           <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '20px' }}><i className="fas fa-chart-pie" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Komposisi Produk</h3>
