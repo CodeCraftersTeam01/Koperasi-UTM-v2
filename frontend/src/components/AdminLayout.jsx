@@ -12,6 +12,23 @@ const AdminLayout = ({ children, title }) => {
   const adminUser = localStorage.getItem('kopma_admin_user') || 'Admin';
   const role = localStorage.getItem('kopma_admin_role') || 'petugas';
 
+  const [checkoutSystem, setCheckoutSystem] = useState('current');
+
+  useEffect(() => {
+    let active = true;
+    apiFetch('/api/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (active && data && data.checkout_system) {
+          setCheckoutSystem(data.checkout_system);
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  const isWaSystem = checkoutSystem === 'wa';
+
   const [openMenus, setOpenMenus] = useState({
     transaksi: pathname.includes('/admin/pesanan'),
     master: pathname.includes('/admin/produk') || pathname.includes('/admin/kategori'),
@@ -31,7 +48,10 @@ const AdminLayout = ({ children, title }) => {
         navigate('/admin');
       }
     }
-  }, [token, role, pathname, navigate]);
+    if (isWaSystem && pathname.includes('/admin/pesanan')) {
+      navigate('/admin');
+    }
+  }, [token, role, pathname, navigate, isWaSystem]);
 
   useEffect(() => {
     setOpenMenus({
@@ -47,7 +67,7 @@ const AdminLayout = ({ children, title }) => {
   const latestOrderId = useRef(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || isWaSystem) return;
 
     let isInitialLoad = true;
 
@@ -89,7 +109,7 @@ const AdminLayout = ({ children, title }) => {
     const interval = setInterval(checkNewOrders, 5000); // Check every 5 seconds
     
     return () => clearInterval(interval);
-  }, [token]);
+  }, [token, isWaSystem]);
 
   const toggleMenu = (menu) => {
     setOpenMenus(prev => ({
@@ -161,7 +181,8 @@ const AdminLayout = ({ children, title }) => {
               <i className="fas fa-tachometer-alt"></i> <span>Dashboard</span>
             </NavLink>
 
-            {/* Collapse Transaksi */}
+            {/* Collapse Transaksi (Hidden when using WhatsApp checkout system) */}
+            {!isWaSystem && (
             <div className={`admin-sidebar-collapse ${openMenus.transaksi ? 'open' : ''}`}>
               <button type="button" className="collapse-trigger" onClick={() => toggleMenu('transaksi')}>
                 <i className="fas fa-shopping-cart"></i> <span>Transaksi</span>
@@ -173,6 +194,7 @@ const AdminLayout = ({ children, title }) => {
                 </NavLink>
               </div>
             </div>
+            )}
 
             {/* Collapse Master Data */}
             <div className={`admin-sidebar-collapse ${openMenus.master ? 'open' : ''}`}>
