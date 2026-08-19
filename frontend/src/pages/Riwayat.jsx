@@ -119,7 +119,7 @@ const Riwayat = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Nomor Pesanan</span>
-                      <strong style={{ fontSize: '16px', color: 'var(--text)' }}>#{order.id}</strong>
+                      <strong style={{ fontSize: '16px', color: 'var(--text)' }}>#{order.nomor_nota || order.id}</strong>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Tanggal Pemesanan</span>

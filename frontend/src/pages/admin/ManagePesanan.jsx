@@ -101,6 +101,7 @@ const ManagePesanan = () => {
     const q = searchQuery.toLowerCase();
     return (
       order.nama.toLowerCase().includes(q) ||
+      (order.nomor_nota || '').toString().includes(q) ||
       order.id.toString().includes(q) ||
       order.whatsapp.includes(q)
     );
@@ -144,7 +145,7 @@ const ManagePesanan = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ width: '80px' }}>ID</th>
+                  <th style={{ width: '130px' }}>No Nota</th>
                   <th>Tanggal</th>
                   <th>Pelanggan</th>
                   <th>Daftar Belanja</th>
@@ -163,7 +164,7 @@ const ManagePesanan = () => {
                 ) : (
                   filteredOrders.map(order => (
                     <tr key={order.id}>
-                      <td><strong>#{order.id}</strong></td>
+                      <td><strong>#{order.nomor_nota || order.id}</strong></td>
                       <td>{new Date(order.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</td>
                       <td>
                         <div style={{ fontWeight: 600 }}>{order.nama}</div>

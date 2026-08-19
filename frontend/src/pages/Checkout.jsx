@@ -49,23 +49,59 @@ const Checkout = () => {
     return '62' + digits;
   };
 
-  const buildWhatsAppMessage = () => {
-    const items = cart.map((item, i) =>
-      `${i + 1}. ${item.nama} (${item.qty}x) = Rp ${(item.harga * item.qty).toLocaleString()}`
-    ).join('\n');
-
-    return encodeURIComponent(
-      `Halo Kak, saya *${nama}* ingin melakukan pemesanan:\n\n${items}\n\nTotal: Rp ${cartTotal.toLocaleString()}\nNomor saya: ${whatsapp}`
-    );
+  const generateNotaNumber = () => {
+    const pad = (x) => String(x).padStart(2, '0');
+    const now = new Date();
+    const rand = String(Math.floor(1000 + Math.random() * 9000));
+    return `${pad(now.getDate())}${pad(now.getMonth() + 1)}${String(now.getFullYear()).slice(2)}${rand}`;
   };
 
-  const submitOrder = async () => {
+  const buildWhatsAppMessage = (nota) => {
+    const pad = (x) => String(x).padStart(2, '0');
+    const now = new Date();
+    const tanggal = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const fmt = (n) => n.toLocaleString('id-ID');
+    const WIDTH = 34;
+    const center = (text) => {
+      const total = Math.max(0, WIDTH - text.length);
+      return ' '.repeat(Math.floor(total / 2)) + text + ' '.repeat(Math.ceil(total / 2));
+    };
+
+    const items = cart.map((item) => {
+      const subtotal = fmt(item.harga * item.qty);
+      return `${item.nama}\n${`${item.qty} Pcs x ${fmt(item.harga)}`.padEnd(24)}${subtotal.padStart(10)}`;
+    }).join('\n\n');
+
+    const message =
+`\`\`\`
+${center('KOPERASI UTM')}
+${center('Jl. Raya Telang PO BOX Kamal')}
+${' '.repeat(Math.floor((WIDTH - 13) / 2) + 1)}0811-3904-676
+${'='.repeat(WIDTH)}
+No Nota : ${nota}
+Pelanggan : ${nama.toUpperCase()}
+Tanggal : ${tanggal}
+${'='.repeat(WIDTH)}
+${items}
+${'-'.repeat(WIDTH)}
+${'TOTAL'.padEnd(24)}${fmt(cartTotal).padStart(10)}
+${'='.repeat(WIDTH)}
+
+${center('TERIMA KASIH')}
+\`\`\``;
+
+    return encodeURIComponent(message);
+  };
+
+  const submitOrder = async (nota) => {
     const res = await apiFetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nama,
         whatsapp,
+        nomor_nota: nota,
         items: cart.map(item => ({
           nama: item.nama,
           harga: item.harga,
@@ -107,12 +143,14 @@ const Checkout = () => {
     setLoading(true);
 
     try {
+      const nota = generateNotaNumber();
       if (checkoutSystem === 'wa') {
         const adminNumber = formatPhone(adminWhatsapp);
-        const message = buildWhatsAppMessage();
+        const message = buildWhatsAppMessage(nota);
         window.open(`https://wa.me/${adminNumber}?text=${message}`, '_blank');
+        await submitOrder(nota);
       } else {
-        await submitOrder();
+        await submitOrder(nota);
       }
 
       clearCart();
@@ -184,10 +222,10 @@ const Checkout = () => {
             
             <form id="checkout-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>Nama Lengkap</label>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>Nama</label>
                 <input 
                   type="text" 
-                  placeholder="Masukkan nama lengkap Anda"
+                  placeholder="Masukkan nama Anda"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
                   required
@@ -235,14 +273,6 @@ const Checkout = () => {
             </div>
 
             <div style={{ borderTop: '2px solid var(--border)', paddingTop: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Subtotal Produk</span>
-                <span style={{ fontSize: '14px', color: 'var(--text)', fontWeight: 500 }}>Rp {cartTotal.toLocaleString()}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Biaya Layanan</span>
-                <span style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: 600 }}>GRATIS</span>
-              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>Total</span>
                 <strong style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary)' }}>Rp {cartTotal.toLocaleString()}</strong>
