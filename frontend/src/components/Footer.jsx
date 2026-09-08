@@ -14,10 +14,10 @@ const Footer = () => {
           <img src="/img/logo-koperasi.png" alt="Koperasi UTM" className="footer-logo-img" />
           <h3>Koperasi UTM</h3>
           <p>Koperasi Universitas Trunojoyo Madura — Dari Anggota, Oleh Anggota, Untuk Anggota.</p>
-          <div class="footer-social">
-            <a href="#" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
-            <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <div className="footer-social">
+            <a href="https://www.instagram.com/koperasiutm/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@koperasiutm" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i className="fab fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/@KoperasiTrunojoyo" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i className="fab fa-youtube"></i></a>
           </div>
         </div>
         <div className="footer-links">

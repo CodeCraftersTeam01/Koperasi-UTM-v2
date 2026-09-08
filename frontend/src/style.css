@@ -2879,7 +2879,8 @@ body:has(.hero) #navbar.scrolled .nav-logo {
 
 .admin-wrapper {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .admin-sidebar {
@@ -2890,6 +2891,7 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .admin-sidebar-overlay {
@@ -3036,6 +3038,7 @@ body:has(.hero) #navbar.scrolled .nav-logo {
 .admin-main {
   flex: 1;
   overflow-y: auto;
+  height: 100vh;
 }
 
 .admin-header {
