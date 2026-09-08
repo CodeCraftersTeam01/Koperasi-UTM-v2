@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl } from '../../utils/api';
@@ -276,7 +276,7 @@ const ManageProduk = () => {
       text: `Produk akan di${label}. Produk ${newArsip ? 'tidak akan' : 'akan'} muncul di halaman utama.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: newArsip ? '#6C757D' : '#0F5132',
+      confirmButtonColor: newArsip ? '#6C757D' : '#00754A',
       cancelButtonColor: '#6C757D',
       confirmButtonText: `Ya, ${label}!`,
       cancelButtonText: 'Batal'
@@ -347,12 +347,12 @@ const ManageProduk = () => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            style={{ width: '100%', maxWidth: '360px', padding: '10px 16px', border: '2px solid var(--border)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+            style={{ width: '100%', maxWidth: '360px', padding: '10px 16px', border: '1px solid var(--border-strong)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
           />
         </div>
 
         {selectedIds.length > 0 && (
-          <div style={{ background: 'rgba(15, 81, 50, 0.1)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ background: 'rgba(0, 117, 74, 0.08)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '14px' }}>{selectedIds.length} produk terpilih</span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 
@@ -511,7 +511,7 @@ const ManageProduk = () => {
           <div className="modal-content" style={{ maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}>
             <button className="modal-close" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div style={{ padding: '32px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '22px', color: 'var(--text)', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '22px', color: 'var(--text)', marginBottom: '20px' }}>
                 {modalTitle}
               </h3>
               <form onSubmit={handleSimpanProduk}>
@@ -524,7 +524,7 @@ const ManageProduk = () => {
                       value={nama}
                       onChange={(e) => setNama(e.target.value)}
                       required 
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
@@ -536,7 +536,7 @@ const ManageProduk = () => {
                       onChange={(e) => setHarga(e.target.value)}
                       required 
                       min="0" 
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -547,7 +547,7 @@ const ManageProduk = () => {
                     <select 
                       value={tag}
                       onChange={(e) => setTag(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Tidak ada —</option>
                       <option value="Best Seller">Best Seller</option>
@@ -560,7 +560,7 @@ const ManageProduk = () => {
                     <select 
                       value={kategori}
                       onChange={(e) => setKategori(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Pilih Kategori —</option>
                       {kategoriList.map(k => (
@@ -576,7 +576,7 @@ const ManageProduk = () => {
                     <select 
                       value={subkategori}
                       onChange={(e) => setSubkategori(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Pilih Subkategori —</option>
                       {(() => {
@@ -596,7 +596,7 @@ const ManageProduk = () => {
                       type="file" 
                       accept="image/*" 
                       onChange={handleFileChange}
-                      style={{ width: '100%', padding: '8px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '8px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                     {gambarPreview && (
                       <div style={{ marginTop: '8px' }}>
@@ -617,7 +617,7 @@ const ManageProduk = () => {
                     placeholder="Deskripsi produk" 
                     value={deskripsi}
                     onChange={(e) => setDeskripsi(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   ></textarea>
                 </div>
 

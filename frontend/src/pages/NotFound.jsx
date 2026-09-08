@@ -24,7 +24,7 @@ const NotFound = () => {
           color: 'var(--primary)', 
           lineHeight: 1, 
           margin: '0 0 10px 0',
-          textShadow: '0 10px 30px rgba(15, 81, 50, 0.15)'
+          textShadow: '0 10px 30px rgba(0, 98, 65, 0.15)'
         }}>
           404
         </h1>

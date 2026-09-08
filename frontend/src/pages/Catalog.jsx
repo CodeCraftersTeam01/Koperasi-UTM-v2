@@ -6,7 +6,7 @@ import { playFlyToCartAnimation } from '../utils/animation';
 import LazyImage from '../components/LazyImage';
 
 const Catalog = () => {
-  const { addToCart, openCart } = useCart();
+  const { addToCart } = useCart();
   const location = useLocation();
 
   const [products, setProducts] = useState([]);
@@ -15,8 +15,9 @@ const Catalog = () => {
 
   const handleAddToCart = (e, product, qty = 1) => {
     const imgUrl = product.gambar ? getApiUrl(product.gambar) : '';
-    playFlyToCartAnimation(e.currentTarget, imgUrl);
-    addToCart(product, qty);
+    playFlyToCartAnimation(e.currentTarget, imgUrl, () => {
+      addToCart(product, qty);
+    });
   };
 
   // Filter and Sort states
@@ -306,7 +307,19 @@ const Catalog = () => {
 
           {/* RESULTS */}
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-muted)' }}>Memuat katalog produk...</div>
+            <div className="catalog-results">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton skeleton-card-img"></div>
+                  <div className="skeleton-card-body">
+                    <div className="skeleton skeleton-card-title"></div>
+                    <div className="skeleton skeleton-card-badge"></div>
+                    <div className="skeleton skeleton-card-price"></div>
+                    <div className="skeleton skeleton-card-desc"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : filtered.length === 0 ? (
             <div className="catalog-empty">
               <i className="fas fa-search"></i>
@@ -316,27 +329,28 @@ const Catalog = () => {
           ) : (
             <div id="catalog-results" className="catalog-results">
               {filtered.map((p) => (
-                <div key={p.id} className="product-card">
-                  <div className="product-img-wrap" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
+                <div key={p.id} className="product-card" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
+                  <div className="product-img-wrap">
                     <LazyImage src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
-                    <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>
-                      {p.kategori}{p.subkategori ? ' • ' + p.subkategori : ''}
-                    </span>
-                    {p.tag && (
-                      <span className={`product-tag tag-${p.tag.toLowerCase().replace(/\s+/g, '-')}`}>
-                        {p.tag}
-                      </span>
-                    )}
                   </div>
                   <div className="product-body">
-                    <h3 onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>{p.nama}</h3>
+                    <h3>{p.nama}</h3>
+                    {(p.kategori || p.tag) && (
+                      <div className="product-badges">
+                        {p.kategori && (
+                          <span className={`product-badge ${(p.kategori || '').toLowerCase()}`}>
+                            {p.kategori}
+                          </span>
+                        )}
+                        {p.tag && (
+                          <span className={`product-tag tag-${p.tag.toLowerCase().replace(/\s+/g, '-')}`}>
+                            {p.tag}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="product-price">Rp {p.harga.toLocaleString()}</div>
                     <p className="product-desc">{p.deskripsi}</p>
-                    <div className="product-actions">
-                       <button className="btn-primary btn-sm" onClick={(e) => handleAddToCart(e, p)}>
-                        <i className="fas fa-shopping-cart"></i> Tambah
-                      </button>
-                    </div>
                   </div>
                 </div>
               ))}
@@ -364,11 +378,13 @@ const Catalog = () => {
                 <h2>{selectedProduct.nama}</h2>
                 <div className="modal-price">Rp {selectedProduct.harga.toLocaleString()}</div>
                 <div className="modal-category">
-                  <span>{selectedProduct.kategori}{selectedProduct.subkategori ? ' • ' + selectedProduct.subkategori : ''}</span>
+                  <span className={`product-badge ${(selectedProduct.kategori || '').toLowerCase()}`}>
+                    {selectedProduct.kategori}{selectedProduct.subkategori ? ' › ' + selectedProduct.subkategori : ''}
+                  </span>
                 </div>
                 {selectedProduct.tag && (
                   <div className="modal-tag">
-                    <span className={`tag-badge tag-${selectedProduct.tag.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <span className={`product-tag tag-${selectedProduct.tag.toLowerCase().replace(/\s+/g, '-')}`}>
                       {selectedProduct.tag}
                     </span>
                   </div>
@@ -376,28 +392,44 @@ const Catalog = () => {
                 <p className="modal-desc" style={{ marginTop: '16px', color: 'var(--text-muted)' }}>{selectedProduct.deskripsi}</p>
                 <div className="modal-qty" style={{ marginTop: '20px' }}>
                   <label style={{ display: 'block', fontWeight: 500, marginBottom: '8px' }}>Jumlah</label>
-                  <div className="qty-control" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <button onClick={() => setModalQty(Math.max(1, modalQty - 1))} className="btn-outline" style={{ padding: '6px 12px' }}><i className="fas fa-minus"></i></button>
-                    <input 
-                      type="number" 
-                      value={modalQty} 
+                  <div className="qty-control">
+                    <button
+                      type="button"
+                      className="qty-btn"
+                      onClick={() => setModalQty(Math.max(1, modalQty - 1))}
+                      disabled={modalQty <= 1}
+                      aria-label="Kurangi jumlah"
+                    >
+                      <i className="fas fa-minus"></i>
+                    </button>
+                    <input
+                      type="number"
+                      value={modalQty}
                       onChange={(e) => setModalQty(Math.max(1, parseInt(e.target.value) || 1))}
-                      style={{ width: '60px', textAlign: 'center', padding: '6px', border: '1px solid var(--border)' }}
+                      aria-label="Jumlah"
                     />
-                    <button onClick={() => setModalQty(modalQty + 1)} className="btn-outline" style={{ padding: '6px 12px' }}><i className="fas fa-plus"></i></button>
+                    <button
+                      type="button"
+                      className="qty-btn"
+                      onClick={() => setModalQty(modalQty + 1)}
+                      aria-label="Tambah jumlah"
+                    >
+                      <i className="fas fa-plus"></i>
+                    </button>
                   </div>
                 </div>
+                <div className="modal-subtotal">
+                  <span>Subtotal</span>
+                  <strong>Rp {(selectedProduct.harga * modalQty).toLocaleString()}</strong>
+                </div>
                 <div className="modal-actions" style={{ marginTop: '24px' }}>
-                  <button 
-                    className="btn-primary" 
+                  <button
+                    className="btn-primary"
                     onClick={(e) => {
                       handleAddToCart(e, selectedProduct, modalQty);
                       setTimeout(() => {
                         handleCloseModal();
-                      }, 450);
-                      setTimeout(() => {
-                        openCart();
-                      }, 1000);
+                      }, 500);
                     }}
                   >
                     <i className="fas fa-shopping-cart"></i> Tambah ke Keranjang

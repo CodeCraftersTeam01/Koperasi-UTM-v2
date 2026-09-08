@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -144,7 +144,7 @@ const ManageSettingsLayanan = () => {
   if (loading) {
     return (
       <AdminLayout title="Setelan Layanan">
-        <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-muted)' }}>Memuat setelan...</p>
         </div>
       </AdminLayout>
@@ -155,8 +155,8 @@ const ManageSettingsLayanan = () => {
     <AdminLayout title="Setelan Layanan">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
         <form onSubmit={handleSubmit}>
-          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
               <i className="fas fa-heading" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Judul & Deskripsi Bagian Layanan
             </h3>
             <div style={{ marginBottom: '16px' }}>
@@ -166,7 +166,7 @@ const ManageSettingsLayanan = () => {
                 value={judul}
                 onChange={(e) => setJudul(e.target.value)}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
               />
             </div>
             <div style={{ marginBottom: '0' }}>
@@ -176,14 +176,14 @@ const ManageSettingsLayanan = () => {
                 value={deskripsi}
                 onChange={(e) => setDeskripsi(e.target.value)}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }}
               ></textarea>
             </div>
           </div>
 
-          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
                 <i className="fas fa-concierge-bell" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Daftar Layanan
               </h3>
               <button type="button" onClick={addItem} style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 600, background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
@@ -239,7 +239,7 @@ const ManageSettingsLayanan = () => {
                             handleItemChange(index, 'ikon', e.target.value);
                             handleItemChange(index, 'gambar', '');
                           }}
-                          style={{ width: '100%', padding: '4px 6px', fontSize: '11px', border: '2px solid var(--border)', borderRadius: '6px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box', cursor: 'pointer' }}
+                          style={{ width: '100%', padding: '4px 6px', fontSize: '11px', border: '1px solid var(--border-strong)', borderRadius: '6px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box', cursor: 'pointer' }}
                         >
                           {ICONS.map(ico => (
                             <option key={ico} value={ico}>{ico}</option>
@@ -261,7 +261,7 @@ const ManageSettingsLayanan = () => {
                     value={item.judul}
                     onChange={(e) => handleItemChange(index, 'judul', e.target.value)}
                     required
-                    style={{ width: '100%', padding: '8px 12px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                   <textarea
                     placeholder="Deskripsi Layanan"
@@ -269,7 +269,7 @@ const ManageSettingsLayanan = () => {
                     value={item.deskripsi}
                     onChange={(e) => handleItemChange(index, 'deskripsi', e.target.value)}
                     required
-                    style={{ width: '100%', padding: '8px 12px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.5' }}
+                    style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.5' }}
                   ></textarea>
                 </div>
 

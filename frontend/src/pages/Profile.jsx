@@ -44,12 +44,6 @@ const Profile = () => {
     };
 
     fetchData();
-
-    if (window.AOS) {
-      setTimeout(() => {
-        window.AOS.refresh();
-      }, 500);
-    }
   }, []);
 
   const level1 = pengurusList.filter(p => p.level === 1);

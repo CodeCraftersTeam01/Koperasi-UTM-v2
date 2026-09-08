@@ -19,7 +19,10 @@ class AuthController extends Controller
 
         if ($user && Hash::check($request->input('password'), $user->password)) {
             $token = bin2hex(random_bytes(30));
-            $user->update(['api_token' => $token]);
+            $user->update([
+                'api_token' => $token,
+                'token_created_at' => now(),
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -33,5 +36,14 @@ class AuthController extends Controller
             'status' => 'error',
             'message' => 'Username atau password salah',
         ], 401);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        if ($user) {
+            $user->update(['api_token' => null, 'token_created_at' => null]);
+        }
+        return response()->json(['status' => 'success', 'message' => 'Logout berhasil']);
     }
 }

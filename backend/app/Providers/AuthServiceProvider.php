@@ -36,7 +36,15 @@ class AuthServiceProvider extends ServiceProvider
                 if (preg_match('/Bearer\s(\S+)/', $token, $matches)) {
                     $token = $matches[1];
                 }
-                return User::where('api_token', $token)->first();
+                $user = User::where('api_token', $token)->first();
+                if ($user && $user->token_created_at) {
+                    $hours = now()->diffInHours($user->token_created_at);
+                    if ($hours >= 12) {
+                        $user->update(['api_token' => null, 'token_created_at' => null]);
+                        return null;
+                    }
+                }
+                return $user;
             }
         });
     }

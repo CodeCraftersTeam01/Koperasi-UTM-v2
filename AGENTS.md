@@ -25,15 +25,29 @@ php artisan migrate               # run DB migrations
 
 - Frontend reads `VITE_API_URL` (default `http://localhost:8000`) from `frontend/.env`
 - Auth token stored in `localStorage` as `kopma_admin_token`, sent as `Authorization: Bearer <token>`
-- Also stores `kopma_admin_user` (username) and `kopma_admin_role` (`admin`|`petugas`) in localStorage
+- Also stores `kopma_admin_user` (username) and `kopma_admin_role` (`super_admin`|`admin`|`petugas`) in localStorage
 - On 401, frontend auto-clears localStorage and redirects to `/admin/login`
-- `petugas` role: restricted from settings, pengurus, and users admin pages
+- Roles: `super_admin` (full access incl. Kelola Admin), `admin` (no Kelola Admin), `petugas` (blocked from settings, pengurus, and users admin pages)
+- Settings are key-value pairs in the `settings` table; `SettingController` merges DB values over PHP defaults, so unknown keys return as undefined (frontend handles defaults)
 - Lumen auth matches `api_token` column on `users` table
 - `ProdukController@update` and `PengurusController@update` use **POST** for multipart/form-data uploads
 - Uploaded files stored in `public/upload/` (gallery: `public/upload/gallery/`)
 - Public routes: `GET /api/kategori`, `GET /api/produk`, `POST /api/login`, `GET /api/pengurus`, `GET /api/settings`, `POST /api/checkout`
 - Admin routes (under `auth` middleware): CRUD for kategori, produk, users, pengurus, settings; bulk-delete/bulk-archive use POST
 - CORS middleware is global, allows all origins
+
+## Checkout system (`checkout_system` setting)
+
+- Managed in `ManageSettingsCheckout.jsx` (`/admin/settings-checkout`); values: `wa` (WhatsApp) or `current` (store system)
+- `wa`: checkout opens WhatsApp to `admin_whatsapp` with auto-generated message; orders are NOT stored; admin hides "Transaksi → Pesanan Masuk" menu, disables order polling, and redirects `/admin/pesanan` to Dashboard (`AdminLayout.jsx`)
+- `current`: orders stored via `POST /api/checkout`, visible in ManagePesanan and Riwayat
+- Related settings: `admin_whatsapp` (admin WA number for wa mode)
+
+## Landing page categories (`kategori_tampil` setting)
+
+- Managed in `ManageSettingsKategori.jsx` (`/admin/settings-kategori`); sidebar menu "Kategori Tampil" under Setelan Website
+- Stored as JSON array of `{ id, nama, icon, deskripsi }` — only categories selected here render on the landing page `#kategori` section (Home.jsx)
+- Default icons/descriptions fallback for Retail, Konsinyasi, Cafe
 
 ## Testing
 

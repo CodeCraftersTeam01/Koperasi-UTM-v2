@@ -78,6 +78,7 @@ $app->middleware([
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
+    'throttle.login' => App\Http\Middleware\ThrottleLogin::class,
 ]);
 
 /*

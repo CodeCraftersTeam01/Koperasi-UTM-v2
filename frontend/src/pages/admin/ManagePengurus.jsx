@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl } from '../../utils/api';
 
@@ -239,12 +239,12 @@ const ManagePengurus = () => {
 
   return (
     <AdminLayout title="Kelola Struktur Pengurus">
-      <div className="admin-pengurus-wrap" style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div className="admin-pengurus-wrap" style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
         
         {/* Header Actions */}
         <div className="admin-pengurus-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '20px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>Daftar Pengurus Koperasi UTM</h3>
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>Daftar Pengurus Koperasi UTM</h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Kelola posisi, level struktur, dan foto para pengurus koperasi</p>
           </div>
           <button onClick={handleOpenTambahModal} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -327,7 +327,7 @@ const ManagePengurus = () => {
                             <td style={{ width: '50px', padding: '12px 8px' }}>{idx + 1}</td>
                             <td style={{ padding: '12px 8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border)' }} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
+                                <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-strong)' }} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
                                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{p.nama}</span>
                               </div>
                             </td>
@@ -369,7 +369,7 @@ const ManagePengurus = () => {
           <div className="modal-content" style={{ maxWidth: '520px' }}>
             <button className="modal-close" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div style={{ padding: '32px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '22px', color: 'var(--text)', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '22px', color: 'var(--text)', marginBottom: '24px' }}>
                 {modalTitle}
               </h3>
               <form onSubmit={handleSimpan}>
@@ -381,7 +381,7 @@ const ManagePengurus = () => {
                     value={nama}
                     onChange={(e) => setNama(e.target.value)}
                     required 
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -393,7 +393,7 @@ const ManagePengurus = () => {
                     value={jabatan}
                     onChange={(e) => setJabatan(e.target.value)}
                     required 
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -403,7 +403,7 @@ const ManagePengurus = () => {
                     <select 
                       value={level}
                       onChange={(e) => setLevel(parseInt(e.target.value))}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value={1}>Tingkat 1 (Ketua)</option>
                       <option value={2}>Tingkat 2 (Pengurus Inti/BPH)</option>
@@ -418,7 +418,7 @@ const ManagePengurus = () => {
                       value={urutan}
                       onChange={(e) => setUrutan(parseInt(e.target.value) || 0)}
                       required 
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>

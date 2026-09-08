@@ -22,13 +22,27 @@ const AdminLayout = ({ children, title }) => {
   useEffect(() => {
     if (!token) {
       navigate('/admin/login');
-    } else if (role === 'petugas') {
-      if (pathname.includes('/admin/settings') || pathname.includes('/admin/pengurus') || pathname.includes('/admin/users')) {
-        navigate('/admin');
+    } else {
+      const loginTime = localStorage.getItem('kopma_admin_login_time');
+      if (loginTime) {
+        const hoursSinceLogin = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+        if (hoursSinceLogin >= 12) {
+          localStorage.removeItem('kopma_admin_token');
+          localStorage.removeItem('kopma_admin_user');
+          localStorage.removeItem('kopma_admin_role');
+          localStorage.removeItem('kopma_admin_login_time');
+          navigate('/admin/login');
+          return;
+        }
       }
-    } else if (role === 'admin') {
-      if (pathname.includes('/admin/users')) {
-        navigate('/admin');
+      if (role === 'petugas') {
+        if (pathname.includes('/admin/settings') || pathname.includes('/admin/pengurus') || pathname.includes('/admin/users')) {
+          navigate('/admin');
+        }
+      } else if (role === 'admin') {
+        if (pathname.includes('/admin/users')) {
+          navigate('/admin');
+        }
       }
     }
   }, [token, role, pathname, navigate]);
@@ -98,11 +112,15 @@ const AdminLayout = ({ children, title }) => {
     }));
   };
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
+    try {
+      await apiFetch('/api/logout', { method: 'POST' });
+    } catch (_) {}
     localStorage.removeItem('kopma_admin_token');
     localStorage.removeItem('kopma_admin_user');
     localStorage.removeItem('kopma_admin_role');
+    localStorage.removeItem('kopma_admin_login_time');
     navigate('/admin/login');
   };
 
@@ -138,7 +156,7 @@ const AdminLayout = ({ children, title }) => {
               navigate('/admin/pesanan');
             }}
           >
-            <i className="fas fa-bell" style={{ fontSize: '20px', animation: 'ring 2s infinite' }}></i>
+            <i className="fas fa-bell" style={{ fontSize: '20px' }}></i>
             {toastMessage}
           </motion.div>
         )}

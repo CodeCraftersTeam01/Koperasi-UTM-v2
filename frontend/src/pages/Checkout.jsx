@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { apiFetch, getApiUrl } from '../utils/api';
@@ -62,30 +62,38 @@ const Checkout = () => {
     const tanggal = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
     const fmt = (n) => n.toLocaleString('id-ID');
-    const WIDTH = 34;
+    const WIDTH = 31;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const center = (text) => {
+      if (isMobile) return text;
       const total = Math.max(0, WIDTH - text.length);
       return ' '.repeat(Math.floor(total / 2)) + text + ' '.repeat(Math.ceil(total / 2));
     };
 
     const items = cart.map((item) => {
       const subtotal = fmt(item.harga * item.qty);
-      return `${item.nama}\n${`${item.qty} Pcs x ${fmt(item.harga)}`.padEnd(24)}${subtotal.padStart(10)}`;
+      return `${item.nama}\n${`${item.qty} Pcs x ${fmt(item.harga)}`.padEnd(21)}${subtotal.padStart(10)}`;
     }).join('\n\n');
+
+    const phonePad = isMobile ? '' : ' '.repeat(Math.floor((WIDTH - 13) / 2));
+
+    const notaLine = isMobile ? `No Nota : ${nota}` : `No Nota : ${nota}`;
+    const pelangganLine = isMobile ? `Pelanggan : ${nama.toUpperCase()}` : `Pelanggan : ${nama.toUpperCase()}`;
+    const tanggalLine = isMobile ? `Tanggal : ${tanggal}` : `Tanggal : ${tanggal}`;
 
     const message =
 `\`\`\`
 ${center('KOPERASI UTM')}
 ${center('Jl. Raya Telang PO BOX Kamal')}
-${' '.repeat(Math.floor((WIDTH - 13) / 2) + 1)}0811-3904-676
+${phonePad}0811-3904-676
 ${'='.repeat(WIDTH)}
-No Nota : ${nota}
-Pelanggan : ${nama.toUpperCase()}
-Tanggal : ${tanggal}
+${notaLine}
+${pelangganLine}
+${tanggalLine}
 ${'='.repeat(WIDTH)}
 ${items}
 ${'-'.repeat(WIDTH)}
-${'TOTAL'.padEnd(24)}${fmt(cartTotal).padStart(10)}
+${'TOTAL'.padEnd(21)}${fmt(cartTotal).padStart(10)}
 ${'='.repeat(WIDTH)}
 
 ${center('TERIMA KASIH')}
@@ -175,7 +183,7 @@ ${center('TERIMA KASIH')}
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(15,81,50,0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px' }}>
             <i className={`fas ${checkoutSystem === 'wa' ? 'fa-comment-dots' : 'fa-check-double'}`}></i>
           </div>
-          <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>
             {checkoutSystem === 'wa' ? 'Pesanan Tersimpan!' : 'Pesanan Berhasil Dibuat!'}
           </h2>
           <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '32px' }}>
@@ -215,8 +223,8 @@ ${center('TERIMA KASIH')}
           <div className="checkout-grid-mobile">
           
           {/* BUYER DATA FORM */}
-          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '16px', boxShadow: 'var(--shadow)', border: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
               <i className="fas fa-user-edit" style={{ marginRight: '8px', color: 'var(--primary)' }}></i> Data Diri Pembeli
             </h3>
             
@@ -229,7 +237,7 @@ ${center('TERIMA KASIH')}
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -241,7 +249,7 @@ ${center('TERIMA KASIH')}
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                 />
                 <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Pastikan nomor WhatsApp aktif untuk menerima update status pesanan dari Admin.</p>
               </div>
@@ -249,8 +257,8 @@ ${center('TERIMA KASIH')}
           </div>
 
           {/* ORDER SUMMARY */}
-          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', height: 'fit-content' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '16px', boxShadow: 'var(--shadow)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', height: 'fit-content' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
               <i className="fas fa-shopping-cart" style={{ marginRight: '8px', color: 'var(--primary)' }}></i> Ringkasan Belanja
             </h3>
 

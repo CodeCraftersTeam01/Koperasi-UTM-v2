@@ -57,7 +57,8 @@ const Navbar = () => {
         className={`${isMenuOpen ? 'hidden-blur' : ''}`}
       />
       <nav id="navbar" className={`${isScrolled ? 'scrolled' : ''} ${isMenuOpen ? 'hidden-up' : ''}`}>
-        <div className="nav-inner container">
+        <div className="nav-bar">
+          <div className="nav-inner container">
           <Link to="/" className="nav-logo">
             <img src="/img/logo-koperasi.png" alt="Koperasi UTM" className="nav-logo-img" /> Koperasi UTM
           </Link>
@@ -98,17 +99,18 @@ const Navbar = () => {
               </Link>
             )}
             <button className="cart-btn" aria-label="Keranjang" onClick={openCart}>
-              <i className="fas fa-shopping-bag"></i>
+              <i className="fas fa-shopping-cart"></i>
               <span className={`cart-badge ${cartCount > 0 ? 'show' : ''}`}>{cartCount}</span>
             </button>
-            <button 
-              id="hamburger" 
-              className={`hamburger ${isMenuOpen ? 'active' : ''}`} 
+            <button
+              id="hamburger"
+              className={`hamburger ${isMenuOpen ? 'active' : ''}`}
               aria-label="Menu"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <span></span><span></span><span></span>
             </button>
+          </div>
           </div>
         </div>
       </nav>

@@ -3,7 +3,7 @@
  * @param {HTMLElement} startElement The element to start the flying animation from (e.g. the clicked button)
  * @param {string} productImage URL of the product image to display inside the flyer
  */
-export const playFlyToCartAnimation = (startElement, productImage) => {
+export const playFlyToCartAnimation = (startElement, productImage, onImpact) => {
   const targetElement = document.querySelector('.cart-btn[aria-label="Keranjang"]');
   if (!startElement || !targetElement) return;
 
@@ -54,7 +54,7 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
   setImportant('overflow', 'hidden');
   setImportant('white-space', 'nowrap');
   setImportant('flex', 'none');
-  
+
   // Force a reflow so the initial width is registered
   void startElement.offsetWidth;
 
@@ -81,8 +81,8 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
     flyer.style.height = computedHeight + 'px';
     flyer.style.borderRadius = '50%';
     flyer.style.overflow = 'hidden';
-    flyer.style.boxShadow = '0 8px 24px rgba(15, 81, 50, 0.25)';
-    flyer.style.border = '2px solid var(--accent, #aa3bff)';
+    flyer.style.boxShadow = '0 8px 24px rgba(0, 98, 65, 0.25)';
+    flyer.style.border = '2px solid var(--secondary, #00754A)';
     flyer.style.pointerEvents = 'none';
     flyer.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)'; // Slower and smoother ease
     flyer.style.opacity = '1';
@@ -95,8 +95,8 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
       img.style.objectFit = 'cover';
       flyer.appendChild(img);
     } else {
-      flyer.innerHTML = `<div style="width:100%;height:100%;background:var(--primary, #0f5132);display:flex;align-items:center;justify-content:center;color:white;">
-        <i class="fas fa-shopping-bag"></i>
+      flyer.innerHTML = `<div style="width:100%;height:100%;background:var(--primary, #006241);display:flex;align-items:center;justify-content:center;color:white;">
+        <i class="fas fa-shopping-cart"></i>
       </div>`;
     }
 
@@ -116,7 +116,7 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
     // 3. Fly to cart
     const targetX = targetRect.left + targetRect.width / 2 - (computedHeight / 2);
     const targetY = targetRect.top + targetRect.height / 2 - (computedHeight / 2);
-    
+
     flyer.style.left = `${targetX}px`;
     flyer.style.top = `${targetY}px`;
     flyer.style.transform = 'scale(0.3) rotate(360deg)';
@@ -125,7 +125,7 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
     // 4. Cleanup and expand button back
     setTimeout(() => {
       flyer.remove();
-      
+
       // Expand button back
       setImportant('width', computedWidth + 'px');
       restoreProp('border-radius', originalBorderRadius);
@@ -156,7 +156,7 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
       // Bouncing/impact effect for the cart button
       targetElement.animate([
         { transform: 'scale(1)' },
-        { transform: 'scale(1.35)', color: 'var(--accent, #aa3bff)' },
+        { transform: 'scale(1.35)', color: 'var(--secondary, #00754A)' },
         { transform: 'scale(0.9)' },
         { transform: 'scale(1.1)' },
         { transform: 'scale(1)' }
@@ -164,6 +164,7 @@ export const playFlyToCartAnimation = (startElement, productImage) => {
         duration: 400,
         easing: 'ease-out'
       });
+      if (onImpact) onImpact();
     }, 1500); // Wait for flyer to finish flying
   }, 400); // Wait for button to shrink
 };

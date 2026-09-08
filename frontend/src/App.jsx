@@ -32,10 +32,10 @@ import NotFound from './pages/NotFound';
 
 const PageWrapper = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -15 }}
-    transition={{ duration: 0.3, ease: 'easeInOut' }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2, ease: 'easeInOut' }}
   >
     {children}
   </motion.div>
@@ -71,7 +71,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/settings-layanan" element={<PageWrapper><ManageSettingsLayanan /></PageWrapper>} />
         <Route path="/admin/settings-checkout" element={<PageWrapper><ManageSettingsCheckout /></PageWrapper>} />
         <Route path="/admin/settings-kategori" element={<PageWrapper><ManageSettingsKategori /></PageWrapper>} />
-        
+
         {/* 404 Route */}
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
@@ -96,7 +96,7 @@ function App() {
         {isInitialLoad && (
           <motion.div
             initial={{ opacity: 1 }}
-            exit={{ 
+            exit={{
               opacity: 0,
               transition: { duration: 0.6, ease: 'easeInOut' }
             }}
@@ -113,14 +113,14 @@ function App() {
           >
             {/* Ambient Background Glow */}
             <motion.div
-              animate={{ 
-                scale: [1, 1.15, 1], 
-                opacity: [0.15, 0.25, 0.15] 
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.15, 0.25, 0.15]
               }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 3, 
-                ease: 'easeInOut' 
+              transition={{
+                repeat: Infinity,
+                duration: 3,
+                ease: 'easeInOut'
               }}
               style={{
                 position: 'absolute',
@@ -136,7 +136,7 @@ function App() {
 
             {/* Central Logo Container */}
             <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              
+
               {/* Outer Slow Rotating Dashed Ring */}
               <motion.div
                 animate={{ rotate: 360 }}
@@ -150,10 +150,10 @@ function App() {
                   opacity: 0.35,
                 }}
               />
-              
+
               {/* Inner Soft Pulsing Glowing Ring */}
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [0.93, 1.05, 0.93],
                   opacity: [0.3, 0.7, 0.3]
                 }}
@@ -164,7 +164,7 @@ function App() {
                   height: '115px',
                   borderRadius: '50%',
                   border: '2px solid var(--accent)',
-                  boxShadow: '0 0 20px var(--accent-bg)',
+                  boxShadow: '0 0 20px rgba(0, 117, 74, 0.35)',
                 }}
               />
 
@@ -173,11 +173,11 @@ function App() {
                 src="/img/logo-koperasi.png"
                 alt="Koperasi UTM Logo"
                 initial={{ scale: 0.85, opacity: 0 }}
-                animate={{ 
+                animate={{
                   scale: [1, 1.05, 1],
                   opacity: 1
                 }}
-                transition={{ 
+                transition={{
                   scale: {
                     repeat: Infinity,
                     duration: 2.2,
@@ -213,4 +213,3 @@ function App() {
 }
 
 export default App;
-
