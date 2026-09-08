@@ -1,5 +1,0 @@
-/storage/*
-!/storage/app/.gitignore
-!/storage/logs/.gitignore
-!/storage/framework/.gitignore
-/backend/public/upload/
