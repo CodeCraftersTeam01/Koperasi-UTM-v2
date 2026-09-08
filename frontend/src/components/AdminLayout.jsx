@@ -24,16 +24,21 @@ const AdminLayout = ({ children, title }) => {
       navigate('/admin/login');
     } else {
       const loginTime = localStorage.getItem('kopma_admin_login_time');
-      if (loginTime) {
-        const hoursSinceLogin = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-        if (hoursSinceLogin >= 12) {
-          localStorage.removeItem('kopma_admin_token');
-          localStorage.removeItem('kopma_admin_user');
-          localStorage.removeItem('kopma_admin_role');
-          localStorage.removeItem('kopma_admin_login_time');
-          navigate('/admin/login');
-          return;
-        }
+      if (!loginTime) {
+        localStorage.removeItem('kopma_admin_token');
+        localStorage.removeItem('kopma_admin_user');
+        localStorage.removeItem('kopma_admin_role');
+        navigate('/admin/login');
+        return;
+      }
+      const hoursSinceLogin = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+      if (hoursSinceLogin >= 12) {
+        localStorage.removeItem('kopma_admin_token');
+        localStorage.removeItem('kopma_admin_user');
+        localStorage.removeItem('kopma_admin_role');
+        localStorage.removeItem('kopma_admin_login_time');
+        navigate('/admin/login');
+        return;
       }
       if (role === 'petugas') {
         if (pathname.includes('/admin/settings') || pathname.includes('/admin/pengurus') || pathname.includes('/admin/users')) {
