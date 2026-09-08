@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -22,7 +21,7 @@ class AuthController extends Controller
             $token = bin2hex(random_bytes(30));
             $user->update([
                 'api_token' => $token,
-                'token_created_at' => Carbon::now(),
+                'token_created_at' => date('Y-m-d H:i:s'),
             ]);
 
             return response()->json([
