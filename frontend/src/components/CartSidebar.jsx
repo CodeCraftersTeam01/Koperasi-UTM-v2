@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { getApiUrl } from '../utils/api';
+import { getApiUrl, PLACEHOLDER_IMG } from '../utils/api';
 import LazyImage from '../components/LazyImage';
 
 const CartSidebar = () => {
@@ -56,7 +56,7 @@ const CartSidebar = () => {
             cart.map((item) => (
               <div key={item.id} className="cart-item">
                 <LazyImage
-                  src={getApiUrl(item.gambar) || '/img/placeholder.jpg'}
+                  src={getApiUrl(item.gambar) || PLACEHOLDER_IMG}
                   alt={item.nama}
                   className="cart-item-img"
                   wrapperStyle={{ width: '60px', height: '60px' }}

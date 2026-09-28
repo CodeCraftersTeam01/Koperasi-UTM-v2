@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { playFlyToCartAnimation } from '../utils/animation';
 import LazyImage from '../components/LazyImage';
@@ -232,7 +232,7 @@ const Home = () => {
               {latestProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
                   <div className="product-img-wrap">
-                    <LazyImage src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
+                    <LazyImage src={getApiUrl(p.gambar) || PLACEHOLDER_IMG} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
                   </div>
                   <div className="product-body">
                     <h3>{p.nama}</h3>
@@ -282,7 +282,7 @@ const Home = () => {
             <div className="product-modal-body">
               <div className="product-modal-img-container">
                 <LazyImage
-                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'}
+                  src={getApiUrl(selectedProduct.gambar) || PLACEHOLDER_IMG}
                   alt={selectedProduct.nama}
                   className="modal-img"
                   wrapperStyle={{ width: '100%', height: '100%' }}

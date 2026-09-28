@@ -29,7 +29,11 @@ class PengurusController extends Controller
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
             $file = $request->file('foto');
             $filename = 'pengurus_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $filename);
             $fotoPath = 'upload/' . $filename;
         }
 
@@ -71,7 +75,11 @@ class PengurusController extends Controller
             }
             $file = $request->file('foto');
             $filename = 'pengurus_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $filename);
             $fotoPath = 'upload/' . $filename;
         }
 

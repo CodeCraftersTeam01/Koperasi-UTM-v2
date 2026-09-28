@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, AVATAR_IMG } from '../../utils/api';
 
 const ManagePengurus = () => {
   const [pengurusList, setPengurusList] = useState([]);
@@ -327,7 +327,7 @@ const ManagePengurus = () => {
                             <td style={{ width: '50px', padding: '12px 8px' }}>{idx + 1}</td>
                             <td style={{ padding: '12px 8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <img src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-strong)' }} onError={(e) => { e.target.src = '/img/layanan/avatar.png' }} />
+                                <img src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-strong)' }} onError={(e) => { e.target.src = AVATAR_IMG }} />
                                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{p.nama}</span>
                               </div>
                             </td>

@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch } from '../utils/api';
 
 const Riwayat = () => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { playFlyToCartAnimation } from '../utils/animation';
 import LazyImage from '../components/LazyImage';
@@ -281,7 +281,7 @@ const Catalog = () => {
                 }}
               >
                 <button type="button" className={`filter-btn ${currentFilter === utama.nama ? 'active' : ''}`}>
-                  <span>{currentFilter === utama.nama && currentSubFilter !== 'Semua' ? `${utama.nama} • ${currentSubFilter}` : utama.nama}</span>
+                  <span>{currentFilter === utama.nama && currentSubFilter !== 'Semua' ? `${utama.nama} â€¢ ${currentSubFilter}` : utama.nama}</span>
                   <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
                 </button>
                 <div className={`custom-select-menu ${isFilterOpen[utama.nama] ? 'open' : ''}`}>
@@ -331,7 +331,7 @@ const Catalog = () => {
               {filtered.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => handleOpenModal(p)} style={{ cursor: 'pointer' }}>
                   <div className="product-img-wrap">
-                    <LazyImage src={getApiUrl(p.gambar) || '/img/placeholder.jpg'} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
+                    <LazyImage src={getApiUrl(p.gambar) || PLACEHOLDER_IMG} alt={p.nama} wrapperStyle={{ width: '100%', height: '100%' }} />
                   </div>
                   <div className="product-body">
                     <h3>{p.nama}</h3>
@@ -368,7 +368,7 @@ const Catalog = () => {
             <div className="product-modal-body">
               <div className="product-modal-img-container">
                 <LazyImage
-                  src={getApiUrl(selectedProduct.gambar) || '/img/placeholder.jpg'}
+                  src={getApiUrl(selectedProduct.gambar) || PLACEHOLDER_IMG}
                   alt={selectedProduct.nama}
                   className="modal-img"
                   wrapperStyle={{ width: '100%', height: '100%' }}
@@ -379,7 +379,7 @@ const Catalog = () => {
                 <div className="modal-price">Rp {selectedProduct.harga.toLocaleString()}</div>
                 <div className="modal-category">
                   <span className={`product-badge ${(selectedProduct.kategori || '').toLowerCase()}`}>
-                    {selectedProduct.kategori}{selectedProduct.subkategori ? ' › ' + selectedProduct.subkategori : ''}
+                    {selectedProduct.kategori}{selectedProduct.subkategori ? ' â€º ' + selectedProduct.subkategori : ''}
                   </span>
                 </div>
                 {selectedProduct.tag && (

@@ -28,14 +28,7 @@ class SettingController extends Controller
             'admin_email' => 'admin@koperasiutm.com',
             'galeri_judul' => 'Galeri Kegiatan',
             'galeri_deskripsi' => 'Dokumentasi berbagai kegiatan dan acara Koperasi UTM.',
-            'galeri_items' => json_encode([
-                ['gambar' => '/img/kegiatan/RAT Tahun Buku 2025.webp', 'judul' => 'RAT Tahun Buku 2025'],
-                ['gambar' => 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&q=80', 'judul' => 'Kegiatan Pelayanan'],
-                ['gambar' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&q=80', 'judul' => 'Tim Koperasi UTM'],
-                ['gambar' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&q=80', 'judul' => 'Produk Koperasi'],
-                ['gambar' => 'https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=400&q=80', 'judul' => 'Suasana Kampus'],
-                ['gambar' => 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&q=80', 'judul' => 'Event Koperasi'],
-            ]),
+            'galeri_items' => json_encode($this->defaultGaleriItems()),
             'layanan_judul' => 'Layanan Koperasi UTM',
             'layanan_deskripsi' => 'Berbagai layanan yang tersedia untuk memenuhi kebutuhan seluruh civitas akademika Universitas Trunojoyo Madura.',
             'layanan_items' => json_encode([
@@ -53,6 +46,37 @@ class SettingController extends Controller
             'kontak_instagram' => '@koperasiutm',
             'kontak_maps_embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.615379733752!2d112.7271187!3d-7.1172706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd803dd04854303%3A0xa436f3258944c98f!2sGedung%20Cakra%20-%20UTM!5e0!3m2!1sid!2sid!4v1710000000000',
         ];
+    }
+
+    private function defaultGaleriItems()
+    {
+        $dir = base_path('public/upload/gallery');
+        if (!is_dir($dir)) {
+            return [];
+        }
+
+        $files = glob($dir . '/*.{jpg,jpeg,png,webp,gif}', GLOB_BRACE);
+        if (!$files) {
+            return [];
+        }
+
+        sort($files);
+
+        $items = [];
+        $index = 0;
+        foreach ($files as $file) {
+            $index++;
+            $name = pathinfo($file, PATHINFO_FILENAME);
+            if (preg_match('/^[0-9a-f]{8,}$/i', $name)) {
+                $name = 'Kegiatan ' . str_pad((string) $index, 2, '0', STR_PAD_LEFT);
+            }
+            $items[] = [
+                'gambar' => 'upload/gallery/' . basename($file),
+                'judul' => $name,
+            ];
+        }
+
+        return $items;
     }
 
     public function index()

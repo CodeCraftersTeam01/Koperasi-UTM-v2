@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch } from '../../utils/api';
+import { apiFetch, getApiUrl } from '../../utils/api';
 
 const ICONS = [
   'fa-coins', 'fa-file-invoice', 'fa-truck', 'fa-bus', 'fa-mobile-alt',
@@ -217,7 +217,7 @@ const ManageSettingsLayanan = () => {
                       </div>
                     ) : (
                       <img
-                        src={item.gambar.startsWith('upload/') ? `${BASE_URL}/${item.gambar}` : item.gambar.startsWith('http') ? item.gambar : `${BASE_URL}/${item.gambar}`}
+                        src={getApiUrl(item.gambar)}
                         alt={item.judul || 'Layanan'}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:24px;color:var(--text-muted)"><i class="fas fa-image"></i></div>'; }}

@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch } from '../../utils/api';
 
 const ManagePesanan = () => {
   const [orders, setOrders] = useState([]);

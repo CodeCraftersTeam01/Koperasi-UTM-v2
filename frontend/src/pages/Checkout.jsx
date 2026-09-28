@@ -1,7 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../utils/api';
 import LazyImage from '../components/LazyImage';
 
 const Checkout = () => {
@@ -266,7 +266,7 @@ ${center('TERIMA KASIH')}
               {cart.map(item => (
                 <div key={item.id} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <LazyImage
-                    src={getApiUrl(item.gambar) || '/img/placeholder.jpg'}
+                    src={getApiUrl(item.gambar) || PLACEHOLDER_IMG}
                     alt={item.nama}
                     style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--border)' }}
                     wrapperStyle={{ width: '56px', height: '56px' }}

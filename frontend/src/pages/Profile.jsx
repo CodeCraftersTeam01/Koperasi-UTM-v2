@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch, getApiUrl, AVATAR_IMG } from '../utils/api';
 import LazyImage from '../components/LazyImage';
 
 const Profile = () => {
@@ -128,7 +128,7 @@ const Profile = () => {
                     <div key={p.id} className="tree-node">
                       <div className="struktur-card ketua">
                         <div className="struktur-avatar">
-                          <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
                         <h4>{p.jabatan}</h4>
                         <p className="struktur-nama">{p.nama}</p>
@@ -147,7 +147,7 @@ const Profile = () => {
                       <div key={p.id} className="tree-node">
                         <div className="struktur-card bendahara">
                           <div className="struktur-avatar">
-                            <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
+                            <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                           </div>
                           <h4>{p.jabatan}</h4>
                           <p className="struktur-nama">{p.nama}</p>
@@ -167,7 +167,7 @@ const Profile = () => {
                       <div key={p.id} className="tree-node">
                         <div className="struktur-card sie1">
                           <div className="struktur-avatar">
-                            <LazyImage src={p.foto ? getApiUrl(p.foto) : '/img/layanan/avatar.png'} alt={p.nama} fallbackSrc="/img/layanan/avatar.png" wrapperStyle={{ width: '100%', height: '100%' }} />
+                            <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                           </div>
                           <h4>{p.jabatan}</h4>
                           <p className="struktur-nama">{p.nama}</p>

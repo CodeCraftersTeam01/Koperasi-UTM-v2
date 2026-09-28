@@ -69,7 +69,11 @@ class ProdukController extends Controller
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
             $file = $request->file('gambar');
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $filename);
             $gambarPath = 'upload/' . $filename;
         }
 
@@ -112,7 +116,11 @@ class ProdukController extends Controller
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
             $file = $request->file('gambar');
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $filename);
             $gambarPath = 'upload/' . $filename;
         }
 
