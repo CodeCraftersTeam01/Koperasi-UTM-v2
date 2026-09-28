@@ -43,13 +43,13 @@ const Contact = () => {
       
       const data = await res.json();
       if (res.ok) {
-        alert(data.message || `Terima kasih ${formData.nama}, pesan Anda telah dikirim!`);
+        window.Swal.fire('Pesan Terkirim', data.message || `Terima kasih ${formData.nama}, pesan Anda telah dikirim!`, 'success');
         setFormData({ nama: '', email: '', subjek: '', pesan: '' });
       } else {
-        alert(data.message || 'Gagal mengirim pesan. Silakan coba lagi.');
+        window.Swal.fire('Gagal', data.message || 'Gagal mengirim pesan. Silakan coba lagi.', 'error');
       }
     } catch (err) {
-      alert('Terjadi kesalahan. Gagal menghubungi server.');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setLoading(false);
     }
