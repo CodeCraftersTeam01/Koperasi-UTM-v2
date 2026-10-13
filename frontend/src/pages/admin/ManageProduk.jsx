@@ -2,6 +2,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl } from '../../utils/api';
+import { adminPath } from '../../config/admin';
 
 const ManageProduk = () => {
   const location = useLocation();
@@ -140,7 +141,7 @@ const ManageProduk = () => {
     if (editIdParam) {
       handleEditProduk(editIdParam);
       // Clean query params
-      navigate('/admin/produk', { replace: true });
+      navigate(adminPath('produk'), { replace: true });
     }
   }, [location.search]);
 

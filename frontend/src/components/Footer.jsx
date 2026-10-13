@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { isAdminPath } from '../config/admin';
 
 const Footer = () => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = isAdminPath(location.pathname);
 
   if (isAdminRoute) return null;
 

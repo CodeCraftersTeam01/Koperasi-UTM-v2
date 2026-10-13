@@ -29,6 +29,7 @@ import ManageSettingsKategori from './pages/admin/ManageSettingsKategori';
 import Checkout from './pages/Checkout';
 import Riwayat from './pages/Riwayat';
 import NotFound from './pages/NotFound';
+import { adminPath } from './config/admin';
 
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -56,21 +57,21 @@ const AnimatedRoutes = () => {
         <Route path="/riwayat" element={<PageWrapper><Riwayat /></PageWrapper>} />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/admin" element={<PageWrapper><Dashboard /></PageWrapper>} />
-        <Route path="/admin/pesanan" element={<PageWrapper><ManagePesanan /></PageWrapper>} />
-        <Route path="/admin/produk" element={<PageWrapper><ManageProduk /></PageWrapper>} />
-        <Route path="/admin/kategori" element={<PageWrapper><ManageKategori /></PageWrapper>} />
-        <Route path="/admin/users" element={<PageWrapper><ManageUser /></PageWrapper>} />
-        <Route path="/admin/pengurus" element={<PageWrapper><ManagePengurus /></PageWrapper>} />
-        <Route path="/admin/settings-hero" element={<PageWrapper><ManageSettingsHero /></PageWrapper>} />
-        <Route path="/admin/settings-about" element={<PageWrapper><ManageSettingsAbout /></PageWrapper>} />
-        <Route path="/admin/settings-identity" element={<PageWrapper><ManageSettingsIdentity /></PageWrapper>} />
-        <Route path="/admin/settings-galeri" element={<PageWrapper><ManageSettingsGaleri /></PageWrapper>} />
-        <Route path="/admin/settings-kontak" element={<PageWrapper><ManageSettingsKontak /></PageWrapper>} />
-        <Route path="/admin/settings-layanan" element={<PageWrapper><ManageSettingsLayanan /></PageWrapper>} />
-        <Route path="/admin/settings-checkout" element={<PageWrapper><ManageSettingsCheckout /></PageWrapper>} />
-        <Route path="/admin/settings-kategori" element={<PageWrapper><ManageSettingsKategori /></PageWrapper>} />
+        <Route path={adminPath('login')} element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path={adminPath()} element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path={adminPath('pesanan')} element={<PageWrapper><ManagePesanan /></PageWrapper>} />
+        <Route path={adminPath('produk')} element={<PageWrapper><ManageProduk /></PageWrapper>} />
+        <Route path={adminPath('kategori')} element={<PageWrapper><ManageKategori /></PageWrapper>} />
+        <Route path={adminPath('users')} element={<PageWrapper><ManageUser /></PageWrapper>} />
+        <Route path={adminPath('pengurus')} element={<PageWrapper><ManagePengurus /></PageWrapper>} />
+        <Route path={adminPath('settings-hero')} element={<PageWrapper><ManageSettingsHero /></PageWrapper>} />
+        <Route path={adminPath('settings-about')} element={<PageWrapper><ManageSettingsAbout /></PageWrapper>} />
+        <Route path={adminPath('settings-identity')} element={<PageWrapper><ManageSettingsIdentity /></PageWrapper>} />
+        <Route path={adminPath('settings-galeri')} element={<PageWrapper><ManageSettingsGaleri /></PageWrapper>} />
+        <Route path={adminPath('settings-kontak')} element={<PageWrapper><ManageSettingsKontak /></PageWrapper>} />
+        <Route path={adminPath('settings-layanan')} element={<PageWrapper><ManageSettingsLayanan /></PageWrapper>} />
+        <Route path={adminPath('settings-checkout')} element={<PageWrapper><ManageSettingsCheckout /></PageWrapper>} />
+        <Route path={adminPath('settings-kategori')} element={<PageWrapper><ManageSettingsKategori /></PageWrapper>} />
 
         {/* 404 Route */}
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />

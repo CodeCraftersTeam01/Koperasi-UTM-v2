@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../../utils/api';
+import { adminPath } from '../../config/admin';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ const Login = () => {
           return;
         }
       }
-      navigate('/admin');
+      navigate(adminPath());
     }
   }, [navigate]);
 
@@ -45,7 +46,7 @@ const Login = () => {
         localStorage.setItem('kopma_admin_user', data.username);
         if (data.role) localStorage.setItem('kopma_admin_role', data.role);
         localStorage.setItem('kopma_admin_login_time', Date.now().toString());
-        navigate('/admin');
+        navigate(adminPath());
       } else {
         setError(data.message || 'Username atau password salah');
       }

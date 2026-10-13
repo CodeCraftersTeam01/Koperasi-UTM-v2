@@ -1,3 +1,5 @@
+import { adminPath, isAdminPath } from '../config/admin';
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const LOCAL_HOSTS = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|::1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)$/i;
@@ -78,8 +80,8 @@ export const apiFetch = async (endpoint, options = {}) => {
     localStorage.removeItem('kopma_admin_user');
     localStorage.removeItem('kopma_admin_role');
     localStorage.removeItem('kopma_admin_login_time');
-    if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
-      window.location.href = '/admin/login';
+    if (isAdminPath(window.location.pathname) && window.location.pathname !== adminPath('login')) {
+      window.location.href = adminPath('login');
     }
   }
 

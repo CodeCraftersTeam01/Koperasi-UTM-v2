@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl } from '../../utils/api';
+import { adminPath } from '../../config/admin';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ const Dashboard = () => {
           <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)' }}><i className="fas fa-clock" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Produk Terbaru</h3>
-              <Link to="/admin/produk" style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>Lihat Semua <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i></Link>
+              <Link to={adminPath('produk')} style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>Lihat Semua <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i></Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {stats.produkTerbaru && stats.produkTerbaru.length > 0 ? (

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { apiFetch } from '../utils/api';
 import GradualBlur from './GradualBlur';
+import { isAdminPath } from '../config/admin';
 
 const Navbar = () => {
   const { cartCount, openCart } = useCart();
@@ -41,7 +42,7 @@ const Navbar = () => {
 
   // If in admin dashboard, we show different navigation or handle dashboard layouts.
   // The user approved showing dashboard separately, but let's hide navbar for admin routes.
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = isAdminPath(location.pathname);
   if (isAdminRoute) return null;
 
   return (
