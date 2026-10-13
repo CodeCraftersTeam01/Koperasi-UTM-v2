@@ -16,6 +16,9 @@ $router->post('/api/checkout', 'CheckoutController@process');
 $router->get('/api/orders/track', 'OrderController@track');
 $router->post('/api/contact', 'ContactController@send');
 
+// SEMENTARA: diagnostik upload untuk debugging hosting. Hapus setelah selesai.
+$router->get('/api/diagnostic', 'DiagnosticController@index');
+
 // Admin protected API routes
 $router->group(['middleware' => 'auth'], function () use ($router) {
     // Auth

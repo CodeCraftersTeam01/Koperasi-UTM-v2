@@ -71,9 +71,16 @@ class ProdukController extends Controller
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
+                @mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $filename);
+            try {
+                $file->move($uploadDir, $filename);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
+            }
+            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
+                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
+            }
             $gambarPath = 'upload/' . $filename;
         }
 
@@ -118,9 +125,16 @@ class ProdukController extends Controller
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
+                @mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $filename);
+            try {
+                $file->move($uploadDir, $filename);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
+            }
+            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
+                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
+            }
             $gambarPath = 'upload/' . $filename;
         }
 

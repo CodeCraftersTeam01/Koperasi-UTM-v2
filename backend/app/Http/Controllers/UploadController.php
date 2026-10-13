@@ -12,22 +12,45 @@ class UploadController extends Controller
             'file' => 'required|image|max:5120',
         ]);
 
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $file = $request->file('file');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-
-            $uploadDir = base_path('public/upload/gallery');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            $file->move($uploadDir, $filename);
-
-            return response()->json([
-                'url' => 'upload/gallery/' . $filename,
-            ]);
+        if (!$request->hasFile('file') || !$request->file('file')->isValid()) {
+            return response()->json(['message' => 'File tidak valid atau gagal diunggah ke server.'], 400);
         }
 
-        return response()->json(['message' => 'Gagal mengupload file'], 400);
+        $file = $request->file('file');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+        $uploadDir = base_path('public/upload/gallery');
+        if (!is_dir($uploadDir)) {
+            if (!@mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+                return response()->json([
+                    'message' => 'Folder upload tidak dapat dibuat.',
+                    'path' => $uploadDir,
+                ], 500);
+            }
+        }
+
+        try {
+            $file->move($uploadDir, $filename);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan file: ' . $e->getMessage(),
+                'path' => $uploadDir,
+                'writable' => is_writable($uploadDir),
+            ], 500);
+        }
+
+        $savedPath = $uploadDir . DIRECTORY_SEPARATOR . $filename;
+
+        if (!file_exists($savedPath)) {
+            return response()->json([
+                'message' => 'File dilaporkan berhasil tetapi tidak ditemukan di server.',
+                'path' => $uploadDir,
+                'writable' => is_writable($uploadDir),
+            ], 500);
+        }
+
+        return response()->json([
+            'url' => 'upload/gallery/' . $filename,
+        ]);
     }
 }
