@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage, PLACEHOLDER_IMG } from '../../utils/api';
 import { adminPath } from '../../config/admin';
 import { compressImage } from '../../utils/imageCompressor';
 
@@ -425,6 +425,7 @@ const ManageProduk = () => {
                             src={getApiUrl(p.gambar)} 
                             style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover' }} 
                             alt={p.nama} 
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER_IMG; }}
                           />
                         ) : (
                           <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
@@ -619,6 +620,7 @@ const ManageProduk = () => {
                           src={gambarPreview} 
                           style={{ width: '80px', height: '80px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)' }} 
                           alt="Preview"
+                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER_IMG; }}
                         />
                       </div>
                     )}

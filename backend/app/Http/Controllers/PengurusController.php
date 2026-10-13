@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pengurus;
+use App\Helpers\PathHelper;
 
 class PengurusController extends Controller
 {
@@ -27,22 +28,11 @@ class PengurusController extends Controller
 
         $fotoPath = null;
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
-            $file = $request->file('foto');
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-            $filename = 'pengurus_' . uniqid() . '.' . $ext;
-            $uploadDir = base_path('public/upload');
-            if (!is_dir($uploadDir)) {
-                @mkdir($uploadDir, 0755, true);
-            }
             try {
-                $file->move($uploadDir, $filename);
+                $fotoPath = PathHelper::saveUpload($request->file('foto'));
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Gagal menyimpan foto: ' . $e->getMessage()], 500);
             }
-            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
-                return response()->json(['error' => 'Foto tidak tersimpan di server. Periksa izin folder upload.'], 500);
-            }
-            $fotoPath = 'upload/' . $filename;
         }
 
         $pengurus = Pengurus::create([
@@ -77,26 +67,15 @@ class PengurusController extends Controller
 
         $fotoPath = $pengurus->foto;
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
-            // Delete old file if exists
-            if ($fotoPath && file_exists(base_path('public/' . $fotoPath))) {
-                @unlink(base_path('public/' . $fotoPath));
-            }
-            $file = $request->file('foto');
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-            $filename = 'pengurus_' . uniqid() . '.' . $ext;
-            $uploadDir = base_path('public/upload');
-            if (!is_dir($uploadDir)) {
-                @mkdir($uploadDir, 0755, true);
-            }
             try {
-                $file->move($uploadDir, $filename);
+                $newFoto = PathHelper::saveUpload($request->file('foto'));
+                if ($fotoPath) {
+                    PathHelper::deleteFile($fotoPath);
+                }
+                $fotoPath = $newFoto;
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Gagal menyimpan foto: ' . $e->getMessage()], 500);
             }
-            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
-                return response()->json(['error' => 'Foto tidak tersimpan di server. Periksa izin folder upload.'], 500);
-            }
-            $fotoPath = 'upload/' . $filename;
         }
 
         $pengurus->update([
@@ -119,8 +98,8 @@ class PengurusController extends Controller
         }
 
         // Delete photo file
-        if ($pengurus->foto && file_exists(base_path('public/' . $pengurus->foto))) {
-            @unlink(base_path('public/' . $pengurus->foto));
+        if ($pengurus->foto) {
+            PathHelper::deleteFile($pengurus->foto);
         }
 
         $pengurus->delete();
@@ -154,8 +133,8 @@ class PengurusController extends Controller
         $pengurusList = Pengurus::whereIn('id', $ids)->get();
 
         foreach ($pengurusList as $p) {
-            if ($p->foto && file_exists(base_path('public/' . $p->foto))) {
-                @unlink(base_path('public/' . $p->foto));
+            if ($p->foto) {
+                PathHelper::deleteFile($p->foto);
             }
             $p->delete();
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Produk;
+use App\Helpers\PathHelper;
 
 class ProdukController extends Controller
 {
@@ -67,22 +68,11 @@ class ProdukController extends Controller
 
         $gambarPath = '';
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
-            $file = $request->file('gambar');
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-            $filename = uniqid() . '.' . $ext;
-            $uploadDir = base_path('public/upload');
-            if (!is_dir($uploadDir)) {
-                @mkdir($uploadDir, 0755, true);
-            }
             try {
-                $file->move($uploadDir, $filename);
+                $gambarPath = PathHelper::saveUpload($request->file('gambar'));
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
             }
-            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
-                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
-            }
-            $gambarPath = 'upload/' . $filename;
         }
 
         $produk = Produk::create([
@@ -122,25 +112,15 @@ class ProdukController extends Controller
 
         $gambarPath = $produk->gambar;
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
-            if ($gambarPath && file_exists(base_path('public/' . $gambarPath))) {
-                @unlink(base_path('public/' . $gambarPath));
-            }
-            $file = $request->file('gambar');
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-            $filename = uniqid() . '.' . $ext;
-            $uploadDir = base_path('public/upload');
-            if (!is_dir($uploadDir)) {
-                @mkdir($uploadDir, 0755, true);
-            }
             try {
-                $file->move($uploadDir, $filename);
+                $newGambar = PathHelper::saveUpload($request->file('gambar'));
+                if ($gambarPath) {
+                    PathHelper::deleteFile($gambarPath);
+                }
+                $gambarPath = $newGambar;
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
             }
-            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
-                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
-            }
-            $gambarPath = 'upload/' . $filename;
         }
 
         $produk->update([
@@ -164,6 +144,10 @@ class ProdukController extends Controller
 
         if (!$produk) {
             return response()->json(['error' => 'Produk tidak ditemukan'], 404);
+        }
+
+        if ($produk->gambar) {
+            PathHelper::deleteFile($produk->gambar);
         }
 
         $produk->delete();
@@ -202,7 +186,13 @@ class ProdukController extends Controller
             'ids.*' => 'integer|exists:produks,id',
         ]);
 
-        Produk::whereIn('id', $request->input('ids'))->delete();
+        $produks = Produk::whereIn('id', $request->input('ids'))->get();
+        foreach ($produks as $p) {
+            if ($p->gambar) {
+                PathHelper::deleteFile($p->gambar);
+            }
+            $p->delete();
+        }
 
         return response()->json([
             'message' => 'Produk terpilih berhasil dihapus',

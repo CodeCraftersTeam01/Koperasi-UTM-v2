@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use App\Helpers\PathHelper;
 
 class SettingController extends Controller
 {
@@ -50,7 +51,10 @@ class SettingController extends Controller
 
     private function defaultGaleriItems()
     {
-        $dir = base_path('public/upload/gallery');
+        $dir = PathHelper::publicPath('upload/gallery');
+        if (!is_dir($dir)) {
+            $dir = base_path('public/upload/gallery');
+        }
         if (!is_dir($dir)) {
             return [];
         }

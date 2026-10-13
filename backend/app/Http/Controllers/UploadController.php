@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\PathHelper;
 
 class UploadController extends Controller
 {
@@ -16,42 +17,15 @@ class UploadController extends Controller
             return response()->json(['message' => 'File tidak valid atau gagal diunggah ke server.'], 400);
         }
 
-        $file = $request->file('file');
-        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-        $filename = uniqid() . '.' . $ext;
-
-        $uploadDir = base_path('public/upload/gallery');
-        if (!is_dir($uploadDir)) {
-            if (!@mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
-                return response()->json([
-                    'message' => 'Folder upload tidak dapat dibuat.',
-                    'path' => $uploadDir,
-                ], 500);
-            }
-        }
-
         try {
-            $file->move($uploadDir, $filename);
+            $relativePath = PathHelper::saveUpload($request->file('file'), 'gallery');
+            return response()->json([
+                'url' => $relativePath,
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menyimpan file: ' . $e->getMessage(),
-                'path' => $uploadDir,
-                'writable' => is_writable($uploadDir),
             ], 500);
         }
-
-        $savedPath = $uploadDir . DIRECTORY_SEPARATOR . $filename;
-
-        if (!file_exists($savedPath)) {
-            return response()->json([
-                'message' => 'File dilaporkan berhasil tetapi tidak ditemukan di server.',
-                'path' => $uploadDir,
-                'writable' => is_writable($uploadDir),
-            ], 500);
-        }
-
-        return response()->json([
-            'url' => 'upload/gallery/' . $filename,
-        ]);
     }
 }
