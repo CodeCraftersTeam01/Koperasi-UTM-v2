@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { apiFetch } from '../utils/api';
 import GradualBlur from './GradualBlur';
+import { isAdminPath } from '../config/admin';
 
 const Navbar = () => {
   const { cartCount, openCart } = useCart();
@@ -41,7 +42,7 @@ const Navbar = () => {
 
   // If in admin dashboard, we show different navigation or handle dashboard layouts.
   // The user approved showing dashboard separately, but let's hide navbar for admin routes.
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = isAdminPath(location.pathname);
   if (isAdminRoute) return null;
 
   return (
@@ -57,7 +58,8 @@ const Navbar = () => {
         className={`${isMenuOpen ? 'hidden-blur' : ''}`}
       />
       <nav id="navbar" className={`${isScrolled ? 'scrolled' : ''} ${isMenuOpen ? 'hidden-up' : ''}`}>
-        <div className="nav-inner container">
+        <div className="nav-bar">
+          <div className="nav-inner container">
           <Link to="/" className="nav-logo">
             <img src="/img/logo-koperasi.png" alt="Koperasi UTM" className="nav-logo-img" /> Koperasi UTM
           </Link>
@@ -98,17 +100,18 @@ const Navbar = () => {
               </Link>
             )}
             <button className="cart-btn" aria-label="Keranjang" onClick={openCart}>
-              <i className="fas fa-shopping-bag"></i>
+              <i className="fas fa-shopping-cart"></i>
               <span className={`cart-badge ${cartCount > 0 ? 'show' : ''}`}>{cartCount}</span>
             </button>
-            <button 
-              id="hamburger" 
-              className={`hamburger ${isMenuOpen ? 'active' : ''}`} 
+            <button
+              id="hamburger"
+              className={`hamburger ${isMenuOpen ? 'active' : ''}`}
               aria-label="Menu"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <span></span><span></span><span></span>
             </button>
+          </div>
           </div>
         </div>
       </nav>

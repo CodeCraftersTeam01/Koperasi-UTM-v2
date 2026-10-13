@@ -55,6 +55,7 @@ class CheckoutController extends Controller
 
         // 2. Save Order to Database
         $order = \App\Models\Order::create([
+            'nomor_nota' => $request->input('nomor_nota'),
             'nama' => $nama,
             'whatsapp' => $whatsapp,
             'email' => $email,

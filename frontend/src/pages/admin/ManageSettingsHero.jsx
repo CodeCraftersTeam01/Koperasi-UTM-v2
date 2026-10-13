@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -62,7 +62,7 @@ const ManageSettingsHero = () => {
   if (loading) {
     return (
       <AdminLayout title="Setelan Hero (Halaman Utama)">
-        <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-muted)' }}>Memuat setelan...</p>
         </div>
       </AdminLayout>
@@ -72,8 +72,8 @@ const ManageSettingsHero = () => {
   return (
     <AdminLayout title="Setelan Hero (Halaman Utama)">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
-        <form className="admin-card" onSubmit={handleSubmit} style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+        <form className="admin-card" onSubmit={handleSubmit} style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
             <i className="fas fa-home" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Setelan Hero
           </h3>
           
@@ -86,7 +86,7 @@ const ManageSettingsHero = () => {
                 value={settings.hero_title_accent}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
               />
             </div>
             <div>
@@ -97,7 +97,7 @@ const ManageSettingsHero = () => {
                 value={settings.hero_title_sub}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
               />
             </div>
           </div>
@@ -110,7 +110,7 @@ const ManageSettingsHero = () => {
               value={settings.hero_tagline}
               onChange={handleChange}
               required
-              style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -122,7 +122,7 @@ const ManageSettingsHero = () => {
               value={settings.hero_desc}
               onChange={handleChange}
               required
-              style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
+              style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
             ></textarea>
           </div>
           

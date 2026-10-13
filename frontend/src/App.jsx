@@ -29,13 +29,14 @@ import ManageSettingsKategori from './pages/admin/ManageSettingsKategori';
 import Checkout from './pages/Checkout';
 import Riwayat from './pages/Riwayat';
 import NotFound from './pages/NotFound';
+import { adminPath } from './config/admin';
 
 const PageWrapper = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -15 }}
-    transition={{ duration: 0.3, ease: 'easeInOut' }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2, ease: 'easeInOut' }}
   >
     {children}
   </motion.div>
@@ -56,22 +57,22 @@ const AnimatedRoutes = () => {
         <Route path="/riwayat" element={<PageWrapper><Riwayat /></PageWrapper>} />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/admin" element={<PageWrapper><Dashboard /></PageWrapper>} />
-        <Route path="/admin/pesanan" element={<PageWrapper><ManagePesanan /></PageWrapper>} />
-        <Route path="/admin/produk" element={<PageWrapper><ManageProduk /></PageWrapper>} />
-        <Route path="/admin/kategori" element={<PageWrapper><ManageKategori /></PageWrapper>} />
-        <Route path="/admin/users" element={<PageWrapper><ManageUser /></PageWrapper>} />
-        <Route path="/admin/pengurus" element={<PageWrapper><ManagePengurus /></PageWrapper>} />
-        <Route path="/admin/settings-hero" element={<PageWrapper><ManageSettingsHero /></PageWrapper>} />
-        <Route path="/admin/settings-about" element={<PageWrapper><ManageSettingsAbout /></PageWrapper>} />
-        <Route path="/admin/settings-identity" element={<PageWrapper><ManageSettingsIdentity /></PageWrapper>} />
-        <Route path="/admin/settings-galeri" element={<PageWrapper><ManageSettingsGaleri /></PageWrapper>} />
-        <Route path="/admin/settings-kontak" element={<PageWrapper><ManageSettingsKontak /></PageWrapper>} />
-        <Route path="/admin/settings-layanan" element={<PageWrapper><ManageSettingsLayanan /></PageWrapper>} />
-        <Route path="/admin/settings-checkout" element={<PageWrapper><ManageSettingsCheckout /></PageWrapper>} />
-        <Route path="/admin/settings-kategori" element={<PageWrapper><ManageSettingsKategori /></PageWrapper>} />
-        
+        <Route path={adminPath('login')} element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path={adminPath()} element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path={adminPath('pesanan')} element={<PageWrapper><ManagePesanan /></PageWrapper>} />
+        <Route path={adminPath('produk')} element={<PageWrapper><ManageProduk /></PageWrapper>} />
+        <Route path={adminPath('kategori')} element={<PageWrapper><ManageKategori /></PageWrapper>} />
+        <Route path={adminPath('users')} element={<PageWrapper><ManageUser /></PageWrapper>} />
+        <Route path={adminPath('pengurus')} element={<PageWrapper><ManagePengurus /></PageWrapper>} />
+        <Route path={adminPath('settings-hero')} element={<PageWrapper><ManageSettingsHero /></PageWrapper>} />
+        <Route path={adminPath('settings-about')} element={<PageWrapper><ManageSettingsAbout /></PageWrapper>} />
+        <Route path={adminPath('settings-identity')} element={<PageWrapper><ManageSettingsIdentity /></PageWrapper>} />
+        <Route path={adminPath('settings-galeri')} element={<PageWrapper><ManageSettingsGaleri /></PageWrapper>} />
+        <Route path={adminPath('settings-kontak')} element={<PageWrapper><ManageSettingsKontak /></PageWrapper>} />
+        <Route path={adminPath('settings-layanan')} element={<PageWrapper><ManageSettingsLayanan /></PageWrapper>} />
+        <Route path={adminPath('settings-checkout')} element={<PageWrapper><ManageSettingsCheckout /></PageWrapper>} />
+        <Route path={adminPath('settings-kategori')} element={<PageWrapper><ManageSettingsKategori /></PageWrapper>} />
+
         {/* 404 Route */}
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
@@ -96,7 +97,7 @@ function App() {
         {isInitialLoad && (
           <motion.div
             initial={{ opacity: 1 }}
-            exit={{ 
+            exit={{
               opacity: 0,
               transition: { duration: 0.6, ease: 'easeInOut' }
             }}
@@ -113,14 +114,14 @@ function App() {
           >
             {/* Ambient Background Glow */}
             <motion.div
-              animate={{ 
-                scale: [1, 1.15, 1], 
-                opacity: [0.15, 0.25, 0.15] 
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.15, 0.25, 0.15]
               }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 3, 
-                ease: 'easeInOut' 
+              transition={{
+                repeat: Infinity,
+                duration: 3,
+                ease: 'easeInOut'
               }}
               style={{
                 position: 'absolute',
@@ -136,7 +137,7 @@ function App() {
 
             {/* Central Logo Container */}
             <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              
+
               {/* Outer Slow Rotating Dashed Ring */}
               <motion.div
                 animate={{ rotate: 360 }}
@@ -150,10 +151,10 @@ function App() {
                   opacity: 0.35,
                 }}
               />
-              
+
               {/* Inner Soft Pulsing Glowing Ring */}
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [0.93, 1.05, 0.93],
                   opacity: [0.3, 0.7, 0.3]
                 }}
@@ -164,7 +165,7 @@ function App() {
                   height: '115px',
                   borderRadius: '50%',
                   border: '2px solid var(--accent)',
-                  boxShadow: '0 0 20px var(--accent-bg)',
+                  boxShadow: '0 0 20px rgba(0, 117, 74, 0.35)',
                 }}
               />
 
@@ -173,11 +174,11 @@ function App() {
                 src="/img/logo-koperasi.png"
                 alt="Koperasi UTM Logo"
                 initial={{ scale: 0.85, opacity: 0 }}
-                animate={{ 
+                animate={{
                   scale: [1, 1.05, 1],
                   opacity: 1
                 }}
-                transition={{ 
+                transition={{
                   scale: {
                     repeat: Infinity,
                     duration: 2.2,
@@ -213,4 +214,3 @@ function App() {
 }
 
 export default App;
-

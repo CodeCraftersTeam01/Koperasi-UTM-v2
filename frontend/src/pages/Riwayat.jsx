@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch } from '../utils/api';
 
 const Riwayat = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const Riwayat = () => {
               <p style={{ fontSize: '16px' }}>Memuat riwayat transaksi Anda...</p>
             </div>
           ) : orders.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0', background: 'var(--card-bg)', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)' }}>
+            <div style={{ textAlign: 'center', padding: '80px 0', background: 'var(--card-bg)', borderRadius: '16px', boxShadow: 'var(--shadow)', border: '1px solid var(--border)' }}>
               <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(0,0,0,0.02)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px' }}>
                 <i className="fas fa-receipt"></i>
               </div>
@@ -107,8 +107,8 @@ const Riwayat = () => {
                   style={{ 
                     background: 'var(--card-bg)', 
                     padding: '24px', 
-                    borderRadius: '20px', 
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.02)', 
+                    borderRadius: '16px', 
+                    boxShadow: 'var(--shadow)', 
                     border: '1px solid var(--border)', 
                     display: 'flex', 
                     flexDirection: 'column', 
@@ -119,7 +119,7 @@ const Riwayat = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Nomor Pesanan</span>
-                      <strong style={{ fontSize: '16px', color: 'var(--text)' }}>#{order.id}</strong>
+                      <strong style={{ fontSize: '16px', color: 'var(--text)' }}>#{order.nomor_nota || order.id}</strong>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Tanggal Pemesanan</span>

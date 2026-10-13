@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl } from '../../utils/api';
+import { adminPath } from '../../config/admin';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Dashboard = () => {
   const renderSkeletonCharts = () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
       {/* Skeleton Chart */}
-      <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
         <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '20px' }}><div className="skeleton skeleton-text short" style={{ height: '20px' }}></div></h3>
         <div style={{ height: '250px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div className="skeleton" style={{ width: '200px', height: '200px', borderRadius: '50%' }}></div>
@@ -53,7 +54,7 @@ const Dashboard = () => {
       </div>
 
       {/* Skeleton List */}
-      <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
         <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '20px' }}><div className="skeleton skeleton-text short" style={{ height: '20px' }}></div></h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -114,7 +115,7 @@ const Dashboard = () => {
       {loadingStats ? renderSkeletonCharts() : stats && (
         <div className="admin-chart-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
           {/* Chart Section */}
-          <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '20px' }}><i className="fas fa-chart-pie" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Komposisi Produk</h3>
             <div style={{ height: '250px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -129,7 +130,7 @@ const Dashboard = () => {
                     dataKey="value"
                   >
                     {(stats.komposisiKategori || []).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#0F5132', '#D4AF37', '#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 6]} />
+                      <Cell key={`cell-${index}`} fill={['#00754A', '#cba258', '#006241', '#2b5148', '#d4e9e2', '#c82014'][index % 6]} />
                     ))}
                   </Pie>
                   <RechartsTooltip 
@@ -141,17 +142,17 @@ const Dashboard = () => {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '10px', flexWrap: 'wrap' }}>
               {(stats.komposisiKategori || []).map((kat, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: ['#0F5132', '#D4AF37', '#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 6] }}></div> {kat.name}
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: ['#00754A', '#cba258', '#006241', '#2b5148', '#d4e9e2', '#c82014'][index % 6] }}></div> {kat.name}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Recent Products List */}
-          <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)' }}><i className="fas fa-clock" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Produk Terbaru</h3>
-              <Link to="/admin/produk" style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>Lihat Semua <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i></Link>
+              <Link to={adminPath('produk')} style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>Lihat Semua <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i></Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {stats.produkTerbaru && stats.produkTerbaru.length > 0 ? (

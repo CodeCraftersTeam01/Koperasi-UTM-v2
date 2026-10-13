@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
+import { compressImage } from '../../utils/imageCompressor';
 
 const ManageSettingsGaleri = () => {
   const [judul, setJudul] = useState('');
@@ -71,15 +72,12 @@ const ManageSettingsGaleri = () => {
     if (!file) return;
     setUploadingIndex(index);
     try {
-      const token = localStorage.getItem('kopma_admin_token');
+      const processedFile = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', processedFile);
 
-      const res = await fetch(`${BASE_URL}/api/upload`, {
+      const res = await apiFetch('/api/upload', {
         method: 'POST',
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
         body: formData,
       });
 
@@ -87,11 +85,12 @@ const ManageSettingsGaleri = () => {
         const data = await res.json();
         handleItemChange(index, 'gambar', data.url);
       } else {
-        window.Swal.fire('Gagal', 'Gagal mengupload gambar', 'error');
+        const errorMsg = await extractApiErrorMessage(res, 'Gagal mengupload gambar');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       console.error(err);
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan koneksi internet stabil dan server backend berjalan.', 'error');
     } finally {
       setUploadingIndex(null);
     }
@@ -141,7 +140,7 @@ const ManageSettingsGaleri = () => {
   if (loading) {
     return (
       <AdminLayout title="Setelan Galeri Kegiatan">
-        <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-muted)' }}>Memuat setelan...</p>
         </div>
       </AdminLayout>
@@ -152,8 +151,8 @@ const ManageSettingsGaleri = () => {
     <AdminLayout title="Setelan Galeri Kegiatan">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
         <form onSubmit={handleSubmit}>
-          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '0 0 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
               <i className="fas fa-heading" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Judul & Deskripsi Bagian Galeri
             </h3>
 
@@ -164,7 +163,7 @@ const ManageSettingsGaleri = () => {
                 value={judul}
                 onChange={(e) => setJudul(e.target.value)}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -175,14 +174,14 @@ const ManageSettingsGaleri = () => {
                 value={deskripsi}
                 onChange={(e) => setDeskripsi(e.target.value)}
                 required
-                style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }}
               ></textarea>
             </div>
           </div>
 
-          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '32px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
                 <i className="fas fa-images" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Foto Kegiatan
               </h3>
               <button type="button" onClick={addItem} style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 600, background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
@@ -242,7 +241,7 @@ const ManageSettingsGaleri = () => {
                     value={item.judul}
                     onChange={(e) => handleItemChange(index, 'judul', e.target.value)}
                     required
-                    style={{ width: '100%', padding: '8px 12px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Klik gambar untuk mengganti foto</span>
                 </div>

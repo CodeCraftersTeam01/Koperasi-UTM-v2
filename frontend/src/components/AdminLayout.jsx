@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiFetch } from '../utils/api';
+import { adminPath } from '../config/admin';
 
 const AdminLayout = ({ children, title }) => {
   const navigate = useNavigate();
@@ -13,32 +14,51 @@ const AdminLayout = ({ children, title }) => {
   const role = localStorage.getItem('kopma_admin_role') || 'petugas';
 
   const [openMenus, setOpenMenus] = useState({
-    transaksi: pathname.includes('/admin/pesanan'),
-    master: pathname.includes('/admin/produk') || pathname.includes('/admin/kategori'),
-    website: pathname.includes('/admin/pengurus') || pathname.includes('/admin/settings'),
-    security: pathname.includes('/admin/users'),
+    transaksi: pathname.includes(adminPath('pesanan')),
+    master: pathname.includes(adminPath('produk')) || pathname.includes(adminPath('kategori')),
+    website: pathname.includes(adminPath('pengurus')) || pathname.includes(adminPath('settings')),
+    security: pathname.includes(adminPath('users')),
   });
 
   useEffect(() => {
     if (!token) {
-      navigate('/admin/login');
-    } else if (role === 'petugas') {
-      if (pathname.includes('/admin/settings') || pathname.includes('/admin/pengurus') || pathname.includes('/admin/users')) {
-        navigate('/admin');
+      navigate(adminPath('login'));
+    } else {
+      const loginTime = localStorage.getItem('kopma_admin_login_time');
+      if (!loginTime) {
+        localStorage.removeItem('kopma_admin_token');
+        localStorage.removeItem('kopma_admin_user');
+        localStorage.removeItem('kopma_admin_role');
+        navigate(adminPath('login'));
+        return;
       }
-    } else if (role === 'admin') {
-      if (pathname.includes('/admin/users')) {
-        navigate('/admin');
+      const hoursSinceLogin = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+      if (hoursSinceLogin >= 12) {
+        localStorage.removeItem('kopma_admin_token');
+        localStorage.removeItem('kopma_admin_user');
+        localStorage.removeItem('kopma_admin_role');
+        localStorage.removeItem('kopma_admin_login_time');
+        navigate(adminPath('login'));
+        return;
+      }
+      if (role === 'petugas') {
+        if (pathname.includes(adminPath('settings')) || pathname.includes(adminPath('pengurus')) || pathname.includes(adminPath('users'))) {
+          navigate(adminPath());
+        }
+      } else if (role === 'admin') {
+        if (pathname.includes(adminPath('users'))) {
+          navigate(adminPath());
+        }
       }
     }
   }, [token, role, pathname, navigate]);
 
   useEffect(() => {
     setOpenMenus({
-      transaksi: pathname.includes('/admin/pesanan'),
-      master: pathname.includes('/admin/produk') || pathname.includes('/admin/kategori'),
-      website: pathname.includes('/admin/pengurus') || pathname.includes('/admin/settings'),
-      security: pathname.includes('/admin/users'),
+      transaksi: pathname.includes(adminPath('pesanan')),
+      master: pathname.includes(adminPath('produk')) || pathname.includes(adminPath('kategori')),
+      website: pathname.includes(adminPath('pengurus')) || pathname.includes(adminPath('settings')),
+      security: pathname.includes(adminPath('users')),
     });
   }, [pathname]);
 
@@ -63,7 +83,7 @@ const AdminLayout = ({ children, title }) => {
             
             if (!isInitialLoad && latestOrderId.current !== null && currentLatest > latestOrderId.current) {
               // New order detected!
-              setToastMessage(`Pesanan Baru dari ${orders[0].nama}! (Order #${currentLatest})`);
+              setToastMessage(`Pesanan Baru dari ${orders[0].nama}! (Nota #${orders[0].nomor_nota || orders[0].id})`);
               
               // Play notification sound
               try {
@@ -98,12 +118,16 @@ const AdminLayout = ({ children, title }) => {
     }));
   };
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
+    try {
+      await apiFetch('/api/logout', { method: 'POST' });
+    } catch (_) {}
     localStorage.removeItem('kopma_admin_token');
     localStorage.removeItem('kopma_admin_user');
     localStorage.removeItem('kopma_admin_role');
-    navigate('/admin/login');
+    localStorage.removeItem('kopma_admin_login_time');
+    navigate(adminPath('login'));
   };
 
   if (!token) return null;
@@ -135,10 +159,10 @@ const AdminLayout = ({ children, title }) => {
             }}
             onClick={() => {
               setToastMessage(null);
-              navigate('/admin/pesanan');
+              navigate(adminPath('pesanan'));
             }}
           >
-            <i className="fas fa-bell" style={{ fontSize: '20px', animation: 'ring 2s infinite' }}></i>
+            <i className="fas fa-bell" style={{ fontSize: '20px' }}></i>
             {toastMessage}
           </motion.div>
         )}
@@ -157,7 +181,7 @@ const AdminLayout = ({ children, title }) => {
             <span>Panel Administrasi</span>
           </div>
           <nav className="admin-sidebar-nav">
-            <NavLink to="/admin" end className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink to={adminPath()} end className={({ isActive }) => isActive ? 'active' : ''}>
               <i className="fas fa-tachometer-alt"></i> <span>Dashboard</span>
             </NavLink>
 
@@ -168,7 +192,7 @@ const AdminLayout = ({ children, title }) => {
                 <i className={`fas fa-chevron-${openMenus.transaksi ? 'down' : 'right'} chevron-icon`}></i>
               </button>
               <div className="collapse-menu">
-                <NavLink to="/admin/pesanan" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('pesanan')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-inbox"></i> <span>Pesanan Masuk</span>
                 </NavLink>
               </div>
@@ -181,10 +205,10 @@ const AdminLayout = ({ children, title }) => {
                 <i className={`fas fa-chevron-${openMenus.master ? 'down' : 'right'} chevron-icon`}></i>
               </button>
               <div className="collapse-menu">
-                <NavLink to="/admin/produk" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('produk')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-box"></i> <span>Kelola Produk</span>
                 </NavLink>
-                <NavLink to="/admin/kategori" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('kategori')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-tags"></i> <span>Kelola Kategori</span>
                 </NavLink>
               </div>
@@ -198,31 +222,31 @@ const AdminLayout = ({ children, title }) => {
                 <i className={`fas fa-chevron-${openMenus.website ? 'down' : 'right'} chevron-icon`}></i>
               </button>
               <div className="collapse-menu">
-                <NavLink to="/admin/settings-hero" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-hero')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-home"></i> <span>Setelan Hero</span>
                 </NavLink>
-                <NavLink to="/admin/settings-about" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-about')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-info-circle"></i> <span>Setelan Tentang</span>
                 </NavLink>
-                <NavLink to="/admin/settings-identity" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-identity')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-bullseye"></i> <span>Setelan Visi Misi</span>
                 </NavLink>
-                <NavLink to="/admin/settings-galeri" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-galeri')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-images"></i> <span>Galeri Kegiatan</span>
                 </NavLink>
-                <NavLink to="/admin/settings-layanan" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-layanan')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-concierge-bell"></i> <span>Setelan Layanan</span>
                 </NavLink>
-                <NavLink to="/admin/settings-kontak" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-kontak')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-map-marked-alt"></i> <span>Setelan Kontak</span>
                 </NavLink>
-                <NavLink to="/admin/settings-checkout" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-checkout')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-shopping-bag"></i> <span>Setelan Checkout</span>
                 </NavLink>
-                <NavLink to="/admin/settings-kategori" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('settings-kategori')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-th-large"></i> <span>Kategori Tampil</span>
                 </NavLink>
-                <NavLink to="/admin/pengurus" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('pengurus')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-sitemap"></i> <span>Kelola Pengurus</span>
                 </NavLink>
               </div>
@@ -237,7 +261,7 @@ const AdminLayout = ({ children, title }) => {
                 <i className={`fas fa-chevron-${openMenus.security ? 'down' : 'right'} chevron-icon`}></i>
               </button>
               <div className="collapse-menu">
-                <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to={adminPath('users')} className={({ isActive }) => isActive ? 'active' : ''}>
                   <i className="fas fa-users"></i> <span>Kelola Admin</span>
                 </NavLink>
               </div>

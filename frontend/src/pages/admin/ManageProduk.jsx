@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
+import { adminPath } from '../../config/admin';
+import { compressImage } from '../../utils/imageCompressor';
 
 const ManageProduk = () => {
   const location = useLocation();
@@ -35,6 +37,7 @@ const ManageProduk = () => {
   const [deskripsi, setDeskripsi] = useState('');
   const [gambarFile, setGambarFile] = useState(null);
   const [gambarPreview, setGambarPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   // Fetch products
   const fetchProducts = async () => {
@@ -140,7 +143,7 @@ const ManageProduk = () => {
     if (editIdParam) {
       handleEditProduk(editIdParam);
       // Clean query params
-      navigate('/admin/produk', { replace: true });
+      navigate(adminPath('produk'), { replace: true });
     }
   }, [location.search]);
 
@@ -161,6 +164,9 @@ const ManageProduk = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     document.body.classList.remove('no-scroll');
   };
 
@@ -191,11 +197,18 @@ const ManageProduk = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setGambarFile(file);
-      setGambarPreview(URL.createObjectURL(file));
+      try {
+        const compressed = await compressImage(file);
+        setGambarFile(compressed);
+        setGambarPreview(URL.createObjectURL(compressed));
+      } catch (err) {
+        console.warn('Compress failed, fallback to original', err);
+        setGambarFile(file);
+        setGambarPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -228,17 +241,18 @@ const ManageProduk = () => {
         });
       }
 
-      const result = await response.json();
-      if (response.status === 200 || response.status === 201) {
-        window.Swal.fire('Berhasil', result.message, 'success');
+      if (response.ok) {
+        const result = await response.json();
+        window.Swal.fire('Berhasil', result.message || 'Produk berhasil disimpan', 'success');
         handleCloseModal();
         fetchProducts();
       } else {
-        window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
+        const errorMsg = await extractApiErrorMessage(response, 'Gagal menyimpan produk');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       console.error(err);
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan koneksi internet stabil dan server backend berjalan.', 'error');
     }
   };
 
@@ -276,7 +290,7 @@ const ManageProduk = () => {
       text: `Produk akan di${label}. Produk ${newArsip ? 'tidak akan' : 'akan'} muncul di halaman utama.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: newArsip ? '#6C757D' : '#0F5132',
+      confirmButtonColor: newArsip ? '#6C757D' : '#00754A',
       cancelButtonColor: '#6C757D',
       confirmButtonText: `Ya, ${label}!`,
       cancelButtonText: 'Batal'
@@ -347,12 +361,12 @@ const ManageProduk = () => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            style={{ width: '100%', maxWidth: '360px', padding: '10px 16px', border: '2px solid var(--border)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+            style={{ width: '100%', maxWidth: '360px', padding: '10px 16px', border: '1px solid var(--border-strong)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
           />
         </div>
 
         {selectedIds.length > 0 && (
-          <div style={{ background: 'rgba(15, 81, 50, 0.1)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ background: 'rgba(0, 117, 74, 0.08)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '14px' }}>{selectedIds.length} produk terpilih</span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 
@@ -511,7 +525,7 @@ const ManageProduk = () => {
           <div className="modal-content" style={{ maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}>
             <button className="modal-close" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div style={{ padding: '32px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '22px', color: 'var(--text)', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '22px', color: 'var(--text)', marginBottom: '20px' }}>
                 {modalTitle}
               </h3>
               <form onSubmit={handleSimpanProduk}>
@@ -524,7 +538,7 @@ const ManageProduk = () => {
                       value={nama}
                       onChange={(e) => setNama(e.target.value)}
                       required 
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
@@ -536,7 +550,7 @@ const ManageProduk = () => {
                       onChange={(e) => setHarga(e.target.value)}
                       required 
                       min="0" 
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -547,7 +561,7 @@ const ManageProduk = () => {
                     <select 
                       value={tag}
                       onChange={(e) => setTag(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Tidak ada —</option>
                       <option value="Best Seller">Best Seller</option>
@@ -560,7 +574,7 @@ const ManageProduk = () => {
                     <select 
                       value={kategori}
                       onChange={(e) => setKategori(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Pilih Kategori —</option>
                       {kategoriList.map(k => (
@@ -576,7 +590,7 @@ const ManageProduk = () => {
                     <select 
                       value={subkategori}
                       onChange={(e) => setSubkategori(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
                       <option value="">— Pilih Subkategori —</option>
                       {(() => {
@@ -593,10 +607,11 @@ const ManageProduk = () => {
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '4px' }}>Foto Produk</label>
                     <input 
+                      ref={fileInputRef}
                       type="file" 
                       accept="image/*" 
                       onChange={handleFileChange}
-                      style={{ width: '100%', padding: '8px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '8px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     />
                     {gambarPreview && (
                       <div style={{ marginTop: '8px' }}>
@@ -617,7 +632,7 @@ const ManageProduk = () => {
                     placeholder="Deskripsi produk" 
                     value={deskripsi}
                     onChange={(e) => setDeskripsi(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   ></textarea>
                 </div>
 

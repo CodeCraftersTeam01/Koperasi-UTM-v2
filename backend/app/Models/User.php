@@ -19,7 +19,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'username', 'password', 'api_token', 'role',
+        'username', 'password', 'api_token', 'role', 'token_created_at',
     ];
 
     /**
@@ -29,5 +29,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     protected $hidden = [
         'password', 'api_token',
+    ];
+
+    protected $casts = [
+        'token_created_at' => 'datetime',
     ];
 }

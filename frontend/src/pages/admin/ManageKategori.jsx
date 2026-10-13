@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -105,7 +105,7 @@ const ManageKategori = () => {
       confirmButtonText: 'Simpan',
       showCancelButton: true,
       cancelButtonText: 'Batal',
-      confirmButtonColor: '#0F5132',
+      confirmButtonColor: '#00754A',
       cancelButtonColor: '#6C757D',
       didOpen: () => {
         const tipeEl = document.getElementById('swal-tipe');
@@ -275,7 +275,7 @@ const ManageKategori = () => {
         </div>
 
         {selectedIds.length > 0 && (
-          <div style={{ background: 'rgba(15, 81, 50, 0.1)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ background: 'rgba(0, 117, 74, 0.08)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '14px' }}>{selectedIds.length} kategori terpilih</span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 

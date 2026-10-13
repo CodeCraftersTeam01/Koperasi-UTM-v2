@@ -3,21 +3,31 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 $router->get('/', function () use ($router) {
+    $path = dirname(__DIR__).'/public/index.html';
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
     return $router->app->version();
 });
 
 // Public API routes
 $router->get('/api/kategori', 'KategoriController@index');
 $router->get('/api/produk', 'ProdukController@index');
-$router->post('/api/login', 'AuthController@login');
+$router->post('/api/login', ['middleware' => 'throttle.login', 'uses' => 'AuthController@login']);
 $router->get('/api/pengurus', 'PengurusController@index');
 $router->get('/api/settings', 'SettingController@index');
 $router->post('/api/checkout', 'CheckoutController@process');
 $router->get('/api/orders/track', 'OrderController@track');
 $router->post('/api/contact', 'ContactController@send');
 
+// SEMENTARA: diagnostik upload untuk debugging hosting. Hapus setelah selesai.
+$router->get('/api/diagnostic', 'DiagnosticController@index');
+
 // Admin protected API routes
 $router->group(['middleware' => 'auth'], function () use ($router) {
+    // Auth
+    $router->post('/api/logout', 'AuthController@logout');
+
     // Kategori CRUD
     $router->post('/api/kategori', 'KategoriController@store');
     $router->put('/api/kategori/{id}', 'KategoriController@update');

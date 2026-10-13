@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { apiFetch, getApiUrl } from '../utils/api';
+import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../utils/api';
 import LazyImage from '../components/LazyImage';
 
 const Checkout = () => {
@@ -49,23 +49,67 @@ const Checkout = () => {
     return '62' + digits;
   };
 
-  const buildWhatsAppMessage = () => {
-    const items = cart.map((item, i) =>
-      `${i + 1}. ${item.nama} (${item.qty}x) = Rp ${(item.harga * item.qty).toLocaleString()}`
-    ).join('\n');
-
-    return encodeURIComponent(
-      `Halo Kak, saya *${nama}* ingin melakukan pemesanan:\n\n${items}\n\nTotal: Rp ${cartTotal.toLocaleString()}\nNomor saya: ${whatsapp}`
-    );
+  const generateNotaNumber = () => {
+    const pad = (x) => String(x).padStart(2, '0');
+    const now = new Date();
+    const rand = String(Math.floor(1000 + Math.random() * 9000));
+    return `${pad(now.getDate())}${pad(now.getMonth() + 1)}${String(now.getFullYear()).slice(2)}${rand}`;
   };
 
-  const submitOrder = async () => {
+  const buildWhatsAppMessage = (nota) => {
+    const pad = (x) => String(x).padStart(2, '0');
+    const now = new Date();
+    const tanggal = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const fmt = (n) => n.toLocaleString('id-ID');
+    const WIDTH = 31;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const center = (text) => {
+      if (isMobile) return text;
+      const total = Math.max(0, WIDTH - text.length);
+      return ' '.repeat(Math.floor(total / 2)) + text + ' '.repeat(Math.ceil(total / 2));
+    };
+
+    const items = cart.map((item) => {
+      const subtotal = fmt(item.harga * item.qty);
+      return `${item.nama}\n${`${item.qty} Pcs x ${fmt(item.harga)}`.padEnd(21)}${subtotal.padStart(10)}`;
+    }).join('\n\n');
+
+    const phonePad = isMobile ? '' : ' '.repeat(Math.floor((WIDTH - 13) / 2));
+
+    const notaLine = isMobile ? `No Nota : ${nota}` : `No Nota : ${nota}`;
+    const pelangganLine = isMobile ? `Pelanggan : ${nama.toUpperCase()}` : `Pelanggan : ${nama.toUpperCase()}`;
+    const tanggalLine = isMobile ? `Tanggal : ${tanggal}` : `Tanggal : ${tanggal}`;
+
+    const message =
+`\`\`\`
+${center('KOPERASI UTM')}
+${center('Jl. Raya Telang PO BOX Kamal')}
+${phonePad}0811-3904-676
+${'='.repeat(WIDTH)}
+${notaLine}
+${pelangganLine}
+${tanggalLine}
+${'='.repeat(WIDTH)}
+${items}
+${'-'.repeat(WIDTH)}
+${'TOTAL'.padEnd(21)}${fmt(cartTotal).padStart(10)}
+${'='.repeat(WIDTH)}
+
+${center('TERIMA KASIH')}
+\`\`\``;
+
+    return encodeURIComponent(message);
+  };
+
+  const submitOrder = async (nota) => {
     const res = await apiFetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nama,
         whatsapp,
+        nomor_nota: nota,
         items: cart.map(item => ({
           nama: item.nama,
           harga: item.harga,
@@ -107,12 +151,14 @@ const Checkout = () => {
     setLoading(true);
 
     try {
+      const nota = generateNotaNumber();
       if (checkoutSystem === 'wa') {
         const adminNumber = formatPhone(adminWhatsapp);
-        const message = buildWhatsAppMessage();
+        const message = buildWhatsAppMessage(nota);
         window.open(`https://wa.me/${adminNumber}?text=${message}`, '_blank');
+        await submitOrder(nota);
       } else {
-        await submitOrder();
+        await submitOrder(nota);
       }
 
       clearCart();
@@ -137,7 +183,7 @@ const Checkout = () => {
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(15,81,50,0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px' }}>
             <i className={`fas ${checkoutSystem === 'wa' ? 'fa-comment-dots' : 'fa-check-double'}`}></i>
           </div>
-          <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', marginBottom: '16px' }}>
             {checkoutSystem === 'wa' ? 'Pesanan Tersimpan!' : 'Pesanan Berhasil Dibuat!'}
           </h2>
           <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '32px' }}>
@@ -177,21 +223,21 @@ const Checkout = () => {
           <div className="checkout-grid-mobile">
           
           {/* BUYER DATA FORM */}
-          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '16px', boxShadow: 'var(--shadow)', border: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
               <i className="fas fa-user-edit" style={{ marginRight: '8px', color: 'var(--primary)' }}></i> Data Diri Pembeli
             </h3>
             
             <form id="checkout-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>Nama Lengkap</label>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>Nama</label>
                 <input 
                   type="text" 
-                  placeholder="Masukkan nama lengkap Anda"
+                  placeholder="Masukkan nama Anda"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -203,7 +249,7 @@ const Checkout = () => {
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '12px 16px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                 />
                 <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Pastikan nomor WhatsApp aktif untuk menerima update status pesanan dari Admin.</p>
               </div>
@@ -211,8 +257,8 @@ const Checkout = () => {
           </div>
 
           {/* ORDER SUMMARY */}
-          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', height: 'fit-content' }}>
-            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+          <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '16px', boxShadow: 'var(--shadow)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', height: 'fit-content' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
               <i className="fas fa-shopping-cart" style={{ marginRight: '8px', color: 'var(--primary)' }}></i> Ringkasan Belanja
             </h3>
 
@@ -220,7 +266,7 @@ const Checkout = () => {
               {cart.map(item => (
                 <div key={item.id} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <LazyImage
-                    src={getApiUrl(item.gambar) || '/img/placeholder.jpg'}
+                    src={getApiUrl(item.gambar) || PLACEHOLDER_IMG}
                     alt={item.nama}
                     style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--border)' }}
                     wrapperStyle={{ width: '56px', height: '56px' }}
@@ -235,14 +281,6 @@ const Checkout = () => {
             </div>
 
             <div style={{ borderTop: '2px solid var(--border)', paddingTop: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Subtotal Produk</span>
-                <span style={{ fontSize: '14px', color: 'var(--text)', fontWeight: 500 }}>Rp {cartTotal.toLocaleString()}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Biaya Layanan</span>
-                <span style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: 600 }}>GRATIS</span>
-              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>Total</span>
                 <strong style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary)' }}>Rp {cartTotal.toLocaleString()}</strong>

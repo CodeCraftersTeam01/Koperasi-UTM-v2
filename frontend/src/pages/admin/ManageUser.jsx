@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -194,7 +194,7 @@ const ManageUser = () => {
         </div>
 
         {selectedIds.length > 0 && (
-          <div style={{ background: 'rgba(15, 81, 50, 0.1)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ background: 'rgba(0, 117, 74, 0.08)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '14px' }}>{selectedIds.length} admin terpilih</span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 
@@ -287,7 +287,7 @@ const ManageUser = () => {
           <div className="modal-content" style={{ maxWidth: '400px' }}>
             <button className="modal-close" type="button" onClick={handleCloseModal}><i className="fas fa-times"></i></button>
             <div style={{ padding: '32px' }}>
-              <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '20px', color: 'var(--text)', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '20px', color: 'var(--text)', marginBottom: '20px' }}>
                 {modalTitle}
               </h3>
               <form onSubmit={handleSimpanUser}>
@@ -299,7 +299,7 @@ const ManageUser = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required 
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div style={{ marginBottom: '24px' }}>
@@ -312,7 +312,7 @@ const ManageUser = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required={!editId}
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -323,7 +323,7 @@ const ManageUser = () => {
                     onChange={(e) => setRole(e.target.value)}
                     required
                     disabled={currentUserRole === 'super_admin'}
-                    style={{ width: '100%', padding: '11px 14px', border: '2px solid var(--border)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: currentUserRole === 'super_admin' ? 'var(--bg)' : 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: currentUserRole === 'super_admin' ? 'var(--bg)' : 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   >
                     {currentUserRole === 'super_admin' && <option value="super_admin">Super Admin (Tidak dapat diubah)</option>}
                     <option value="petugas">Petugas (Hanya Akses Master Data)</option>

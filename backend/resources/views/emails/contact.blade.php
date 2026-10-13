@@ -5,7 +5,7 @@
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-        <h2 style="color: #0f5132; margin-top: 0;">Pesan Baru dari Kontak Website</h2>
+        <h2 style="color: #006241; margin-top: 0;">Pesan Baru dari Kontak Website</h2>
         <p>Anda menerima pesan baru melalui formulir kontak di website Koperasi UTM.</p>
         
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">

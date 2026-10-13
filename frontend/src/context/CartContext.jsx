@@ -10,8 +10,6 @@ export const CartProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [notification, setNotification] = useState('');
-
   useEffect(() => {
     localStorage.setItem('kopma_cart', JSON.stringify(cart));
   }, [cart]);
@@ -43,8 +41,7 @@ export const CartProvider = ({ children }) => {
       }];
     });
 
-    // Show toast notification
-    showToastNotification(`${product.nama} ditambahkan ke keranjang`);
+
   };
 
   const removeFromCart = (id) => {
@@ -65,20 +62,19 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const showToastNotification = (msg) => {
-    setNotification(msg);
-    setTimeout(() => {
-      setNotification('');
-    }, 2500);
-  };
-
-  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const cartCount = cart.length;
   
   const cartTotal = cart.reduce((sum, item) => sum + item.harga * item.qty, 0);
 
   const checkoutWA = () => {
     if (cart.length === 0) {
-      alert('Keranjang masih kosong');
+      window.Swal.fire({
+        icon: 'warning',
+        title: 'Keranjang Masih Kosong',
+        text: 'Silakan tambahkan produk terlebih dahulu sebelum melakukan pemesanan.',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#00754A'
+      });
       return;
     }
     const noAdmin = '6285727877235';
@@ -101,7 +97,6 @@ export const CartProvider = ({ children }) => {
       value={{
         cart,
         isCartOpen,
-        notification,
         openCart,
         closeCart,
         addToCart,
@@ -111,7 +106,6 @@ export const CartProvider = ({ children }) => {
         cartTotal,
         checkoutWA,
         clearCart,
-        showToastNotification,
       }}
     >
       {children}

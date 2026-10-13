@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../../utils/api';
+import { adminPath } from '../../config/admin';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,10 +11,20 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If already logged in, redirect to admin dashboard
     const token = localStorage.getItem('kopma_admin_token');
     if (token) {
-      navigate('/admin');
+      const loginTime = localStorage.getItem('kopma_admin_login_time');
+      if (loginTime) {
+        const hoursSinceLogin = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+        if (hoursSinceLogin >= 12) {
+          localStorage.removeItem('kopma_admin_token');
+          localStorage.removeItem('kopma_admin_user');
+          localStorage.removeItem('kopma_admin_role');
+          localStorage.removeItem('kopma_admin_login_time');
+          return;
+        }
+      }
+      navigate(adminPath());
     }
   }, [navigate]);
 
@@ -34,7 +45,8 @@ const Login = () => {
         localStorage.setItem('kopma_admin_token', data.api_token);
         localStorage.setItem('kopma_admin_user', data.username);
         if (data.role) localStorage.setItem('kopma_admin_role', data.role);
-        navigate('/admin');
+        localStorage.setItem('kopma_admin_login_time', Date.now().toString());
+        navigate(adminPath());
       } else {
         setError(data.message || 'Username atau password salah');
       }

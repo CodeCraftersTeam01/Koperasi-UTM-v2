@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { PLACEHOLDER_IMG } from '../utils/api';
 
-const LazyImage = ({ src, alt, className = '', style = {}, wrapperStyle = {}, fallbackSrc = '/img/placeholder.jpg', onClick, onError }) => {
+const LazyImage = ({ src, alt, className = '', style = {}, wrapperStyle = {}, fallbackSrc = PLACEHOLDER_IMG, onClick, onError }) => {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 

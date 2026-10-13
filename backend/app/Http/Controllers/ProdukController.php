@@ -62,14 +62,26 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:100',
             'subkategori' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|max:5120', // Max 5MB
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240', // Max 10MB
         ]);
 
         $gambarPath = '';
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
             $file = $request->file('gambar');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = uniqid() . '.' . $ext;
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            try {
+                $file->move($uploadDir, $filename);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
+            }
+            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
+                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
+            }
             $gambarPath = 'upload/' . $filename;
         }
 
@@ -105,14 +117,29 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:100',
             'subkategori' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|max:5120',
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
         ]);
 
         $gambarPath = $produk->gambar;
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
+            if ($gambarPath && file_exists(base_path('public/' . $gambarPath))) {
+                @unlink(base_path('public/' . $gambarPath));
+            }
             $file = $request->file('gambar');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(base_path('public/upload'), $filename);
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = uniqid() . '.' . $ext;
+            $uploadDir = base_path('public/upload');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            try {
+                $file->move($uploadDir, $filename);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Gagal menyimpan gambar: ' . $e->getMessage()], 500);
+            }
+            if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $filename)) {
+                return response()->json(['error' => 'Gambar tidak tersimpan di server. Periksa izin folder upload.'], 500);
+            }
             $gambarPath = 'upload/' . $filename;
         }
 

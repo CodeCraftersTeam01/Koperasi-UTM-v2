@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch } from '../../utils/api';
 
 const ManagePesanan = () => {
   const [orders, setOrders] = useState([]);
@@ -90,7 +90,7 @@ const ManagePesanan = () => {
     switch (status) {
       case 'pending': return <span className="badge badge-accent"><i className="fas fa-clock"></i> Pending</span>;
       case 'proses': return <span className="badge badge-primary"><i className="fas fa-spinner fa-spin"></i> Diproses</span>;
-      case 'selesai': return <span className="badge" style={{ background: 'rgba(15, 81, 50, 0.1)', color: 'var(--primary)', border: '1px solid rgba(15, 81, 50, 0.2)' }}><i className="fas fa-check-circle"></i> Selesai</span>;
+      case 'selesai': return <span className="badge" style={{ background: 'rgba(0, 117, 74, 0.08)', color: 'var(--primary)', border: '1px solid rgba(0, 117, 74, 0.25)' }}><i className="fas fa-check-circle"></i> Selesai</span>;
       case 'batal': return <span className="badge badge-premium"><i className="fas fa-times-circle"></i> Batal</span>;
       default: return <span className="badge">{status}</span>;
     }
@@ -101,6 +101,7 @@ const ManagePesanan = () => {
     const q = searchQuery.toLowerCase();
     return (
       order.nama.toLowerCase().includes(q) ||
+      (order.nomor_nota || '').toString().includes(q) ||
       order.id.toString().includes(q) ||
       order.whatsapp.includes(q)
     );
@@ -127,7 +128,7 @@ const ManagePesanan = () => {
             placeholder="Cari berdasarkan nama, WhatsApp, atau ID pesanan..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', maxWidth: '420px', padding: '10px 16px', border: '2px solid var(--border)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+            style={{ width: '100%', maxWidth: '420px', padding: '10px 16px', border: '1px solid var(--border-strong)', borderRadius: '100px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
           />
           <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
             Total: <strong>{filteredOrders.length} pesanan</strong>
@@ -144,7 +145,7 @@ const ManagePesanan = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ width: '80px' }}>ID</th>
+                  <th style={{ width: '130px' }}>No Nota</th>
                   <th>Tanggal</th>
                   <th>Pelanggan</th>
                   <th>Daftar Belanja</th>
@@ -163,7 +164,7 @@ const ManagePesanan = () => {
                 ) : (
                   filteredOrders.map(order => (
                     <tr key={order.id}>
-                      <td><strong>#{order.id}</strong></td>
+                      <td><strong>#{order.nomor_nota || order.id}</strong></td>
                       <td>{new Date(order.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</td>
                       <td>
                         <div style={{ fontWeight: 600 }}>{order.nama}</div>
