@@ -224,6 +224,8 @@ Sistem backend dilengkapi kelas `PathHelper` yang secara dinamis mendeteksi kebe
 
 ---
 
-## Lisensi
+## Lisensi & Hak Cipta
 
-Proyek ini dikembangkan untuk kebutuhan internal **Koperasi Mahasiswa Universitas Trunojoyo Madura** di bawah lisensi [MIT License](LICENSE).
+Hak Cipta (c) 2026 **Koperasi Mahasiswa Universitas Trunojoyo Madura (Koperasi UTM)**. Seluruh hak cipta dilindungi undang-undang (*All Rights Reserved*).
+
+Kode sumber dan aset perangkat lunak ini bersifat **Proprietary (Terbatas)**. Dilarang keras memperjualbelikan, menyalin, memodifikasi, atau mendistribusikan ulang kode sumber ini untuk kepentingan komersial maupun pihak ketiga tanpa izin tertulis resmi dari pemegang hak cipta. Lihat rincian ketentuan hukum pada berkas [LICENSE](LICENSE).
