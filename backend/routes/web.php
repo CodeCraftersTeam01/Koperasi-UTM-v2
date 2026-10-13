@@ -3,6 +3,10 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 $router->get('/', function () use ($router) {
+    $path = dirname(__DIR__).'/public/index.html';
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
     return $router->app->version();
 });
 

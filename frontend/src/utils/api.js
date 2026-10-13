@@ -59,6 +59,7 @@ export const getApiUrl = (path) => {
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem('kopma_admin_token');
   const headers = {
+    'Accept': 'application/json',
     ...options.headers,
   };
 
@@ -86,4 +87,35 @@ export const apiFetch = async (endpoint, options = {}) => {
   }
 
   return response;
+};
+
+/**
+ * Ekstrak pesan error yang user-friendly dari response API Laravel/Lumen
+ */
+export const extractApiErrorMessage = async (response, defaultMsg = 'Terjadi kesalahan') => {
+  try {
+    const contentType = response.headers?.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      if (data) {
+        if (data.errors && typeof data.errors === 'object') {
+          const firstKey = Object.keys(data.errors)[0];
+          const val = data.errors[firstKey];
+          return Array.isArray(val) ? val[0] : String(val);
+        }
+        if (data.error) return data.error;
+        if (data.message && data.message !== 'The given data was invalid.') return data.message;
+        // Format { gambar: ["The gambar failed to upload."] } langsung tanpa key errors
+        for (const [key, val] of Object.entries(data)) {
+          if (Array.isArray(val) && val.length > 0) {
+            return `${val[0]}`;
+          }
+        }
+      }
+    }
+    if (response.status === 413) return 'Ukuran file gambar terlalu besar. Silakan gunakan gambar dengan ukuran lebih kecil.';
+    if (response.status === 422) return 'Format gambar atau data tidak valid. Pastikan file berupa JPG, PNG, atau WEBP.';
+    if (response.status === 500) return 'Terjadi kesalahan pada server saat memproses gambar.';
+  } catch {}
+  return defaultMsg;
 };

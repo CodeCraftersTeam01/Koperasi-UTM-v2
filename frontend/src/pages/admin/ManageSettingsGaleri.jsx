@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
+import { compressImage } from '../../utils/imageCompressor';
 
 const ManageSettingsGaleri = () => {
   const [judul, setJudul] = useState('');
@@ -71,15 +72,12 @@ const ManageSettingsGaleri = () => {
     if (!file) return;
     setUploadingIndex(index);
     try {
-      const token = localStorage.getItem('kopma_admin_token');
+      const processedFile = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', processedFile);
 
-      const res = await fetch(`${BASE_URL}/api/upload`, {
+      const res = await apiFetch('/api/upload', {
         method: 'POST',
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
         body: formData,
       });
 
@@ -87,11 +85,12 @@ const ManageSettingsGaleri = () => {
         const data = await res.json();
         handleItemChange(index, 'gambar', data.url);
       } else {
-        window.Swal.fire('Gagal', 'Gagal mengupload gambar', 'error');
+        const errorMsg = await extractApiErrorMessage(res, 'Gagal mengupload gambar');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       console.error(err);
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan koneksi internet stabil dan server backend berjalan.', 'error');
     } finally {
       setUploadingIndex(null);
     }

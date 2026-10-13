@@ -49,6 +49,26 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof ValidationException) {
+            return response()->json([
+                'message' => 'Validasi data gagal',
+                'errors' => $exception->errors(),
+            ], 422);
+        }
+
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $status = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
+            return response()->json([
+                'message' => $exception->getMessage() ?: 'Terjadi kesalahan pada server',
+            ], $status);
+        }
+
         return parent::render($request, $exception);
     }
 }

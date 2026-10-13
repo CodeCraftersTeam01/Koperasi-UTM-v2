@@ -22,13 +22,14 @@ class PengurusController extends Controller
             'jabatan' => 'required|string|max:100',
             'level' => 'required|integer|in:1,2,3',
             'urutan' => 'required|integer',
-            'foto' => 'nullable|image|max:5120', // max 5MB
+            'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240', // max 10MB
         ]);
 
         $fotoPath = null;
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
             $file = $request->file('foto');
-            $filename = 'pengurus_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = 'pengurus_' . uniqid() . '.' . $ext;
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
                 @mkdir($uploadDir, 0755, true);
@@ -71,7 +72,7 @@ class PengurusController extends Controller
             'jabatan' => 'required|string|max:100',
             'level' => 'required|integer|in:1,2,3',
             'urutan' => 'required|integer',
-            'foto' => 'nullable|image|max:5120',
+            'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
         ]);
 
         $fotoPath = $pengurus->foto;
@@ -81,7 +82,8 @@ class PengurusController extends Controller
                 @unlink(base_path('public/' . $fotoPath));
             }
             $file = $request->file('foto');
-            $filename = 'pengurus_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = 'pengurus_' . uniqid() . '.' . $ext;
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
                 @mkdir($uploadDir, 0755, true);

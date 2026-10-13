@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl, AVATAR_IMG } from '../../utils/api';
+import { apiFetch, getApiUrl, AVATAR_IMG, extractApiErrorMessage } from '../../utils/api';
+import { compressImage } from '../../utils/imageCompressor';
 
 const ManagePengurus = () => {
   const [pengurusList, setPengurusList] = useState([]);
@@ -19,6 +20,7 @@ const ManagePengurus = () => {
   const [urutan, setUrutan] = useState(0);
   const [fotoFile, setFotoFile] = useState(null);
   const [fotoPreview, setFotoPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   const fetchPengurus = async () => {
     setLoading(true);
@@ -139,13 +141,23 @@ const ManagePengurus = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setFotoFile(file);
-      setFotoPreview(URL.createObjectURL(file));
+      try {
+        const compressed = await compressImage(file);
+        setFotoFile(compressed);
+        setFotoPreview(URL.createObjectURL(compressed));
+      } catch (err) {
+        console.warn('Compress failed, fallback to original', err);
+        setFotoFile(file);
+        setFotoPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -175,14 +187,19 @@ const ManagePengurus = () => {
       }
 
       if (res.ok) {
+        window.Swal.fire('Berhasil', 'Data pengurus berhasil disimpan', 'success');
         setIsModalOpen(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
         fetchPengurus();
       } else {
-        const data = await res.json();
-        window.Swal.fire('Gagal', data.error || 'Gagal menyimpan pengurus', 'error');
+        const errorMsg = await extractApiErrorMessage(res, 'Gagal menyimpan pengurus');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      console.error(err);
+      window.Swal.fire('Koneksi Gagal', 'Pastikan koneksi internet stabil dan server backend berjalan.', 'error');
     }
   };
 
@@ -435,12 +452,13 @@ const ManagePengurus = () => {
                     </div>
                     <div>
                       <input 
+                        ref={fileInputRef}
                         type="file" 
                         accept="image/*"
                         onChange={handleFileChange}
                         style={{ fontSize: '13px' }}
                       />
-                      <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Ukuran maks 5MB, format JPG/PNG</p>
+                      <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Ukuran maks 5MB, format JPG/PNG/WEBP (otomatis dioptimasi)</p>
                     </div>
                   </div>
                 </div>

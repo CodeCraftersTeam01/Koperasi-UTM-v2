@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
 import { adminPath } from '../../config/admin';
+import { compressImage } from '../../utils/imageCompressor';
 
 const ManageProduk = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const ManageProduk = () => {
   const [deskripsi, setDeskripsi] = useState('');
   const [gambarFile, setGambarFile] = useState(null);
   const [gambarPreview, setGambarPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   // Fetch products
   const fetchProducts = async () => {
@@ -162,6 +164,9 @@ const ManageProduk = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     document.body.classList.remove('no-scroll');
   };
 
@@ -192,11 +197,18 @@ const ManageProduk = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setGambarFile(file);
-      setGambarPreview(URL.createObjectURL(file));
+      try {
+        const compressed = await compressImage(file);
+        setGambarFile(compressed);
+        setGambarPreview(URL.createObjectURL(compressed));
+      } catch (err) {
+        console.warn('Compress failed, fallback to original', err);
+        setGambarFile(file);
+        setGambarPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -229,17 +241,18 @@ const ManageProduk = () => {
         });
       }
 
-      const result = await response.json();
-      if (response.status === 200 || response.status === 201) {
-        window.Swal.fire('Berhasil', result.message, 'success');
+      if (response.ok) {
+        const result = await response.json();
+        window.Swal.fire('Berhasil', result.message || 'Produk berhasil disimpan', 'success');
         handleCloseModal();
         fetchProducts();
       } else {
-        window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
+        const errorMsg = await extractApiErrorMessage(response, 'Gagal menyimpan produk');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       console.error(err);
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan koneksi internet stabil dan server backend berjalan.', 'error');
     }
   };
 
@@ -594,6 +607,7 @@ const ManageProduk = () => {
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '4px' }}>Foto Produk</label>
                     <input 
+                      ref={fileInputRef}
                       type="file" 
                       accept="image/*" 
                       onChange={handleFileChange}

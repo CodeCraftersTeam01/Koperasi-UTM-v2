@@ -62,13 +62,14 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:100',
             'subkategori' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|max:5120', // Max 5MB
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240', // Max 10MB
         ]);
 
         $gambarPath = '';
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
             $file = $request->file('gambar');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = uniqid() . '.' . $ext;
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
                 @mkdir($uploadDir, 0755, true);
@@ -116,13 +117,17 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:100',
             'subkategori' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|max:5120',
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
         ]);
 
         $gambarPath = $produk->gambar;
         if ($request->hasFile('gambar') && $request->file('gambar')->isValid()) {
+            if ($gambarPath && file_exists(base_path('public/' . $gambarPath))) {
+                @unlink(base_path('public/' . $gambarPath));
+            }
             $file = $request->file('gambar');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = uniqid() . '.' . $ext;
             $uploadDir = base_path('public/upload');
             if (!is_dir($uploadDir)) {
                 @mkdir($uploadDir, 0755, true);

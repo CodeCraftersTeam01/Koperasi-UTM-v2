@@ -9,7 +9,7 @@ class UploadController extends Controller
     public function uploadImage(Request $request)
     {
         $this->validate($request, [
-            'file' => 'required|image|max:5120',
+            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
         ]);
 
         if (!$request->hasFile('file') || !$request->file('file')->isValid()) {
@@ -17,7 +17,8 @@ class UploadController extends Controller
         }
 
         $file = $request->file('file');
-        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+        $filename = uniqid() . '.' . $ext;
 
         $uploadDir = base_path('public/upload/gallery');
         if (!is_dir($uploadDir)) {
