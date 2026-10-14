@@ -1,0 +1,22 @@
+﻿No,Nama Fitur / Modul,Spesifikasi Teknis & Manfaat Sistem,Biaya (IDR)
+1,Hero Banner Dinamis & Call-to-Action (CTA),Banner utama beranda interaktif + tombol navigasi katalog produk,150000
+2,Modul Visi Misi & Profil Kelembagaan,"Pemaparan resmi visi, misi, nilai kelembagaan & sejarah koperasi",100000
+3,Bagan Struktur Kepengurusan Bertingkat,"Hierarki jabatan (Pembina, Pengawas, Pengurus) lengkap foto & jabatan",150000
+4,Showcase Unit Layanan & Usaha Koperasi,"Presentasi unit bisnis toko, ATK, seragam & layanan anggota koperasi",100000
+5,Indikator Kinerja & Counter Statistik Dinamis,"Metrik otomatis: jumlah anggota aktif, produk katalog & transaksi",100000
+6,Galeri Dokumentasi Kegiatan Interaktif,"Album foto dokumentasi kegiatan, program kerja & RAT koperasi",100000
+7,Katalog Digital dengan Live Search Real-time,Pencarian instan produk koperasi secara real-time tanpa reload,150000
+8,Filter Hierarki Kategori & Subkategori,Pengelompokan produk terstruktur memudahkan navigasi pembeli,150000
+9,Badge Penanda Produk Khusus,"Label visual otomatis (Promo Diskon, Best Seller, New Arrival)",100000
+10,Modal Pop-Up Quick View Detail Produk,"Pratinjau cepat spesifikasi, foto detail, harga diskon & info stok",150000
+11,Keranjang Belanja Interaktif (Slide-Over Cart),Slide-over cart dengan kontrol kuantitas & kalkulasi subtotal otomatis,150000
+12,Penyimpanan Keranjang Otomatis (Local Persistence),Data belanja tetap tersimpan di browser pembeli meski halaman refresh,100000
+13,Formulir Checkout & Opsi Pengiriman Fleksibel,Form checkout lengkap dengan opsi ambil di toko atau kirim ke alamat,150000
+14,Direct WhatsApp Invoice Gateway,Struk pesanan otomatis tersusun rapi langsung ke WhatsApp admin,250000
+15,Modul Pelacakan Riwayat Pesanan (Order Tracking),Halaman mandiri pelanggan cek progres status order (Pending s/d Selesai),150000
+16,"Halaman Kontak, Aspirasi & Google Maps","Peta digital lokasi sekretariat, form kirim pesan/aspirasi & medsos",150000
+17,Dashboard Analitik & Grafik Transaksi (Recharts),Panel kontrol pengurus memantau grafik penjualan & performa toko,200000
+18,Panel Manajemen & Pemrosesan Pesanan Masuk,"Backoffice filter status pesanan, detail pembeli & update progres order",200000
+19,Panel Manajemen Produk & Kategori (CRUD + Bulk),"Kelola stok, upload gambar, atur promo, arsip produk & bulk delete",250000
+20,CMS Pengaturan Konten Terpadu & Multi-User Admin,"Ubah banner/teks mandiri tanpa koding, reorder pengurus & akun admin",150000
+,TOTAL BIAYA KESELURUHAN,,3000000
