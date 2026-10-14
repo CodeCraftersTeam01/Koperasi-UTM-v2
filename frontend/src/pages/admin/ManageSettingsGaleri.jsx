@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl, extractApiErrorMessage } from '../../utils/api';
+import { apiFetch, getApiUrl, extractApiErrorMessage, PLACEHOLDER_IMG } from '../../utils/api';
 import { compressImage } from '../../utils/imageCompressor';
 
 const ManageSettingsGaleri = () => {
@@ -219,7 +219,7 @@ const ManageSettingsGaleri = () => {
                       src={getApiUrl(item.gambar)}
                       alt={item.judul || 'Foto'}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:24px;color:var(--text-muted)"><i class="fas fa-image"></i></div>'; }}
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER_IMG; }}
                     />
                   ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'var(--text-muted)' }}>

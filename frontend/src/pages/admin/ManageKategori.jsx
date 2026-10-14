@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch } from '../../utils/api';
+import { apiFetch, extractApiErrorMessage } from '../../utils/api';
 
 const ManageKategori = () => {
   const [kategoris, setKategoris] = useState([]);
@@ -128,13 +128,22 @@ const ManageKategori = () => {
       if (!result.isConfirmed) return;
       const method = isEdit ? 'PUT' : 'POST';
       const url = isEdit ? `/api/kategori/${editData.id}` : '/api/kategori';
-      const res = await apiFetch(url, {
-        method,
-        body: JSON.stringify(result.value),
-      });
-      const data = await res.json();
-      window.Swal.fire('Berhasil!', data.message || 'Kategori berhasil disimpan.', 'success');
-      fetchKategoris();
+      try {
+        const res = await apiFetch(url, {
+          method,
+          body: JSON.stringify(result.value),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          window.Swal.fire('Berhasil!', data.message || 'Kategori berhasil disimpan.', 'success');
+          fetchKategoris();
+        } else {
+          const errorMsg = await extractApiErrorMessage(res, 'Gagal menyimpan kategori');
+          window.Swal.fire('Gagal', errorMsg, 'error');
+        }
+      } catch (err) {
+        window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+      }
     });
   };
 
@@ -150,12 +159,21 @@ const ManageKategori = () => {
       cancelButtonText: 'Batal'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await apiFetch(`/api/kategori/${id}`, {
-          method: 'DELETE',
-        });
-        const data = await res.json();
-        window.Swal.fire('Terhapus!', data.message || 'Kategori berhasil dihapus.', 'success');
-        fetchKategoris();
+        try {
+          const res = await apiFetch(`/api/kategori/${id}`, {
+            method: 'DELETE',
+          });
+          if (res.ok) {
+            const data = await res.json();
+            window.Swal.fire('Terhapus!', data.message || 'Kategori berhasil dihapus.', 'success');
+            fetchKategoris();
+          } else {
+            const errorMsg = await extractApiErrorMessage(res, 'Gagal menghapus kategori');
+            window.Swal.fire('Gagal', errorMsg, 'error');
+          }
+        } catch (err) {
+          window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
+        }
       }
     });
   };

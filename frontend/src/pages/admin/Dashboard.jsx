@@ -1,8 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch, getApiUrl } from '../../utils/api';
+import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../../utils/api';
 import { adminPath } from '../../config/admin';
 
 const Dashboard = () => {
@@ -159,7 +159,7 @@ const Dashboard = () => {
                 stats.produkTerbaru.map((p) => (
                   <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid var(--border)', borderRadius: '16px', transition: 'all 0.3s ease' }}>
                     {p.gambar ? (
-                      <img src={getApiUrl(p.gambar)} alt={p.nama} style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover' }} loading="lazy" />
+                      <img src={getApiUrl(p.gambar)} alt={p.nama} style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover' }} loading="lazy" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER_IMG; }} />
                     ) : (
                       <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}><i className="fas fa-box"></i></div>
                     )}

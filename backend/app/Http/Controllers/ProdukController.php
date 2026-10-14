@@ -183,7 +183,7 @@ class ProdukController extends Controller
     {
         $this->validate($request, [
             'ids' => 'required|array',
-            'ids.*' => 'integer|exists:produks,id',
+            'ids.*' => 'integer|exists:produk,id',
         ]);
 
         $produks = Produk::whereIn('id', $request->input('ids'))->get();
@@ -196,6 +196,24 @@ class ProdukController extends Controller
 
         return response()->json([
             'message' => 'Produk terpilih berhasil dihapus',
+        ]);
+    }
+
+    public function bulkArchive(Request $request)
+    {
+        $this->validate($request, [
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:produk,id',
+            'arsip' => 'required|boolean',
+        ]);
+
+        $arsip = (bool) $request->input('arsip');
+        Produk::whereIn('id', $request->input('ids'))->update(['arsip' => $arsip]);
+
+        $label = $arsip ? 'dinonaktifkan' : 'diaktifkan';
+
+        return response()->json([
+            'message' => "Produk terpilih berhasil $label",
         ]);
     }
 

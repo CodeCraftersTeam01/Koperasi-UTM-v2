@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../utils/api';
 
@@ -131,7 +131,7 @@ const Riwayat = () => {
 
                   {/* Card Body */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {(order.items || []).map((item, idx) => (
+                    {(Array.isArray(order.items) ? order.items : (() => { try { return JSON.parse(order.items || '[]'); } catch { return []; } })()).map((item, idx) => (
                       <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                           <strong style={{ fontSize: '14px', color: 'var(--text)' }}>{item.nama}</strong>

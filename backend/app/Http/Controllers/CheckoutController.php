@@ -54,8 +54,9 @@ class CheckoutController extends Controller
         }
 
         // 2. Save Order to Database
+        $nomorNota = $request->input('nomor_nota') ?: ('NOTA-' . date('YmdHis') . '-' . rand(1000, 9999));
         $order = \App\Models\Order::create([
-            'nomor_nota' => $request->input('nomor_nota'),
+            'nomor_nota' => $nomorNota,
             'nama' => $nama,
             'whatsapp' => $whatsapp,
             'email' => $email,

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -179,7 +179,7 @@ const ManagePesanan = () => {
                       </td>
                       <td>
                         <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                          {(order.items || []).map((item, idx) => (
+                          {(Array.isArray(order.items) ? order.items : (() => { try { return JSON.parse(order.items || '[]'); } catch { return []; } })()).map((item, idx) => (
                             <li key={idx}>
                               <strong>{item.nama}</strong> <span style={{ fontSize: '11px' }}>(x{item.qty})</span>
                             </li>
