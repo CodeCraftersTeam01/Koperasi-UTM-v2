@@ -9,63 +9,82 @@ class PengurusTableSeeder extends Seeder
 {
     public function run()
     {
-        // Level 1 — Ketua
+        Pengurus::truncate();
+
+        // Level 1 — Ketua Koperasi
         Pengurus::create([
-            'nama' => 'Faidal',
-            'jabatan' => 'Ketua',
+            'nama' => 'FAIDAL, S.E., M.M.',
+            'jabatan' => 'KETUA KOPERASI',
             'foto' => 'img/pengurus/FAIDAL.jpeg',
             'level' => 1,
             'urutan' => 0,
         ]);
 
-        // Level 2 — BPH
+        // Level 2 — Pengawas & BPH
         Pengurus::create([
-            'nama' => 'Trimulyani Budianingsih',
-            'jabatan' => 'Bendahara',
-            'foto' => 'img/pengurus/TRIMULYANI BUDIANINGSIH.jpeg',
+            'nama' => 'R. SRI KENTJANAWATI',
+            'jabatan' => 'PENGAWAS',
+            'foto' => 'img/pengurus/R SRI KENTJANAWATI.jpeg',
             'level' => 2,
             'urutan' => 0,
         ]);
 
         Pengurus::create([
-            'nama' => 'R Ayu Fauziyah Fierdaus',
-            'jabatan' => 'Sekretaris',
+            'nama' => 'R. AYU FAUZIYAH F.',
+            'jabatan' => 'SEKRETARIS',
             'foto' => 'img/pengurus/R AYU FAUZIYAH FIERDAUS.jpeg',
             'level' => 2,
             'urutan' => 1,
         ]);
 
         Pengurus::create([
-            'nama' => 'R Sri Kentjanawati',
-            'jabatan' => 'Pengawas',
-            'foto' => 'img/pengurus/R SRI KENTJANAWATI.jpeg',
+            'nama' => 'TRIMULYANI BUDIAINGSIH',
+            'jabatan' => 'BENDAHARA',
+            'foto' => 'img/pengurus/TRIMULYANI BUDIANINGSIH.jpeg',
             'level' => 2,
             'urutan' => 2,
         ]);
 
-        // Level 3 — Sie
+        // Level 3 — Divisi
         Pengurus::create([
-            'nama' => 'Moh. Ajib',
-            'jabatan' => 'Sie Perlengkapan',
-            'foto' => 'img/pengurus/MOH AJIB.jpeg',
+            'nama' => 'ABD. HALIM',
+            'jabatan' => 'DIVISI USAHA',
+            'foto' => 'img/pengurus/ABD HALIM.jpeg',
             'level' => 3,
             'urutan' => 0,
         ]);
 
         Pengurus::create([
-            'nama' => 'Abd. Halim',
-            'jabatan' => 'Sie Usaha',
-            'foto' => 'img/pengurus/ABD HALIM.jpeg',
+            'nama' => 'ANISAH',
+            'jabatan' => 'DIVISI USAHA',
+            'foto' => 'img/pengurus/ANISAH.jpeg',
             'level' => 3,
             'urutan' => 1,
         ]);
 
         Pengurus::create([
-            'nama' => 'Anisah',
-            'jabatan' => 'Sie Usaha',
-            'foto' => 'img/pengurus/ANISAH.jpeg',
+            'nama' => 'MOH. AJIB',
+            'jabatan' => 'DIVISI PERLENGKAPAN',
+            'foto' => 'img/pengurus/MOH AJIB.jpeg',
             'level' => 3,
             'urutan' => 2,
+        ]);
+
+        // Level 4 — Manajer Operasional
+        Pengurus::create([
+            'nama' => 'FEBRI ANGGA SAPUTRA',
+            'jabatan' => 'MANAJER SIMPAN PINJAM DAN JASA',
+            'foto' => 'img/pengurus/FEBRI ANGGA SAPUTRA.jpeg',
+            'level' => 4,
+            'urutan' => 0,
+        ]);
+
+        Pengurus::create([
+            'nama' => 'APRILIA CHAIRANI SAPUTRI',
+            'jabatan' => 'MANAJER PERTOKOAN',
+            'foto' => null,
+            'level' => 4,
+            'urutan' => 1,
         ]);
     }
 }

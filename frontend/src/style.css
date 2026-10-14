@@ -1671,63 +1671,474 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   }
 }
 
-/* Struktur Organisasi (Tree) */
-.struktur {
-  padding: 80px 0;
+/* ========================================================
+   STRUKTUR ORGANISASI & BAGAN RESMI
+   ======================================================== */
+.bagan-section {
+  padding: 70px 0 90px;
   background: var(--surface);
 }
 
-.struktur-tree {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  position: relative;
-}
-
-.tree-level {
+.bagan-view-toggle {
   display: flex;
   justify-content: center;
-  gap: 48px;
-  position: relative;
-  padding: 0 20px;
+  gap: 12px;
+  margin-bottom: 36px;
 }
 
-.tree-level-1 { gap: 0; }
-.tree-level-2 { gap: 32px; }
-.tree-level-3 { gap: 24px; }
+.bagan-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
 
-.tree-node {
+.bagan-toggle-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.bagan-toggle-btn.active {
+  background: #134e2f;
+  color: #ffffff;
+  border-color: #134e2f;
+  box-shadow: 0 4px 14px rgba(19, 78, 47, 0.25);
+}
+
+.bagan-mobile-hint {
+  display: none;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 14px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+@media (max-width: 992px) {
+  .bagan-mobile-hint {
+    display: flex;
+  }
+}
+
+.bagan-container {
   position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f8fafc;
+}
+
+.bagan-bg-layer {
+  position: absolute;
+  inset: 0;
+  background-image: url('/img/cakra.jpeg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.16;
+  filter: saturate(1.15);
+  pointer-events: none;
+}
+
+.bagan-overlay-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.94) 100%);
+  pointer-events: none;
+}
+
+.bagan-scroll-wrapper {
+  position: relative;
+  z-index: 1;
+  padding: 50px 24px 60px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bagan-canvas {
+  min-width: 980px;
+  max-width: 1040px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+
+/* Banner RAT */
+.bagan-rat-box {
+  background: #fef08a;
+  color: #0f172a;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 12px 38px;
+  border-radius: 8px;
+  border: 1px solid #fde047;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  cursor: default;
+}
+
+/* Solid vertical dark green line */
+.bagan-line-v-center {
+  width: 3px;
+  background: #134e2f;
+  margin: 0 auto;
+}
+
+.bagan-line-rat-to-ketua {
+  height: 38px;
+}
+
+/* Cards */
+.bagan-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.bagan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(19, 78, 47, 0.15);
+  border-color: #134e2f;
+}
+
+.bagan-card-role {
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.bagan-card-role u {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.bagan-card-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+  line-height: 1.35;
+}
+
+.bagan-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.bagan-card-list-item {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.bagan-card-list-item:hover {
+  color: #134e2f;
+}
+
+/* Top Tier: Ketua & Pengawas */
+.bagan-top-tier {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.bagan-ketua-container {
+  width: 250px;
+  position: relative;
+  z-index: 2;
+}
+
+.bagan-pengawas-branch {
+  position: absolute;
+  left: calc(50% + 125px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.bagan-line-dashed-h {
+  width: 90px;
+  border-top: 3px dashed #134e2f;
+}
+
+.bagan-pengawas-container {
+  width: 250px;
+}
+
+.bagan-line-ketua-to-branch {
+  height: 38px;
+}
+
+/* 4-Column Branch Bar */
+.bagan-branch-system {
+  width: 960px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.bagan-branch-h-bar-wrap {
+  position: relative;
+  height: 3px;
+  margin-left: 112.5px;
+  margin-right: 112.5px;
+  background: #134e2f;
+}
+
+.bagan-drops-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 960px;
+  margin: 0 auto;
+}
+
+.bagan-drop-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bagan-drop-line {
+  width: 3px;
+  height: 22px;
+  background: #134e2f;
+}
+
+.bagan-drop-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #134e2f;
+}
+
+/* Middle Tier (4 Columns) */
+.bagan-middle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 960px;
+  margin: 0 auto;
+}
+
+.bagan-middle-grid .bagan-card {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bagan-line-middle-to-manajer {
+  height: 48px;
+}
+
+/* Manajer Tier */
+.bagan-manajer-tier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.bagan-manajer-card-wrap {
+  width: 270px;
+}
+
+.bagan-manajer-card-wrap .bagan-card {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bagan-line-manajer-dashed-h {
+  width: 100px;
+  border-top: 3px dashed #134e2f;
+  position: relative;
+}
+
+/* Modal Popup */
+.bagan-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.bagan-modal-content {
+  background: var(--card-bg, #ffffff);
+  border-radius: 16px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+}
+
+.bagan-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.bagan-modal-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text);
+}
+
+.bagan-modal-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border: 4px solid #ffffff;
+  background: var(--primary);
+}
+
+.bagan-modal-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.bagan-modal-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #134e2f;
+  background: rgba(19, 78, 47, 0.1);
+  padding: 6px 16px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.bagan-modal-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0;
+}
+
+/* Grid Photo View */
+.struktur-grid-view {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.grid-level-block {
+  text-align: center;
+}
+
+.grid-level-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #134e2f;
+}
+
+.grid-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
 }
 
 .struktur-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: 36px 28px 28px;
+  background: var(--card-bg, #ffffff);
+  border-radius: var(--radius, 12px);
+  padding: 30px 24px 24px;
   text-align: center;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  width: 260px;
+  width: 240px;
   position: relative;
-  z-index: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.struktur-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .struktur-avatar {
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 36px;
   margin: 0 auto 16px;
   background: var(--primary);
   color: #fff;
   overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
 .struktur-avatar img {
@@ -1738,11 +2149,11 @@ body:has(.hero) #navbar.scrolled .nav-logo {
 }
 
 .struktur-card.ketua .struktur-avatar {
-  background: var(--house);
+  background: var(--house, #0b4619);
 }
 
 .struktur-card h4 {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
   margin-bottom: 8px;
@@ -1751,61 +2162,10 @@ body:has(.hero) #navbar.scrolled .nav-logo {
 }
 
 .struktur-nama {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text);
   margin-bottom: 2px;
-}
-
-.tree-connector {
-  width: 2px;
-  height: 32px;
-  background: var(--primary);
-  opacity: 0.3;
-  position: relative;
-}
-
-.tree-connector-split {
-  width: 2px;
-  height: 40px;
-  background: var(--primary);
-  opacity: 0.3;
-  position: relative;
-}
-
-.tree-connector-split::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 500px;
-  height: 2px;
-  background: var(--primary);
-  opacity: 0.3;
-  transform: translateX(-50%);
-}
-
-@media (max-width: 992px) {
-  .tree-connector-split::before { width: 360px; }
-}
-
-@media (max-width: 600px) {
-  .tree-connector-split::before { width: 280px; }
-}
-
-@media (max-width: 992px) {
-  .tree-level-2 { gap: 24px; }
-  .tree-level-3 { gap: 16px; }
-  .struktur-card { width: 200px; padding: 28px 18px 22px; }
-  .struktur-avatar { width: 100px; height: 100px; font-size: 28px; }
-}
-
-@media (max-width: 600px) {
-  .struktur-tree { overflow-x: auto; }
-  .tree-level-2 { gap: 16px; }
-  .tree-level-3 { gap: 12px; }
-  .struktur-card { width: 170px; padding: 22px 14px 18px; }
-  .struktur-avatar { width: 80px; height: 80px; font-size: 22px; }
 }
 
 /* Gallery */

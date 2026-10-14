@@ -21,7 +21,7 @@ class PengurusController extends Controller
         $this->validate($request, [
             'nama' => 'required|string|max:100',
             'jabatan' => 'required|string|max:100',
-            'level' => 'required|integer|in:1,2,3',
+            'level' => 'required|integer|in:1,2,3,4',
             'urutan' => 'required|integer',
             'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240', // max 10MB
         ]);
@@ -60,7 +60,7 @@ class PengurusController extends Controller
         $this->validate($request, [
             'nama' => 'required|string|max:100',
             'jabatan' => 'required|string|max:100',
-            'level' => 'required|integer|in:1,2,3',
+            'level' => 'required|integer|in:1,2,3,4',
             'urutan' => 'required|integer',
             'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
         ]);

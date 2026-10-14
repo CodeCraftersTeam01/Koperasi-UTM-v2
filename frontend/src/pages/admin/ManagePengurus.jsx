@@ -43,7 +43,7 @@ const ManagePengurus = () => {
   }, []);
 
   const getGrouped = () => {
-    const groups = { 1: [], 2: [], 3: [] };
+    const groups = { 1: [], 2: [], 3: [], 4: [] };
     pengurusList.forEach(p => {
       if (groups[p.level]) groups[p.level].push(p);
     });
@@ -313,12 +313,13 @@ const ManagePengurus = () => {
           (() => {
             const groups = getGrouped();
             const levelMeta = {
-              1: { label: 'Ketua', icon: 'fa-crown', color: 'var(--primary)', bg: 'rgba(15,81,50,0.06)' },
-              2: { label: 'Pengurus Inti (BPH)', icon: 'fa-user-tie', color: '#0056b3', bg: 'rgba(0,123,255,0.06)' },
-              3: { label: 'Sie / Divisi', icon: 'fa-users', color: '#495057', bg: 'rgba(108,117,125,0.06)' },
+              1: { label: 'Ketua Koperasi', icon: 'fa-crown', color: 'var(--primary)', bg: 'rgba(15,81,50,0.06)' },
+              2: { label: 'Pengawas & BPH', icon: 'fa-user-tie', color: '#0056b3', bg: 'rgba(0,123,255,0.06)' },
+              3: { label: 'Divisi / Sie', icon: 'fa-users', color: '#495057', bg: 'rgba(108,117,125,0.06)' },
+              4: { label: 'Manajer Operasional', icon: 'fa-briefcase', color: '#b45309', bg: 'rgba(217,119,6,0.06)' },
             };
             let globalIdx = 0;
-            return [1, 2, 3].map(lvl => {
+            return [1, 2, 3, 4].map(lvl => {
               const items = groups[lvl] || [];
               const meta = levelMeta[lvl];
               if (items.length === 0) return null;
@@ -422,9 +423,10 @@ const ManagePengurus = () => {
                       onChange={(e) => setLevel(parseInt(e.target.value))}
                       style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
-                      <option value={1}>Tingkat 1 (Ketua)</option>
-                      <option value={2}>Tingkat 2 (Pengurus Inti/BPH)</option>
-                      <option value={3}>Tingkat 3 (Sie/Divisi)</option>
+                      <option value={1}>Tingkat 1 (Ketua Koperasi)</option>
+                      <option value={2}>Tingkat 2 (Pengawas & BPH)</option>
+                      <option value={3}>Tingkat 3 (Divisi / Sie)</option>
+                      <option value={4}>Tingkat 4 (Manajer Operasional)</option>
                     </select>
                   </div>
                   <div>

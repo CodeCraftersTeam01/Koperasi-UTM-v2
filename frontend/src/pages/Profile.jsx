@@ -46,12 +46,41 @@ const Profile = () => {
     fetchData();
   }, []);
 
-  const level1 = pengurusList.filter(p => p.level === 1);
-  const level2 = pengurusList.filter(p => p.level === 2);
-  const level3 = pengurusList.filter(p => p.level === 3);
+  const [viewMode, setViewMode] = useState('bagan');
+  const [selectedMember, setSelectedMember] = useState(null);
 
-  // Fallbacks if database is empty
-  const hasDbPengurus = pengurusList.length > 0;
+  const defaultPengurus = [
+    { id: 1, nama: 'FAIDAL, S.E., M.M.', jabatan: 'KETUA KOPERASI', level: 1, foto: 'img/pengurus/FAIDAL.jpeg' },
+    { id: 2, nama: 'R. SRI KENTJANAWATI', jabatan: 'PENGAWAS', level: 2, foto: 'img/pengurus/R SRI KENTJANAWATI.jpeg' },
+    { id: 3, nama: 'R. AYU FAUZIYAH F.', jabatan: 'SEKRETARIS', level: 2, foto: 'img/pengurus/R AYU FAUZIYAH FIERDAUS.jpeg' },
+    { id: 4, nama: 'TRIMULYANI BUDIAINGSIH', jabatan: 'BENDAHARA', level: 2, foto: 'img/pengurus/TRIMULYANI BUDIANINGSIH.jpeg' },
+    { id: 5, nama: 'ABD. HALIM', jabatan: 'DIVISI USAHA', level: 3, foto: 'img/pengurus/ABD HALIM.jpeg' },
+    { id: 6, nama: 'ANISAH', jabatan: 'DIVISI USAHA', level: 3, foto: 'img/pengurus/ANISAH.jpeg' },
+    { id: 7, nama: 'MOH. AJIB', jabatan: 'DIVISI PERLENGKAPAN', level: 3, foto: 'img/pengurus/MOH AJIB.jpeg' },
+    { id: 8, nama: 'FEBRI ANGGA SAPUTRA', jabatan: 'MANAJER SIMPAN PINJAM DAN JASA', level: 4, foto: 'img/pengurus/FEBRI ANGGA SAPUTRA.jpeg' },
+    { id: 9, nama: 'APRILIA CHAIRANI SAPUTRI', jabatan: 'MANAJER PERTOKOAN', level: 4, foto: null }
+  ];
+
+  const activeList = pengurusList.length > 0 ? pengurusList : defaultPengurus;
+
+  const ketua = activeList.find(p => p.level === 1 || /ketua/i.test(p.jabatan)) || defaultPengurus[0];
+  const pengawas = activeList.find(p => /pengawas/i.test(p.jabatan)) || defaultPengurus[1];
+  const sekretaris = activeList.find(p => /sekretaris/i.test(p.jabatan)) || defaultPengurus[2];
+  const bendahara = activeList.find(p => /bendahara/i.test(p.jabatan)) || defaultPengurus[3];
+
+  const listDivisiUsaha = activeList.filter(p => /usaha/i.test(p.jabatan));
+  const finalDivisiUsaha = listDivisiUsaha.length > 0 ? listDivisiUsaha : [defaultPengurus[4], defaultPengurus[5]];
+
+  const listDivisiPerlengkapan = activeList.filter(p => /perlengkapan/i.test(p.jabatan));
+  const finalDivisiPerlengkapan = listDivisiPerlengkapan.length > 0 ? listDivisiPerlengkapan : [defaultPengurus[6]];
+
+  const manajerSP = activeList.find(p => /simpan/i.test(p.jabatan)) || defaultPengurus[7];
+  const manajerToko = activeList.find(p => /toko|pertokoan/i.test(p.jabatan)) || defaultPengurus[8];
+
+  const level1 = activeList.filter(p => p.level === 1);
+  const level2 = activeList.filter(p => p.level === 2);
+  const level3 = activeList.filter(p => p.level === 3);
+  const level4 = activeList.filter(p => p.level === 4);
 
   const misiItems = settings.misi.split('\n').filter(m => m.trim() !== '');
 
@@ -113,74 +142,309 @@ const Profile = () => {
       </section>
 
       {/* STRUKTUR ORGANISASI Susunan Pengurus */}
-      {hasDbPengurus && (
-        <section className="struktur">
-          <div className="container">
-            <div className="section-header">
-              <h2>Susunan Pengurus</h2>
-              <p>Susunan kepengurusan Koperasi Universitas Trunojoyo Madura.</p>
-            </div>
-            <div className="struktur-tree">
-              {/* Level 1 (Ketua) */}
+      <section className="struktur bagan-section">
+        <div className="container">
+          <div className="section-header">
+            <h2>Susunan Pengurus</h2>
+            <p>Bagan struktur kepengurusan resmi Koperasi Universitas Trunojoyo Madura.</p>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="bagan-view-toggle">
+            <button
+              type="button"
+              className={`bagan-toggle-btn ${viewMode === 'bagan' ? 'active' : ''}`}
+              onClick={() => setViewMode('bagan')}
+            >
+              <i className="fas fa-sitemap"></i> Bagan Struktur Resmi
+            </button>
+            <button
+              type="button"
+              className={`bagan-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+            >
+              <i className="fas fa-id-card"></i> Kartu & Foto Pengurus
+            </button>
+          </div>
+
+          {viewMode === 'bagan' ? (
+            <>
+              <div className="bagan-mobile-hint">
+                <i className="fas fa-arrows-left-right"></i> Geser layar ke samping untuk melihat bagan lengkap
+              </div>
+
+              <div className="bagan-container">
+                <div className="bagan-bg-layer"></div>
+                <div className="bagan-overlay-layer"></div>
+
+                <div className="bagan-scroll-wrapper">
+                  <div className="bagan-canvas">
+                    {/* LEVEL 0: RAPAT ANGGOTA TAHUNAN */}
+                    <div className="bagan-rat-box">
+                      RAPAT ANGGOTA TAHUNAN
+                    </div>
+
+                    {/* VERTICAL LINE FROM RAT TO KETUA */}
+                    <div className="bagan-line-v-center bagan-line-rat-to-ketua"></div>
+
+                    {/* LEVEL 1: KETUA & PENGAWAS */}
+                    <div className="bagan-top-tier">
+                      <div
+                        className="bagan-ketua-container"
+                        onClick={() => setSelectedMember(ketua)}
+                        title="Klik untuk melihat profil"
+                      >
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>{ketua.jabatan || 'KETUA KOPERASI'}</u></div>
+                          <div className="bagan-card-name">{ketua.nama}</div>
+                        </div>
+                      </div>
+
+                      {/* DASHED LINE TO PENGAWAS */}
+                      <div className="bagan-pengawas-branch">
+                        <div className="bagan-line-dashed-h"></div>
+                        <div
+                          className="bagan-pengawas-container"
+                          onClick={() => setSelectedMember(pengawas)}
+                          title="Klik untuk melihat profil"
+                        >
+                          <div className="bagan-card">
+                            <div className="bagan-card-role"><u>{pengawas.jabatan || 'PENGAWAS'}</u></div>
+                            <div className="bagan-card-name">{pengawas.nama}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* VERTICAL LINE FROM KETUA DOWN TO HORIZONTAL BRANCH */}
+                    <div className="bagan-line-v-center bagan-line-ketua-to-branch"></div>
+
+                    {/* BRANCH BAR SYSTEM ACROSS 4 COLUMNS */}
+                    <div className="bagan-branch-system">
+                      <div className="bagan-branch-h-bar-wrap"></div>
+                      <div className="bagan-drops-grid">
+                        <div className="bagan-drop-col">
+                          <div className="bagan-drop-line"></div>
+                          <div className="bagan-drop-arrow"></div>
+                        </div>
+                        <div className="bagan-drop-col">
+                          <div className="bagan-drop-line"></div>
+                          <div className="bagan-drop-arrow"></div>
+                        </div>
+                        <div className="bagan-drop-col">
+                          <div className="bagan-drop-line"></div>
+                          <div className="bagan-drop-arrow"></div>
+                        </div>
+                        <div className="bagan-drop-col">
+                          <div className="bagan-drop-line"></div>
+                          <div className="bagan-drop-arrow"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* LEVEL 2: 4 COLUMNS (SEKRETARIS, BENDAHARA, DIVISI USAHA, DIVISI PERLENGKAPAN) */}
+                    <div className="bagan-middle-grid">
+                      {/* Col 1: SEKRETARIS */}
+                      <div
+                        className="bagan-col-item"
+                        onClick={() => setSelectedMember(sekretaris)}
+                        title="Klik untuk melihat profil"
+                      >
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>{sekretaris.jabatan || 'SEKRETARIS'}</u></div>
+                          <div className="bagan-card-name">{sekretaris.nama}</div>
+                        </div>
+                      </div>
+
+                      {/* Col 2: BENDAHARA */}
+                      <div
+                        className="bagan-col-item"
+                        onClick={() => setSelectedMember(bendahara)}
+                        title="Klik untuk melihat profil"
+                      >
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>{bendahara.jabatan || 'BENDAHARA'}</u></div>
+                          <div className="bagan-card-name">{bendahara.nama}</div>
+                        </div>
+                      </div>
+
+                      {/* Col 3: DIVISI USAHA */}
+                      <div className="bagan-col-item">
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>DIVISI USAHA</u></div>
+                          <div className="bagan-card-list">
+                            {finalDivisiUsaha.map((p, idx) => (
+                              <div
+                                key={p.id || idx}
+                                className="bagan-card-list-item"
+                                onClick={() => setSelectedMember(p)}
+                                title="Klik untuk melihat profil"
+                              >
+                                {idx + 1}. {p.nama}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Col 4: DIVISI PERLENGKAPAN */}
+                      <div className="bagan-col-item">
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>DIVISI PERLENGKAPAN</u></div>
+                          <div className="bagan-card-list">
+                            {finalDivisiPerlengkapan.map((p, idx) => (
+                              <div
+                                key={p.id || idx}
+                                className="bagan-card-list-item"
+                                onClick={() => setSelectedMember(p)}
+                                title="Klik untuk melihat profil"
+                              >
+                                {idx + 1}. {p.nama}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* VERTICAL LINE DOWN FROM CENTER AXIS TO OPERATIONAL MANAGERS */}
+                    <div className="bagan-line-v-center bagan-line-middle-to-manajer"></div>
+
+                    {/* LEVEL 3: OPERATIONAL MANAGERS CONNECTED BY DASHED LINE */}
+                    <div className="bagan-manajer-tier">
+                      <div
+                        className="bagan-manajer-card-wrap"
+                        onClick={() => setSelectedMember(manajerSP)}
+                        title="Klik untuk melihat profil"
+                      >
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>{manajerSP.jabatan || 'MANAJER SIMPAN PINJAM DAN JASA'}</u></div>
+                          <div className="bagan-card-name">{manajerSP.nama}</div>
+                        </div>
+                      </div>
+
+                      {/* HORIZONTAL DASHED LINE BETWEEN MANAGERS */}
+                      <div className="bagan-line-manajer-dashed-h"></div>
+
+                      <div
+                        className="bagan-manajer-card-wrap"
+                        onClick={() => setSelectedMember(manajerToko)}
+                        title="Klik untuk melihat profil"
+                      >
+                        <div className="bagan-card">
+                          <div className="bagan-card-role"><u>{manajerToko.jabatan || 'MANAJER PERTOKOAN'}</u></div>
+                          <div className="bagan-card-name">{manajerToko.nama}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* GRID PHOTO VIEW */
+            <div className="struktur-grid-view">
+              {/* Level 1: Ketua */}
               {level1.length > 0 && (
-                <div className="tree-level tree-level-1">
-                  {level1.map(p => (
-                    <div key={p.id} className="tree-node">
-                      <div className="struktur-card ketua">
+                <div className="grid-level-block">
+                  <h3 className="grid-level-title"><i className="fas fa-crown"></i> Pimpinan Koperasi</h3>
+                  <div className="grid-cards-row">
+                    {level1.map(p => (
+                      <div key={p.id} className="struktur-card ketua">
                         <div className="struktur-avatar">
                           <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
                         <h4>{p.jabatan}</h4>
                         <p className="struktur-nama">{p.nama}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* Level 2 (BPH) */}
+              {/* Level 2: Pengawas & BPH */}
               {level2.length > 0 && (
-                <>
-                  <div className="tree-connector"></div>
-                  <div className="tree-level tree-level-2">
+                <div className="grid-level-block">
+                  <h3 className="grid-level-title"><i className="fas fa-shield-alt"></i> Pengawas & Badan Pengurus Harian</h3>
+                  <div className="grid-cards-row">
                     {level2.map(p => (
-                      <div key={p.id} className="tree-node">
-                        <div className="struktur-card bendahara">
-                          <div className="struktur-avatar">
-                            <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
-                          </div>
-                          <h4>{p.jabatan}</h4>
-                          <p className="struktur-nama">{p.nama}</p>
+                      <div key={p.id} className="struktur-card">
+                        <div className="struktur-avatar">
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
+                        <h4>{p.jabatan}</h4>
+                        <p className="struktur-nama">{p.nama}</p>
                       </div>
                     ))}
                   </div>
-                </>
+                </div>
               )}
 
-              {/* Level 3 (Divisi/Sie) */}
+              {/* Level 3: Divisi */}
               {level3.length > 0 && (
-                <>
-                  <div className="tree-connector tree-connector-split"></div>
-                  <div className="tree-level tree-level-3">
+                <div className="grid-level-block">
+                  <h3 className="grid-level-title"><i className="fas fa-layer-group"></i> Divisi Operasional</h3>
+                  <div className="grid-cards-row">
                     {level3.map(p => (
-                      <div key={p.id} className="tree-node">
-                        <div className="struktur-card sie1">
-                          <div className="struktur-avatar">
-                            <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
-                          </div>
-                          <h4>{p.jabatan}</h4>
-                          <p className="struktur-nama">{p.nama}</p>
+                      <div key={p.id} className="struktur-card">
+                        <div className="struktur-avatar">
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
+                        <h4>{p.jabatan}</h4>
+                        <p className="struktur-nama">{p.nama}</p>
                       </div>
                     ))}
                   </div>
-                </>
+                </div>
+              )}
+
+              {/* Level 4: Manajer Operasional */}
+              {level4.length > 0 && (
+                <div className="grid-level-block">
+                  <h3 className="grid-level-title"><i className="fas fa-briefcase"></i> Manajer Layanan</h3>
+                  <div className="grid-cards-row">
+                    {level4.map(p => (
+                      <div key={p.id} className="struktur-card">
+                        <div className="struktur-avatar">
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
+                        </div>
+                        <h4>{p.jabatan}</h4>
+                        <p className="struktur-nama">{p.nama}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        </section>
-      )}
+          )}
+
+          {/* MODAL POPUP FOR MEMBER DETAIL */}
+          {selectedMember && (
+            <div className="bagan-modal-backdrop" onClick={() => setSelectedMember(null)}>
+              <div className="bagan-modal-content" onClick={e => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="bagan-modal-close"
+                  onClick={() => setSelectedMember(null)}
+                  aria-label="Tutup"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+                <div className="bagan-modal-avatar">
+                  <LazyImage
+                    src={selectedMember.foto ? getApiUrl(selectedMember.foto) : AVATAR_IMG}
+                    alt={selectedMember.nama}
+                    fallbackSrc={AVATAR_IMG}
+                    wrapperStyle={{ width: '100%', height: '100%' }}
+                  />
+                </div>
+                <div className="bagan-modal-badge">{selectedMember.jabatan}</div>
+                <h3 className="bagan-modal-name">{selectedMember.nama}</h3>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* GALERI */}
       {(() => {
