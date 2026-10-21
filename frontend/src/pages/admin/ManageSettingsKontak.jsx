@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -43,8 +43,6 @@ const ManageSettingsKontak = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const token = localStorage.getItem('kopma_admin_token');
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const payload = {
         kontak_alamat: settings.kontak_alamat,
         kontak_whatsapp: settings.kontak_whatsapp,
@@ -52,13 +50,9 @@ const ManageSettingsKontak = () => {
         kontak_instagram: settings.kontak_instagram,
         kontak_maps_embed: settings.kontak_maps_embed,
       };
-      const res = await fetch(`${BASE_URL}/api/settings`, {
+      const res = await apiFetch('/api/settings', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ settings: payload })
       });
       if (res.ok) {
@@ -69,7 +63,7 @@ const ManageSettingsKontak = () => {
       }
     } catch (err) {
       console.error('Kontak save error:', err);
-      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan di ' + (import.meta.env.VITE_API_URL || 'http://localhost:8000'), 'error');
+      window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
     } finally {
       setSaving(false);
     }

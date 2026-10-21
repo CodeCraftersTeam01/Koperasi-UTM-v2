@@ -281,7 +281,7 @@ const Catalog = () => {
                 }}
               >
                 <button type="button" className={`filter-btn ${currentFilter === utama.nama ? 'active' : ''}`}>
-                  <span>{currentFilter === utama.nama && currentSubFilter !== 'Semua' ? `${utama.nama} â€¢ ${currentSubFilter}` : utama.nama}</span>
+                  <span>{currentFilter === utama.nama && currentSubFilter !== 'Semua' ? `${utama.nama} • ${currentSubFilter}` : utama.nama}</span>
                   <i className="fas fa-chevron-down" style={{ marginLeft: '6px', fontSize: '11px' }}></i>
                 </button>
                 <div className={`custom-select-menu ${isFilterOpen[utama.nama] ? 'open' : ''}`}>
@@ -379,7 +379,7 @@ const Catalog = () => {
                 <div className="modal-price">Rp {selectedProduct.harga.toLocaleString()}</div>
                 <div className="modal-category">
                   <span className={`product-badge ${(selectedProduct.kategori || '').toLowerCase()}`}>
-                    {selectedProduct.kategori}{selectedProduct.subkategori ? ' â€º ' + selectedProduct.subkategori : ''}
+                    {selectedProduct.kategori}{selectedProduct.subkategori ? ' › ' + selectedProduct.subkategori : ''}
                   </span>
                 </div>
                 {selectedProduct.tag && (

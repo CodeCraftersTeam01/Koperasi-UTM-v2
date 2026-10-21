@@ -17,6 +17,7 @@ class UsersTableSeeder extends Seeder
     {
         if (User::count() === 0) {
             User::create([
+                'email' => 'admin@koperasiutm.com',
                 'username' => 'superadmin',
                 'password' => Hash::make('superadmin123'),
                 'role' => 'super_admin'

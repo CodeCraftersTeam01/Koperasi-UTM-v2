@@ -50,7 +50,7 @@ const ManageProduk = () => {
         url += `?page=${currentPage}&per_page=7`;
       }
 
-      const res = await apiFetch(url);
+      const res = await apiFetch(url, { skipCache: true, cache: 'no-store' });
       const data = await res.json();
       
       if (searchQuery) {
@@ -257,7 +257,8 @@ const ManageProduk = () => {
   };
 
   const handleArsipProduk = (id, currentArsip) => {
-    const newArsip = currentArsip ? 0 : 1;
+    const isCurrentlyArchived = currentArsip === 1 || currentArsip === true || currentArsip === '1';
+    const newArsip = isCurrentlyArchived ? 0 : 1;
     const label = newArsip ? 'nonaktifkan' : 'aktifkan';
     const labelTitle = newArsip ? 'Nonaktifkan' : 'Aktifkan';
 
@@ -279,6 +280,7 @@ const ManageProduk = () => {
           throw new Error(msg);
         }
         window.Swal.fire('Berhasil!', `Produk berhasil di${label}.`, 'success');
+        setProducts(prev => prev.map(p => p.id === id ? { ...p, arsip: newArsip } : p));
         fetchProducts();
       } catch (err) {
         window.Swal.fire('Gagal', err.message, 'error');
@@ -436,7 +438,7 @@ const ManageProduk = () => {
                       <td><strong>{p.nama}</strong></td>
                       <td>
                         <span className={`badge ${badgeClass}`}>
-                          {p.kategori}{p.subkategori ? ' — ' + p.subkategori : ''}
+                          {p.kategori}{p.subkategori ? ' / ' + p.subkategori : ''}
                         </span>
                       </td>
                       <td>Rp {p.harga.toLocaleString()}</td>
@@ -446,7 +448,7 @@ const ManageProduk = () => {
                             {p.tag}
                           </span>
                         ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>-</span>
                         )}
                       </td>
                       <td>
@@ -564,7 +566,7 @@ const ManageProduk = () => {
                       onChange={(e) => setTag(e.target.value)}
                       style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
-                      <option value="">— Tidak ada —</option>
+                      <option value="">Tidak ada</option>
                       <option value="Best Seller">Best Seller</option>
                       <option value="New">New</option>
                       <option value="Promo">Promo</option>
@@ -577,7 +579,7 @@ const ManageProduk = () => {
                       onChange={(e) => setKategori(e.target.value)}
                       style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
-                      <option value="">— Pilih Kategori —</option>
+                      <option value="">Pilih Kategori</option>
                       {kategoriList.map(k => (
                         <option key={k.id} value={k.nama}>{k.nama}</option>
                       ))}
@@ -593,7 +595,7 @@ const ManageProduk = () => {
                       onChange={(e) => setSubkategori(e.target.value)}
                       style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
-                      <option value="">— Pilih Subkategori —</option>
+                      <option value="">Pilih Subkategori</option>
                       {(() => {
                         const selectedMain = kategoriList.find(k => k.nama === kategori);
                         const filtered = selectedMain

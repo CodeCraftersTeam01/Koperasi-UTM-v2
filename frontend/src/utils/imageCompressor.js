@@ -18,8 +18,8 @@ export async function compressImage(file, {
     return file;
   }
 
-  // Jika file sudah kecil (< 300KB) dan format standard, tidak perlu kompresi ulang
-  if (file.size < 300 * 1024 && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp')) {
+  // Jika file sudah berformat webp dan ukurannya kecil (< 300KB), lewati kompresi
+  if (file.type === 'image/webp' && file.size < 300 * 1024) {
     return file;
   }
 
@@ -64,27 +64,28 @@ export async function compressImage(file, {
             return;
           }
 
-          // Background putih untuk gambar transparan saat dikonversi ke JPEG
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, width, height);
+          // Bersihkan canvas agar transparansi alpha (PNG/WebP) tetap terjaga
+          ctx.clearRect(0, 0, width, height);
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Konversi ke JPEG
+          // Konversi ke WebP (didukung oleh semua browser modern)
           canvas.toBlob(
             (blob) => {
               if (!blob) {
                 resolve(file);
                 return;
               }
-              const originalName = file.name || 'image.jpg';
+              const isWebp = blob.type === 'image/webp';
+              const ext = isWebp ? 'webp' : 'jpg';
+              const originalName = file.name || `image.${ext}`;
               const baseName = originalName.replace(/\.[^/.]+$/, '');
-              const compressedFile = new File([blob], `${baseName}.jpg`, {
-                type: 'image/jpeg',
+              const compressedFile = new File([blob], `${baseName}.${ext}`, {
+                type: blob.type || (isWebp ? 'image/webp' : 'image/jpeg'),
                 lastModified: Date.now(),
               });
               resolve(compressedFile);
             },
-            'image/jpeg',
+            'image/webp',
             quality
           );
         } catch (err) {

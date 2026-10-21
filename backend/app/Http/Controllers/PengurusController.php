@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Pengurus;
 use App\Helpers\PathHelper;
 
@@ -10,21 +11,30 @@ class PengurusController extends Controller
 {
     public function index()
     {
-        $pengurus = Pengurus::orderBy('level', 'asc')
+        $cacheHit = Cache::has('api_pengurus');
+        $pengurus = Cache::remember('api_pengurus', 86400, function () {
+            return Pengurus::orderBy('level', 'asc')
                             ->orderBy('urutan', 'asc')
                             ->get();
-        return response()->json($pengurus);
+        });
+
+        return response()->json($pengurus)
+            ->header('X-Cache', $cacheHit ? 'HIT' : 'MISS')
+            ->header('Cache-Control', 'no-cache, private');
     }
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $rules = [
             'nama' => 'required|string|max:100',
             'jabatan' => 'required|string|max:100',
             'level' => 'required|integer|in:1,2,3,4',
-            'urutan' => 'required|integer',
-            'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240', // max 10MB
-        ]);
+            'urutan' => 'nullable|integer',
+        ];
+        if ($request->hasFile('foto')) {
+            $rules['foto'] = 'file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240';
+        }
+        $this->validate($request, $rules);
 
         $fotoPath = null;
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
@@ -39,9 +49,11 @@ class PengurusController extends Controller
             'nama' => $request->input('nama'),
             'jabatan' => $request->input('jabatan'),
             'level' => intval($request->input('level')),
-            'urutan' => intval($request->input('urutan')),
+            'urutan' => intval($request->input('urutan', 0)),
             'foto' => $fotoPath,
         ]);
+
+        Cache::forget('api_pengurus');
 
         return response()->json([
             'id' => $pengurus->id,
@@ -57,19 +69,22 @@ class PengurusController extends Controller
             return response()->json(['error' => 'Pengurus tidak ditemukan'], 404);
         }
 
-        $this->validate($request, [
+        $rules = [
             'nama' => 'required|string|max:100',
             'jabatan' => 'required|string|max:100',
             'level' => 'required|integer|in:1,2,3,4',
-            'urutan' => 'required|integer',
-            'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240',
-        ]);
+            'urutan' => 'nullable|integer',
+        ];
+        if ($request->hasFile('foto')) {
+            $rules['foto'] = 'file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,avif|max:10240';
+        }
+        $this->validate($request, $rules);
 
         $fotoPath = $pengurus->foto;
         if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
             try {
                 $newFoto = PathHelper::saveUpload($request->file('foto'));
-                if ($fotoPath) {
+                if ($fotoPath && !str_starts_with($fotoPath, 'img/')) {
                     PathHelper::deleteFile($fotoPath);
                 }
                 $fotoPath = $newFoto;
@@ -78,13 +93,17 @@ class PengurusController extends Controller
             }
         }
 
+        $urutanVal = $request->filled('urutan') ? intval($request->input('urutan')) : ($pengurus->urutan ?? 0);
+
         $pengurus->update([
             'nama' => $request->input('nama'),
             'jabatan' => $request->input('jabatan'),
             'level' => intval($request->input('level')),
-            'urutan' => intval($request->input('urutan')),
+            'urutan' => $urutanVal,
             'foto' => $fotoPath,
         ]);
+
+        Cache::forget('api_pengurus');
 
         return response()->json(['message' => 'Pengurus berhasil diperbarui']);
     }
@@ -97,12 +116,14 @@ class PengurusController extends Controller
             return response()->json(['error' => 'Pengurus tidak ditemukan'], 404);
         }
 
-        // Delete photo file
-        if ($pengurus->foto) {
+        // Delete photo file if uploaded (do not delete built-in img/)
+        if ($pengurus->foto && !str_starts_with($pengurus->foto, 'img/')) {
             PathHelper::deleteFile($pengurus->foto);
         }
 
         $pengurus->delete();
+
+        Cache::forget('api_pengurus');
 
         return response()->json(['message' => 'Pengurus berhasil dihapus']);
     }
@@ -118,6 +139,8 @@ class PengurusController extends Controller
         foreach ($request->input('items') as $item) {
             Pengurus::where('id', $item['id'])->update(['urutan' => $item['urutan']]);
         }
+
+        Cache::forget('api_pengurus');
 
         return response()->json(['message' => 'Urutan berhasil diperbarui']);
     }
@@ -138,6 +161,8 @@ class PengurusController extends Controller
             }
             $p->delete();
         }
+
+        Cache::forget('api_pengurus');
 
         return response()->json([
             'message' => 'Pengurus terpilih berhasil dihapus',

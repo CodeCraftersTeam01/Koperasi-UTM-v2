@@ -51,9 +51,9 @@ const Navbar = () => {
       <GradualBlur
         target="page"
         position="top"
-        height="100px"
-        strength={1.5}
-        divCount={4}
+        height="80px"
+        strength={1.2}
+        divCount={2}
         zIndex={9000}
         className={`${isMenuOpen ? 'hidden-blur' : ''}`}
       />

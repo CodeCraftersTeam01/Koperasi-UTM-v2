@@ -25,7 +25,7 @@ const ManagePengurus = () => {
   const fetchPengurus = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch('/api/pengurus');
+      const res = await apiFetch('/api/pengurus', { skipCache: true, cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setPengurusList(data || []);
@@ -43,9 +43,27 @@ const ManagePengurus = () => {
   }, []);
 
   const getGrouped = () => {
-    const groups = { 1: [], 2: [], 3: [], 4: [] };
+    const groups = {
+      ketua: [],
+      pengawas: [],
+      bph: [],
+      divisi: [],
+      manajer: []
+    };
     pengurusList.forEach(p => {
-      if (groups[p.level]) groups[p.level].push(p);
+      if (p.level === 1) {
+        groups.ketua.push(p);
+      } else if (p.level === 2) {
+        if (/pengawas/i.test(p.jabatan)) {
+          groups.pengawas.push(p);
+        } else {
+          groups.bph.push(p);
+        }
+      } else if (p.level === 3) {
+        groups.divisi.push(p);
+      } else if (p.level === 4) {
+        groups.manajer.push(p);
+      }
     });
     return groups;
   };
@@ -54,12 +72,21 @@ const ManagePengurus = () => {
     const item = pengurusList.find(p => p.id === id);
     if (!item) return;
 
-    const sameLevel = pengurusList.filter(p => p.level === item.level).sort((a, b) => a.urutan - b.urutan);
-    const idx = sameLevel.findIndex(p => p.id === id);
-    const target = idx + direction;
-    if (target < 0 || target >= sameLevel.length) return;
+    const isItemPengawas = item.level === 2 && /pengawas/i.test(item.jabatan);
+    const sameGroup = pengurusList.filter(p => {
+      if (item.level !== p.level) return false;
+      if (item.level === 2) {
+        const isPPengawas = /pengawas/i.test(p.jabatan);
+        return isItemPengawas ? isPPengawas : !isPPengawas;
+      }
+      return true;
+    }).sort((a, b) => a.urutan - b.urutan);
 
-    const swapped = [...sameLevel];
+    const idx = sameGroup.findIndex(p => p.id === id);
+    const target = idx + direction;
+    if (target < 0 || target >= sameGroup.length) return;
+
+    const swapped = [...sameGroup];
     [swapped[idx], swapped[target]] = [swapped[target], swapped[idx]];
     const updates = swapped.map((p, i) => ({ id: p.id, urutan: i }));
 
@@ -70,7 +97,7 @@ const ManagePengurus = () => {
         body: JSON.stringify({ items: updates })
       });
       if (res.ok) fetchPengurus();
-    } catch (err) {
+    } catch {
       window.Swal.fire('Gagal', 'Gagal mengubah urutan', 'error');
     }
   };
@@ -220,9 +247,12 @@ const ManagePengurus = () => {
         method: 'DELETE'
       });
       if (res.ok) {
+        setPengurusList(prev => prev.filter(p => p.id !== id));
+        window.Swal.fire('Berhasil', 'Pengurus berhasil dihapus', 'success');
         fetchPengurus();
       } else {
-        window.Swal.fire('Gagal', 'Gagal menghapus pengurus', 'error');
+        const errorMsg = await extractApiErrorMessage(res, 'Gagal menghapus pengurus');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
@@ -313,18 +343,20 @@ const ManagePengurus = () => {
           (() => {
             const groups = getGrouped();
             const levelMeta = {
-              1: { label: 'Ketua Koperasi', icon: 'fa-crown', color: 'var(--primary)', bg: 'rgba(15,81,50,0.06)' },
-              2: { label: 'Pengawas & BPH', icon: 'fa-user-tie', color: '#0056b3', bg: 'rgba(0,123,255,0.06)' },
-              3: { label: 'Divisi / Sie', icon: 'fa-users', color: '#495057', bg: 'rgba(108,117,125,0.06)' },
-              4: { label: 'Manajer Operasional', icon: 'fa-briefcase', color: '#b45309', bg: 'rgba(217,119,6,0.06)' },
+              ketua: { label: 'Ketua Koperasi', icon: 'fa-crown', color: 'var(--primary, #00754a)', bg: 'rgba(15,81,50,0.06)' },
+              pengawas: { label: 'Badan Pengawas', icon: 'fa-shield-alt', color: '#6f42c1', bg: 'rgba(111,66,193,0.06)' },
+              bph: { label: 'Badan Pengurus Harian (BPH)', icon: 'fa-user-tie', color: '#0056b3', bg: 'rgba(0,123,255,0.06)' },
+              divisi: { label: 'Divisi / Sie', icon: 'fa-users', color: '#495057', bg: 'rgba(108,117,125,0.06)' },
+              manajer: { label: 'Manajer Operasional', icon: 'fa-briefcase', color: '#b45309', bg: 'rgba(217,119,6,0.06)' },
             };
+            const groupOrder = ['ketua', 'pengawas', 'bph', 'divisi', 'manajer'];
             let globalIdx = 0;
-            return [1, 2, 3, 4].map(lvl => {
-              const items = groups[lvl] || [];
-              const meta = levelMeta[lvl];
+            return groupOrder.map(groupKey => {
+              const items = groups[groupKey] || [];
+              const meta = levelMeta[groupKey];
               if (items.length === 0) return null;
               return (
-                <div key={lvl} style={{ marginBottom: '24px', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden' }}>
+                <div key={groupKey} style={{ marginBottom: '24px', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden' }}>
                   <div style={{ overflowX: 'auto' }}>
                   <div style={{ minWidth: '600px' }}>
                   <div style={{ padding: '14px 20px', background: meta.bg, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -336,7 +368,6 @@ const ManagePengurus = () => {
                     <tbody>
                       {items.map((p, idx) => {
                         globalIdx++;
-                        const sameLevel = groups[lvl] || [];
                         return (
                           <tr key={p.id}>
                             <td style={{ width: '40px', padding: '12px 8px' }}>
@@ -355,7 +386,7 @@ const ManagePengurus = () => {
                                 <button type="button" onClick={() => moveItem(p.id, -1)} disabled={idx === 0} title="Naik" style={{ padding: '4px 7px', fontSize: '11px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', cursor: idx === 0 ? 'not-allowed' : 'pointer', opacity: idx === 0 ? 0.3 : 1, color: 'var(--text)' }}>
                                   <i className="fas fa-chevron-up"></i>
                                 </button>
-                                <button type="button" onClick={() => moveItem(p.id, 1)} disabled={idx === sameLevel.length - 1} title="Turun" style={{ padding: '4px 7px', fontSize: '11px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', cursor: idx === sameLevel.length - 1 ? 'not-allowed' : 'pointer', opacity: idx === sameLevel.length - 1 ? 0.3 : 1, color: 'var(--text)' }}>
+                                <button type="button" onClick={() => moveItem(p.id, 1)} disabled={idx === items.length - 1} title="Turun" style={{ padding: '4px 7px', fontSize: '11px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', cursor: idx === items.length - 1 ? 'not-allowed' : 'pointer', opacity: idx === items.length - 1 ? 0.3 : 1, color: 'var(--text)' }}>
                                   <i className="fas fa-chevron-down"></i>
                                 </button>
                               </div>
@@ -407,7 +438,7 @@ const ManagePengurus = () => {
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '6px' }}>Jabatan</label>
                   <input 
                     type="text" 
-                    placeholder="Contoh: Ketua, Bendahara, Sie Usaha" 
+                    placeholder="Contoh: Ketua, Pengawas, Sekretaris, Bendahara, Sie Usaha" 
                     value={jabatan}
                     onChange={(e) => setJabatan(e.target.value)}
                     required 
@@ -423,11 +454,14 @@ const ManagePengurus = () => {
                       onChange={(e) => setLevel(parseInt(e.target.value))}
                       style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                     >
-                      <option value={1}>Tingkat 1 (Ketua Koperasi)</option>
-                      <option value={2}>Tingkat 2 (Pengawas & BPH)</option>
-                      <option value={3}>Tingkat 3 (Divisi / Sie)</option>
-                      <option value={4}>Tingkat 4 (Manajer Operasional)</option>
+                      <option value={1}>Tingkat 1 - Ketua Koperasi</option>
+                      <option value={2}>Tingkat 2 - Badan Pengawas / Pengurus Harian (BPH)</option>
+                      <option value={3}>Tingkat 3 - Divisi / Sie</option>
+                      <option value={4}>Tingkat 4 - Manajer Operasional</option>
                     </select>
+                    <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
+                      *Jabatan dengan kata "Pengawas" otomatis masuk ke seksi Badan Pengawas.
+                    </p>
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '6px' }}>Urutan Tampilan</label>

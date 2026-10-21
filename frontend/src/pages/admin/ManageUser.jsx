@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch } from '../../utils/api';
 
@@ -15,7 +15,7 @@ const ManageUser = () => {
   const [editId, setEditId] = useState('');
   
   // Form State
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('petugas');
   const [currentUserRole, setCurrentUserRole] = useState('');
@@ -89,7 +89,7 @@ const ManageUser = () => {
   const handleOpenTambahModal = () => {
     setModalTitle('Tambah Admin');
     setEditId('');
-    setUsername('');
+    setEmail('');
     setPassword('');
     setRole('petugas');
     setCurrentUserRole('');
@@ -100,7 +100,7 @@ const ManageUser = () => {
   const handleOpenEditModal = (user) => {
     setModalTitle('Edit Admin');
     setEditId(user.id);
-    setUsername(user.username);
+    setEmail(user.email || user.username || '');
     setPassword(''); // Don't fill password
     setRole(user.role || 'petugas');
     setCurrentUserRole(user.role || '');
@@ -121,13 +121,13 @@ const ManageUser = () => {
         response = await apiFetch(`/api/users/${editId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, role }),
+          body: JSON.stringify({ email, password, role }),
         });
       } else {
         response = await apiFetch('/api/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, role }),
+          body: JSON.stringify({ email, password, role }),
         });
       }
 
@@ -221,7 +221,7 @@ const ManageUser = () => {
                   />
                 </th>
                 <th>ID</th>
-                <th>Username</th>
+                <th>Email</th>
                 <th>Role</th>
                 <th>Dibuat Pada</th>
                 <th>Aksi</th>
@@ -247,7 +247,7 @@ const ManageUser = () => {
                       )}
                     </td>
                     <td>#{u.id}</td>
-                    <td><strong>{u.username}</strong></td>
+                    <td><strong>{u.email || u.username}</strong></td>
                     <td>
                       <span className={`badge ${u.role === 'super_admin' ? 'badge-primary' : (u.role === 'admin' ? 'badge-success' : 'badge-secondary')}`} style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         {u.role === 'super_admin' ? 'Super Admin' : (u.role === 'admin' ? 'Admin' : 'Petugas')}
@@ -292,12 +292,12 @@ const ManageUser = () => {
               </h3>
               <form onSubmit={handleSimpanUser}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '4px' }}>Username</label>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--text)', marginBottom: '4px' }}>Email</label>
                   <input 
-                    type="text" 
-                    placeholder="Masukkan username" 
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    type="email" 
+                    placeholder="Masukkan email (contoh: admin@koperasiutm.com)" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required 
                     style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '14px', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />

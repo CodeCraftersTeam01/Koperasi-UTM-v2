@@ -18,7 +18,6 @@ const ManageSettingsLayanan = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
-  const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const fileInputRefs = useRef({});
 
   const fetchSettings = async () => {

@@ -10,7 +10,6 @@ const ManageSettingsGaleri = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
-  const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const fileInputRefs = useRef({});
 
   const fetchSettings = async () => {
@@ -234,16 +233,19 @@ const ManageSettingsGaleri = () => {
                     style={{ display: 'none' }}
                   />
                 </div>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)' }}>
+                    Nama / Judul Kegiatan:
+                  </label>
                   <input
                     type="text"
-                    placeholder="Judul Kegiatan"
+                    placeholder="Contoh: Launching Unit Usaha Koperasi UTM"
                     value={item.judul}
                     onChange={(e) => handleItemChange(index, 'judul', e.target.value)}
                     required
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border-strong)', borderRadius: '8px', fontSize: '13px', outline: 'none', backgroundColor: 'var(--card-bg)', color: 'var(--text)', boxSizing: 'border-box' }}
                   />
-                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Klik gambar untuk mengganti foto</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Nama ini akan muncul saat foto disorot (hover) pada halaman Profil. Klik gambar untuk mengganti foto.</span>
                 </div>
                 <button type="button" onClick={() => removeItem(index)} title="Hapus foto" style={{ padding: '6px 10px', fontSize: '14px', background: 'transparent', border: '1px solid #ef4444', borderRadius: '8px', cursor: 'pointer', color: '#ef4444' }}>
                   <i className="fas fa-trash"></i>

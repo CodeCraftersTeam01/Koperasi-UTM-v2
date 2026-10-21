@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartProvider } from './context/CartContext';
@@ -6,30 +6,52 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartSidebar from './components/CartSidebar';
 
-// Pages
+// Public Pages: Eager load Home for instant paint, lazy load other pages
 import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import Profile from './pages/Profile';
-import Contact from './pages/Contact';
-import Login from './pages/admin/Login';
-import Dashboard from './pages/admin/Dashboard';
-import ManagePesanan from './pages/admin/ManagePesanan';
-import ManageProduk from './pages/admin/ManageProduk';
-import ManageKategori from './pages/admin/ManageKategori';
-import ManageUser from './pages/admin/ManageUser';
-import ManagePengurus from './pages/admin/ManagePengurus';
-import ManageSettingsHero from './pages/admin/ManageSettingsHero';
-import ManageSettingsAbout from './pages/admin/ManageSettingsAbout';
-import ManageSettingsIdentity from './pages/admin/ManageSettingsIdentity';
-import ManageSettingsGaleri from './pages/admin/ManageSettingsGaleri';
-import ManageSettingsKontak from './pages/admin/ManageSettingsKontak';
-import ManageSettingsLayanan from './pages/admin/ManageSettingsLayanan';
-import ManageSettingsCheckout from './pages/admin/ManageSettingsCheckout';
-import ManageSettingsKategori from './pages/admin/ManageSettingsKategori';
-import Checkout from './pages/Checkout';
-import Riwayat from './pages/Riwayat';
-import NotFound from './pages/NotFound';
+const Catalog = lazy(() => import('./pages/Catalog'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Riwayat = lazy(() => import('./pages/Riwayat'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Admin Pages (Code split for high performance)
+const Login = lazy(() => import('./pages/admin/Login'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const ManagePesanan = lazy(() => import('./pages/admin/ManagePesanan'));
+const ManageProduk = lazy(() => import('./pages/admin/ManageProduk'));
+const ManageKategori = lazy(() => import('./pages/admin/ManageKategori'));
+const ManageUser = lazy(() => import('./pages/admin/ManageUser'));
+const ManagePengurus = lazy(() => import('./pages/admin/ManagePengurus'));
+const ManageSettingsHero = lazy(() => import('./pages/admin/ManageSettingsHero'));
+const ManageSettingsAbout = lazy(() => import('./pages/admin/ManageSettingsAbout'));
+const ManageSettingsIdentity = lazy(() => import('./pages/admin/ManageSettingsIdentity'));
+const ManageSettingsGaleri = lazy(() => import('./pages/admin/ManageSettingsGaleri'));
+const ManageSettingsKontak = lazy(() => import('./pages/admin/ManageSettingsKontak'));
+const ManageSettingsLayanan = lazy(() => import('./pages/admin/ManageSettingsLayanan'));
+const ManageSettingsCheckout = lazy(() => import('./pages/admin/ManageSettingsCheckout'));
+const ManageSettingsKategori = lazy(() => import('./pages/admin/ManageSettingsKategori'));
+
 import { adminPath } from './config/admin';
+
+const PageFallback = () => (
+  <div style={{
+    minHeight: '60vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.6
+  }}>
+    <div style={{
+      width: '36px',
+      height: '36px',
+      border: '3px solid rgba(0, 117, 74, 0.2)',
+      borderTopColor: 'var(--primary, #00754a)',
+      borderRadius: '50%',
+      animation: 'spin 0.8s linear infinite'
+    }} />
+  </div>
+);
 
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -38,7 +60,9 @@ const PageWrapper = ({ children }) => (
     exit={{ opacity: 0 }}
     transition={{ duration: 0.2, ease: 'easeInOut' }}
   >
-    {children}
+    <Suspense fallback={<PageFallback />}>
+      {children}
+    </Suspense>
   </motion.div>
 );
 
@@ -81,15 +105,19 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(() => {
+    return !sessionStorage.getItem('kopma_intro_shown');
+  });
 
   useEffect(() => {
-    // Simulate loading time or wait for assets
-    const timer = setTimeout(() => {
-      setIsInitialLoad(false);
-    }, 1500); // 1.5s loading time
-    return () => clearTimeout(timer);
-  }, []);
+    if (isInitialLoad) {
+      const timer = setTimeout(() => {
+        setIsInitialLoad(false);
+        sessionStorage.setItem('kopma_intro_shown', 'true');
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialLoad]);
 
   return (
     <>

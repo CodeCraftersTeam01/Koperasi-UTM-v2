@@ -3,10 +3,18 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 $router->get('/', function () use ($router) {
-    $path = dirname(__DIR__).'/public/index.html';
-    if (file_exists($path)) {
-        return response()->file($path);
+    $candidates = [
+        \App\Helpers\PathHelper::publicPath('index.html'),
+        dirname(\App\Helpers\PathHelper::publicPath()) . DIRECTORY_SEPARATOR . 'index.html',
+        base_path('public' . DIRECTORY_SEPARATOR . 'index.html'),
+    ];
+
+    foreach (array_unique($candidates) as $path) {
+        if (file_exists($path) && is_file($path)) {
+            return response()->file($path);
+        }
     }
+
     return $router->app->version();
 });
 
@@ -41,8 +49,11 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     // Produk CRUD
     $router->post('/api/produk', 'ProdukController@store');
     $router->post('/api/produk/{id}', 'ProdukController@update'); // POST to support multipart/form-data upload easily
+    $router->put('/api/produk/{id}', 'ProdukController@update');
     $router->delete('/api/produk/{id}', 'ProdukController@destroy');
     $router->post('/api/produk/{id}/archive', 'ProdukController@archive');
+    $router->put('/api/produk/{id}/archive', 'ProdukController@archive');
+    $router->patch('/api/produk/{id}/archive', 'ProdukController@archive');
 
     // Dashboard Stats
     $router->get('/api/stats', 'StatsController@index');
@@ -59,6 +70,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->post('/api/pengurus/reorder', 'PengurusController@reorder');
     $router->post('/api/pengurus', 'PengurusController@store');
     $router->post('/api/pengurus/{id}', 'PengurusController@update');
+    $router->put('/api/pengurus/{id}', 'PengurusController@update');
     $router->delete('/api/pengurus/{id}', 'PengurusController@destroy');
 
     // Settings Management
@@ -71,4 +83,26 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/api/orders', 'OrderController@index');
     $router->put('/api/orders/{id}', 'OrderController@update');
     $router->delete('/api/orders/{id}', 'OrderController@destroy');
+});
+
+// SPA Fallback: serve index.html for all client-side routes (e.g. /katalog, /profil, /panel-utm-4dmn)
+$router->get('/{any:.*}', function ($any = null) use ($router) {
+    $anyStr = (string) $any;
+    if (str_starts_with($anyStr, 'api/') || str_contains($anyStr, 'api/')) {
+        return response()->json(['error' => 'API endpoint not found'], 404);
+    }
+
+    $candidates = [
+        \App\Helpers\PathHelper::publicPath('index.html'),
+        dirname(\App\Helpers\PathHelper::publicPath()) . DIRECTORY_SEPARATOR . 'index.html',
+        base_path('public' . DIRECTORY_SEPARATOR . 'index.html'),
+    ];
+
+    foreach (array_unique($candidates) as $path) {
+        if (file_exists($path) && is_file($path)) {
+            return response()->file($path);
+        }
+    }
+
+    return $router->app->version();
 });

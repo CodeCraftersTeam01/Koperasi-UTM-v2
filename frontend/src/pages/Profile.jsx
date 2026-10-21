@@ -15,7 +15,7 @@ const Profile = () => {
     galeri_items: '[]',
   });
 
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -63,6 +63,21 @@ const Profile = () => {
 
   const activeList = pengurusList.length > 0 ? pengurusList : defaultPengurus;
 
+  // Preload and decode all pengurus photos in background so modal and grid views render instantaneously
+  useEffect(() => {
+    if (activeList.length > 0) {
+      activeList.forEach(p => {
+        if (p.foto) {
+          const img = new Image();
+          img.src = getApiUrl(p.foto);
+          if (img.decode) {
+            img.decode().catch(() => {});
+          }
+        }
+      });
+    }
+  }, [activeList]);
+
   const ketua = activeList.find(p => p.level === 1 || /ketua/i.test(p.jabatan)) || defaultPengurus[0];
   const pengawas = activeList.find(p => /pengawas/i.test(p.jabatan)) || defaultPengurus[1];
   const sekretaris = activeList.find(p => /sekretaris/i.test(p.jabatan)) || defaultPengurus[2];
@@ -82,7 +97,7 @@ const Profile = () => {
   const level3 = activeList.filter(p => p.level === 3);
   const level4 = activeList.filter(p => p.level === 4);
 
-  const misiItems = settings.misi.split('\n').filter(m => m.trim() !== '');
+  const misiItems = (settings.misi || '').split('\n').filter(m => m.trim() !== '');
 
   return (
     <>
@@ -99,16 +114,44 @@ const Profile = () => {
         </div>
       </section>
 
-      {/* TENTANG */}
+      {/* TENTANG KOPERASI UTM */}
       <section className="profile-about">
         <div className="container">
-          <div className="profile-content">
-            <h2>{settings.about_title}</h2>
-            <div className="profile-img-wrap">
-              <LazyImage src={getApiUrl('img/layanan/cakra.jpeg')} alt="Kegiatan Koperasi UTM" wrapperStyle={{ width: '100%', height: '100%' }} />
+          <div className="profile-about-grid">
+            {/* Kolom Kiri: Narasi & Ringkasan Kelembagaan */}
+            <div className="profile-about-body">
+              <h2 className="profile-about-title">{settings.about_title}</h2>
+              <div className="profile-about-text" style={{ whiteSpace: 'pre-line' }}>
+                {settings.about_desc}
+              </div>
+
+              {/* Data Lembaga Singkat */}
+              <div className="profile-about-facts">
+                <div className="profile-fact-item">
+                  <span className="profile-fact-value">1997</span>
+                  <span className="profile-fact-label">Tahun Berdiri Resmi</span>
+                </div>
+                <div className="profile-fact-item">
+                  <span className="profile-fact-value">Gedung Cakra</span>
+                  <span className="profile-fact-label">Pusat Layanan Kampus</span>
+                </div>
+                <div className="profile-fact-item">
+                  <span className="profile-fact-value">Civitas UTM</span>
+                  <span className="profile-fact-label">Dosen, Tendik & Mahasiswa</span>
+                </div>
+              </div>
             </div>
-            <div className="profile-text" style={{ whiteSpace: 'pre-line' }}>
-              {settings.about_desc}
+
+            {/* Kolom Kanan: Foto Gedung Cakra */}
+            <div className="profile-about-media">
+              <div className="profile-about-photo">
+                <LazyImage
+                  src={getApiUrl('img/layanan/cakra.jpeg')}
+                  alt="Gedung Cakra Koperasi Universitas Trunojoyo Madura"
+                  priority={true}
+                  wrapperStyle={{ width: '100%', height: '100%' }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -344,51 +387,108 @@ const Profile = () => {
           ) : (
             /* GRID PHOTO VIEW */
             <div className="struktur-grid-view">
-              {/* Level 1: Ketua */}
-              {level1.length > 0 && (
-                <div className="grid-level-block">
-                  <h3 className="grid-level-title"><i className="fas fa-crown"></i> Pimpinan Koperasi</h3>
-                  <div className="grid-cards-row">
-                    {level1.map(p => (
-                      <div key={p.id} className="struktur-card ketua">
-                        <div className="struktur-avatar">
-                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
-                        </div>
-                        <h4>{p.jabatan}</h4>
-                        <p className="struktur-nama">{p.nama}</p>
+              {/* Level 1 & Pengawas: Ketua di tengah, Pengawas di sisi kanan */}
+              <div className="grid-level-block">
+                <h3 className="grid-level-title">
+                  Pimpinan & Pengawas Koperasi
+                </h3>
+
+                <div className="photo-top-tier">
+                  {/* Spacer penyeimbang di sisi kiri agar Ketua tepat berada di tengah layar */}
+                  <div className="photo-top-spacer" aria-hidden="true"></div>
+
+                  {/* Posisi Tengah: Ketua Koperasi */}
+                  <div className="photo-ketua-container">
+                    <div
+                      className="struktur-card ketua"
+                      onClick={() => setSelectedMember(ketua)}
+                      title="Klik untuk melihat profil"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="struktur-avatar">
+                        <LazyImage
+                          src={ketua.foto ? getApiUrl(ketua.foto) : AVATAR_IMG}
+                          alt={ketua.nama}
+                          fallbackSrc={AVATAR_IMG}
+                          priority={true}
+                          wrapperStyle={{ width: '100%', height: '100%' }}
+                        />
                       </div>
-                    ))}
+                      <h4>{ketua.jabatan || 'KETUA KOPERASI'}</h4>
+                      <p className="struktur-nama">{ketua.nama}</p>
+                    </div>
+                  </div>
+
+                  {/* Posisi Kanan: Pengawas (dihubungkan garis koordinasi putus-putus) */}
+                  <div className="photo-pengawas-container">
+                    <div className="photo-dashed-connector">
+                      <span className="photo-connector-line"></span>
+                    </div>
+                    <div
+                      className="struktur-card pengawas"
+                      onClick={() => setSelectedMember(pengawas)}
+                      title="Klik untuk melihat profil"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="struktur-avatar">
+                        <LazyImage
+                          src={pengawas.foto ? getApiUrl(pengawas.foto) : AVATAR_IMG}
+                          alt={pengawas.nama}
+                          fallbackSrc={AVATAR_IMG}
+                          priority={true}
+                          wrapperStyle={{ width: '100%', height: '100%' }}
+                        />
+                      </div>
+                      <h4>{pengawas.jabatan || 'PENGAWAS'}</h4>
+                      <p className="struktur-nama">{pengawas.nama}</p>
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {/* Level 2: Pengawas & BPH */}
-              {level2.length > 0 && (
-                <div className="grid-level-block">
-                  <h3 className="grid-level-title"><i className="fas fa-shield-alt"></i> Pengawas & Badan Pengurus Harian</h3>
-                  <div className="grid-cards-row">
-                    {level2.map(p => (
-                      <div key={p.id} className="struktur-card">
-                        <div className="struktur-avatar">
-                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
+              {/* Level 2: Badan Pengurus Harian (Sekretaris, Bendahara) - Pengawas tidak diduplikasi di sini */}
+              {(() => {
+                const bphItems = level2.filter(p => !/pengawas/i.test(p.jabatan) && p.id !== pengawas?.id && p.id !== ketua?.id);
+                const finalBPH = bphItems.length > 0 ? bphItems : [sekretaris, bendahara];
+                return finalBPH.length > 0 ? (
+                  <div className="grid-level-block">
+                    <h3 className="grid-level-title">Badan Pengurus Harian</h3>
+                    <div className="grid-cards-row">
+                      {finalBPH.map(p => (
+                        <div
+                          key={p.id}
+                          className="struktur-card"
+                          onClick={() => setSelectedMember(p)}
+                          title="Klik untuk melihat profil"
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="struktur-avatar">
+                            <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} loading="eager" wrapperStyle={{ width: '100%', height: '100%' }} />
+                          </div>
+                          <h4>{p.jabatan}</h4>
+                          <p className="struktur-nama">{p.nama}</p>
                         </div>
-                        <h4>{p.jabatan}</h4>
-                        <p className="struktur-nama">{p.nama}</p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })()}
 
-              {/* Level 3: Divisi */}
+              {/* Level 3: Divisi Operasional (Divisi Usaha, Divisi Perlengkapan) */}
               {level3.length > 0 && (
                 <div className="grid-level-block">
-                  <h3 className="grid-level-title"><i className="fas fa-layer-group"></i> Divisi Operasional</h3>
+                  <h3 className="grid-level-title">Divisi Operasional</h3>
                   <div className="grid-cards-row">
                     {level3.map(p => (
-                      <div key={p.id} className="struktur-card">
+                      <div
+                        key={p.id}
+                        className="struktur-card"
+                        onClick={() => setSelectedMember(p)}
+                        title="Klik untuk melihat profil"
+                        style={{ cursor: 'pointer' }}
+                      >
                         <div className="struktur-avatar">
-                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} loading="eager" wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
                         <h4>{p.jabatan}</h4>
                         <p className="struktur-nama">{p.nama}</p>
@@ -398,15 +498,21 @@ const Profile = () => {
                 </div>
               )}
 
-              {/* Level 4: Manajer Operasional */}
+              {/* Level 4: Manajer Layanan (Simpan Pinjam, Pertokoan) */}
               {level4.length > 0 && (
                 <div className="grid-level-block">
-                  <h3 className="grid-level-title"><i className="fas fa-briefcase"></i> Manajer Layanan</h3>
+                  <h3 className="grid-level-title">Manajer Layanan</h3>
                   <div className="grid-cards-row">
                     {level4.map(p => (
-                      <div key={p.id} className="struktur-card">
+                      <div
+                        key={p.id}
+                        className="struktur-card"
+                        onClick={() => setSelectedMember(p)}
+                        title="Klik untuk melihat profil"
+                        style={{ cursor: 'pointer' }}
+                      >
                         <div className="struktur-avatar">
-                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} wrapperStyle={{ width: '100%', height: '100%' }} />
+                          <LazyImage src={p.foto ? getApiUrl(p.foto) : AVATAR_IMG} alt={p.nama} fallbackSrc={AVATAR_IMG} loading="eager" wrapperStyle={{ width: '100%', height: '100%' }} />
                         </div>
                         <h4>{p.jabatan}</h4>
                         <p className="struktur-nama">{p.nama}</p>
@@ -435,6 +541,7 @@ const Profile = () => {
                     src={selectedMember.foto ? getApiUrl(selectedMember.foto) : AVATAR_IMG}
                     alt={selectedMember.nama}
                     fallbackSrc={AVATAR_IMG}
+                    priority={true}
                     wrapperStyle={{ width: '100%', height: '100%' }}
                   />
                 </div>

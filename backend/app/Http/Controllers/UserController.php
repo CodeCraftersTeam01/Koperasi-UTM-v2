@@ -17,13 +17,25 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'username' => 'required|string|unique:users',
+            'email' => 'required|email|unique:users,email',
+            'username' => 'nullable|string|unique:users,username',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,petugas'
         ]);
 
+        $email = strtolower(trim($request->input('email')));
+        $username = $request->input('username') ?: explode('@', $email)[0];
+        
+        $baseUsername = $username;
+        $counter = 1;
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
         $user = User::create([
-            'username' => $request->input('username'),
+            'email' => $email,
+            'username' => $username,
             'password' => Hash::make($request->input('password')),
             'role' => $request->input('role')
         ]);
@@ -44,12 +56,16 @@ class UserController extends Controller
         }
 
         $this->validate($request, [
-            'username' => 'required|string|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'username' => 'nullable|string|unique:users,username,' . $id,
             'password' => 'nullable|string|min:6',
             'role' => 'nullable|in:admin,petugas'
         ]);
 
-        $data = ['username' => $request->input('username')];
+        $data = ['email' => strtolower(trim($request->input('email')))];
+        if ($request->filled('username')) {
+            $data['username'] = $request->input('username');
+        }
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->input('password'));

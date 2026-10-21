@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Setting;
 use App\Helpers\PathHelper;
 
@@ -25,8 +26,14 @@ class SettingController extends Controller
             'visi' => 'Koperasi UTM menjadi Koperasi Nasional.',
             'misi' => "Memberi Layanan, Menyediakan Produk, Jasa serta Kebutuhan Anggota.\nMembantu Menciptakan Peluang Usaha Bagi Anggota.\nMenjadi Organisasi yang Transparan dengan Good Corporate Governance.",
             'checkout_method' => 'direct',
+            'checkout_system' => 'current',
             'admin_whatsapp' => '6285727877235',
             'admin_email' => 'admin@koperasiutm.com',
+            'kategori_tampil' => json_encode([
+                ['id' => 1, 'nama' => 'Retail', 'icon' => 'fa-shopping-bag', 'deskripsi' => 'Kebutuhan pokok dan perlengkapan perkuliahan sehari-hari.'],
+                ['id' => 2, 'nama' => 'Konsinyasi', 'icon' => 'fa-handshake', 'deskripsi' => 'Produk titipan hasil kreasi mahasiswa dan UMKM mitra.'],
+                ['id' => 3, 'nama' => 'Lainnya', 'icon' => 'fa-box', 'deskripsi' => 'Aneka ragam produk dan perlengkapan pendukung lainnya.']
+            ]),
             'galeri_judul' => 'Galeri Kegiatan',
             'galeri_deskripsi' => 'Dokumentasi berbagai kegiatan dan acara Koperasi UTM.',
             'galeri_items' => json_encode($this->defaultGaleriItems()),
@@ -66,14 +73,28 @@ class SettingController extends Controller
 
         sort($files);
 
+        $defaultTitles = [
+            '6a64c517ec8aa' => 'Launching Unit Usaha Koperasi UTM',
+            '6a64c5448e1f3' => 'Peringatan Hari Koperasi & Tasyakuran',
+            '6a64c5661b697' => 'Stand Promosi Produk Koperasi UTM',
+            '6a64c5709b81e' => 'Rapat Anggota Tahunan Koperasi UTM',
+            '6a64c58988fb7' => 'Sosialisasi Kewirausahaan Mahasiswa',
+            '6a64c5a03c936' => 'Kunjungan Kerja & Bazar Mahasiswa',
+            '6a64c5b30ef94' => 'Pelayanan Gerai Kebutuhan Mahasiswa',
+            '6a64c5c7701d6' => 'Workshop Pengembangan Usaha Kampus',
+            '6a64c5e4de77a' => 'Pertemuan Rutin & Rapat Kerja',
+            '6a64c62908a63' => 'Diskusi Evaluasi Program Koperasi',
+            '6a64c67764192' => 'Pelayanan Toko & Perlengkapan Kuliah',
+            '6a64c69c80463' => 'Operasional Toko Koperasi UTM',
+            '6a945be0d08ad' => 'Pembinaan Perkoperasian Mahasiswa',
+        ];
+
         $items = [];
         $index = 0;
         foreach ($files as $file) {
             $index++;
-            $name = pathinfo($file, PATHINFO_FILENAME);
-            if (preg_match('/^[0-9a-f]{8,}$/i', $name)) {
-                $name = 'Kegiatan ' . str_pad((string) $index, 2, '0', STR_PAD_LEFT);
-            }
+            $baseName = pathinfo($file, PATHINFO_FILENAME);
+            $name = $defaultTitles[$baseName] ?? 'Dokumentasi Kegiatan Koperasi';
             $items[] = [
                 'gambar' => 'upload/gallery/' . basename($file),
                 'judul' => $name,
@@ -85,12 +106,15 @@ class SettingController extends Controller
 
     public function index()
     {
-        $settings = Setting::all()->pluck('value', 'key')->toArray();
+        $cacheHit = Cache::has('api_settings');
+        $merged = Cache::remember('api_settings', 86400, function () {
+            $settings = Setting::all()->pluck('value', 'key')->toArray();
+            return array_merge($this->defaults, $settings);
+        });
         
-        // Merge defaults
-        $merged = array_merge($this->defaults, $settings);
-        
-        return response()->json($merged);
+        return response()->json($merged)
+            ->header('X-Cache', $cacheHit ? 'HIT' : 'MISS')
+            ->header('Cache-Control', 'no-cache, private');
     }
 
     public function updateBatch(Request $request)
@@ -107,6 +131,9 @@ class SettingController extends Controller
                 ['value' => $value]
             );
         }
+
+        // Invalidate backend cache
+        Cache::forget('api_settings');
 
         return response()->json([
             'message' => 'Setelan berhasil diperbarui',

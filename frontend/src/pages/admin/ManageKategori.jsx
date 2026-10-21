@@ -97,7 +97,7 @@ const ManageKategori = () => {
         </select>
         <div id="swal-parent-wrap" style="${isEdit && editData.tipe === 'sub' ? '' : 'display:none'}; margin-top:8px">
           <select id="swal-parent_id" class="swal2-input" style="padding:10px; box-sizing:border-box">
-            <option value="">— Pilih Induk —</option>
+            <option value="">Pilih Kategori Induk</option>
             ${parentOptions}
           </select>
         </div>
@@ -211,7 +211,7 @@ const ManageKategori = () => {
           <td><input type="checkbox" checked={selectedIds.includes(parent.id)} onChange={() => toggleSelect(parent.id)} /></td>
           <td>{idx}</td>
           <td><strong>{parent.nama}</strong></td>
-          <td style={{ color: 'var(--text-muted)', fontSize: '13px' }}><span style={{ color: 'transparent' }}>—</span></td>
+          <td style={{ color: 'var(--text-muted)', fontSize: '13px' }}>-</td>
           <td><span className="badge badge-primary">Kategori Utama</span></td>
           <td>
             <button className="admin-btn-sm admin-btn-edit" onClick={() => showTambahForm({ id: parent.id, nama: parent.nama, tipe: parent.tipe, parent_id: parent.parent_id })} title="Edit" style={{ marginRight: '4px' }}><i className="fas fa-edit"></i></button>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Link } from 'react-router-dom';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import AdminLayout from '../../components/AdminLayout';
 import { apiFetch, getApiUrl, PLACEHOLDER_IMG } from '../../utils/api';
 import { adminPath } from '../../config/admin';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
 

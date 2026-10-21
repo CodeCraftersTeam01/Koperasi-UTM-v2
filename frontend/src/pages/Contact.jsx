@@ -82,7 +82,7 @@ const Contact = () => {
                 <div className="contact-detail-icon"><i className="fas fa-map-marker-alt"></i></div>
                 <div className="contact-detail-text">
                   <h4>Alamat</h4>
-                  <p>{settings.kontak_alamat.split('\n').map((line, i) => <span key={i}>{line}<br /></span>)}</p>
+                  <p>{(settings.kontak_alamat || '').split('\n').map((line, i) => <span key={i}>{line}<br /></span>)}</p>
                 </div>
               </div>
 

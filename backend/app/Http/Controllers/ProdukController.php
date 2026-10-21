@@ -3,55 +3,71 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Produk;
 use App\Helpers\PathHelper;
 
 class ProdukController extends Controller
 {
+    private function invalidateCache()
+    {
+        Cache::increment('api_produk_version');
+        Cache::forget('api_dashboard_stats');
+    }
+
     public function index(Request $request)
     {
-        $search = trim($request->input('search', ''));
-        $page = $request->has('page') ? max(1, intval($request->input('page'))) : null;
-        $perPage = max(1, intval($request->input('per_page', 7)));
+        $version = Cache::get('api_produk_version', 1);
+        $cacheKey = 'api_produk_v' . $version . '_' . md5(json_encode($request->all()));
+        $cacheHit = Cache::has($cacheKey);
 
-        $query = Produk::query();
+        $result = Cache::remember($cacheKey, 3600, function () use ($request) {
+            $search = trim($request->input('search', ''));
+            $page = $request->has('page') ? max(1, intval($request->input('page'))) : null;
+            $perPage = max(1, intval($request->input('per_page', 7)));
 
-        if ($request->has('arsip')) {
-            $query->where('arsip', intval($request->input('arsip')));
-        }
+            $query = Produk::query();
 
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama', 'LIKE', '%' . $search . '%')
-                  ->orWhere('kategori', 'LIKE', '%' . $search . '%')
-                  ->orWhere('deskripsi', 'LIKE', '%' . $search . '%')
-                  ->orWhere('tag', 'LIKE', '%' . $search . '%');
-            });
-        }
+            if ($request->has('arsip')) {
+                $query->where('arsip', intval($request->input('arsip')));
+            }
 
-        $total = $query->count();
+            if ($search !== '') {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama', 'LIKE', '%' . $search . '%')
+                      ->orWhere('kategori', 'LIKE', '%' . $search . '%')
+                      ->orWhere('deskripsi', 'LIKE', '%' . $search . '%')
+                      ->orWhere('tag', 'LIKE', '%' . $search . '%');
+                });
+            }
 
-        if ($search !== '') {
-            // Native code did not limit when searching
-            $data = $query->orderBy('id', 'desc')->get();
-            return response()->json([
-                'data' => $data,
-                'total' => $total
-            ]);
-        } elseif ($page !== null) {
-            $offset = ($page - 1) * $perPage;
-            $data = $query->orderBy('id', 'desc')->offset($offset)->limit($perPage)->get();
-            return response()->json([
-                'data' => $data,
-                'total' => $total,
-                'page' => $page,
-                'per_page' => $perPage,
-                'total_pages' => max(1, ceil($total / $perPage))
-            ]);
-        } else {
-            $data = $query->orderBy('id', 'desc')->get();
-            return response()->json($data);
-        }
+            $total = $query->count();
+
+            if ($search !== '') {
+                // Native code did not limit when searching
+                $data = $query->orderBy('id', 'desc')->get();
+                return [
+                    'data' => $data,
+                    'total' => $total
+                ];
+            } elseif ($page !== null) {
+                $offset = ($page - 1) * $perPage;
+                $data = $query->orderBy('id', 'desc')->offset($offset)->limit($perPage)->get();
+                return [
+                    'data' => $data,
+                    'total' => $total,
+                    'page' => $page,
+                    'per_page' => $perPage,
+                    'total_pages' => max(1, ceil($total / $perPage))
+                ];
+            } else {
+                return $query->orderBy('id', 'desc')->get();
+            }
+        });
+
+        return response()->json($result)
+            ->header('X-Cache', $cacheHit ? 'HIT' : 'MISS')
+            ->header('Cache-Control', 'no-cache, private');
     }
 
     public function store(Request $request)
@@ -85,6 +101,8 @@ class ProdukController extends Controller
             'deskripsi' => $request->input('deskripsi') ?? '',
             'arsip' => false,
         ]);
+
+        $this->invalidateCache();
 
         return response()->json([
             'id' => $produk->id,
@@ -133,6 +151,8 @@ class ProdukController extends Controller
             'deskripsi' => $request->input('deskripsi') ?? '',
         ]);
 
+        $this->invalidateCache();
+
         return response()->json([
             'message' => 'Produk berhasil diperbarui',
         ]);
@@ -152,6 +172,8 @@ class ProdukController extends Controller
 
         $produk->delete();
 
+        $this->invalidateCache();
+
         return response()->json([
             'message' => 'Produk berhasil dihapus',
         ]);
@@ -166,16 +188,19 @@ class ProdukController extends Controller
         }
 
         $this->validate($request, [
-            'arsip' => 'required|boolean',
+            'arsip' => 'required',
         ]);
 
-        $arsip = $request->input('arsip');
+        $arsip = filter_var($request->input('arsip'), FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         $produk->update(['arsip' => $arsip]);
+
+        $this->invalidateCache();
 
         $label = $arsip ? 'dinonaktifkan' : 'diaktifkan';
 
         return response()->json([
             'message' => "Produk berhasil $label",
+            'arsip' => $arsip,
         ]);
     }
 
@@ -194,6 +219,8 @@ class ProdukController extends Controller
             $p->delete();
         }
 
+        $this->invalidateCache();
+
         return response()->json([
             'message' => 'Produk terpilih berhasil dihapus',
         ]);
@@ -209,6 +236,8 @@ class ProdukController extends Controller
 
         $arsip = (bool) $request->input('arsip');
         Produk::whereIn('id', $request->input('ids'))->update(['arsip' => $arsip]);
+
+        $this->invalidateCache();
 
         $label = $arsip ? 'dinonaktifkan' : 'diaktifkan';
 

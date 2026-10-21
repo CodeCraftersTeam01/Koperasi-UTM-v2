@@ -4,7 +4,7 @@ import { apiFetch } from '../../utils/api';
 import { adminPath } from '../../config/admin';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,19 +36,19 @@ const Login = () => {
     try {
       const response = await apiFetch('/api/login', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.status === 200) {
         localStorage.setItem('kopma_admin_token', data.api_token);
-        localStorage.setItem('kopma_admin_user', data.username);
+        localStorage.setItem('kopma_admin_user', data.email || data.username);
         if (data.role) localStorage.setItem('kopma_admin_role', data.role);
         localStorage.setItem('kopma_admin_login_time', Date.now().toString());
         navigate(adminPath());
       } else {
-        setError(data.message || 'Username atau password salah');
+        setError(data.message || 'Email atau password salah');
       }
     } catch (err) {
       setError('Koneksi ke backend gagal.');
@@ -78,15 +78,17 @@ const Login = () => {
 
           <form onSubmit={handleLogin} className="login-form">
             <div className="login-form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
               <div className="login-input-wrapper">
-                <i className="fas fa-user"></i>
+                <i className="fas fa-envelope"></i>
                 <input 
-                  type="text" 
-                  id="username" 
-                  placeholder="Masukkan username" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email" 
+                  id="email" 
+                  name="email"
+                  autoComplete="email"
+                  placeholder="Masukkan email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required 
                 />
               </div>

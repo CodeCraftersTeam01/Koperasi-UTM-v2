@@ -1,0 +1,36 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. Forward API requests to Lumen system/index.php (hosting structure)
+    RewriteRule ^api/(.*)$ system/index.php [L,QSA]
+    RewriteRule ^api$ system/index.php [L,QSA]
+
+    # 2. Forward upload requests to system/upload if file is not in root upload
+    RewriteCond %{REQUEST_URI} ^/upload/(.*)$
+    RewriteCond %{DOCUMENT_ROOT}/upload/%1 !-f
+    RewriteRule ^upload/(.*)$ system/upload/$1 [L]
+
+    # 3. Serve physical files and directories directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 4. SPA Fallback: Route all client-side routes to index.html
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# Security: Block sensitive files
+<FilesMatch "^\.|\.(env|json|lock|md|git|yml|yaml)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml
+</IfModule>

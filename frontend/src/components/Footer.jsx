@@ -14,7 +14,7 @@ const Footer = () => {
         <div className="footer-brand">
           <img src="/img/logo-koperasi.png" alt="Koperasi UTM" className="footer-logo-img" />
           <h3>Koperasi UTM</h3>
-          <p>Koperasi Universitas Trunojoyo Madura — Dari Anggota, Oleh Anggota, Untuk Anggota.</p>
+          <p>Koperasi Universitas Trunojoyo Madura: Dari Anggota, Oleh Anggota, Untuk Anggota.</p>
           <div className="footer-social">
             <a href="https://www.instagram.com/koperasiutm/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
             <a href="https://www.tiktok.com/@koperasiutm" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i className="fab fa-tiktok"></i></a>

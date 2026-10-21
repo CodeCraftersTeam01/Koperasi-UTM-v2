@@ -1510,49 +1510,147 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   font-size: 10px;
 }
 
-/* Profile About */
+/* Profile About - Authentic Institutional Editorial */
 .profile-about {
-  padding: 64px 0;
+  padding: 64px 0 72px;
   background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
-.profile-content {
-  max-width: 1200px;
+.profile-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: flex-start;
+  max-width: 1140px;
   margin: 0 auto;
-  text-align: center;
 }
 
-.profile-content h2 {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 700;
-  color: var(--house);
-  margin-bottom: 28px;
-  line-height: 1.25;
+.profile-about-media {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.profile-img-wrap {
-  border-radius: var(--radius);
+.profile-about-photo {
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow);
-  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
 }
 
-.profile-img-wrap img {
+.profile-about-photo img {
   width: 100%;
-  height: 400px;
+  height: 380px;
   object-fit: cover;
   display: block;
 }
 
-.profile-text {
-  text-align: left;
+
+.profile-about-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.profile-text p {
-  color: var(--text-muted);
+.profile-about-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--house);
+  line-height: 1.3;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.profile-about-text {
   font-size: 15px;
-  line-height: 1.8;
-  margin-bottom: 12px;
+  line-height: 1.85;
+  color: var(--text);
+}
+
+.profile-about-text p {
+  margin: 0 0 14px 0;
+}
+
+.profile-about-text p:last-child {
+  margin-bottom: 0;
+}
+
+.profile-about-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+
+.profile-fact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-fact-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.profile-fact-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .profile-about-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .profile-about-body {
+    display: contents;
+  }
+  .profile-about-title {
+    order: 1;
+    font-size: 24px;
+  }
+  .profile-about-media {
+    order: 2;
+    width: 100%;
+  }
+  .profile-about-photo {
+    width: 100%;
+  }
+  .profile-about-photo img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+  }
+  .profile-about-text {
+    order: 3;
+    font-size: 15px;
+  }
+  .profile-about-facts {
+    order: 4;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0;
+    padding-top: 18px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-about-photo img {
+    height: 300px;
+  }
+  .profile-about-facts {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 /* Visi Misi */
@@ -2166,6 +2264,115 @@ body:has(.hero) #navbar.scrolled .nav-logo {
   font-weight: 700;
   color: var(--text);
   margin-bottom: 2px;
+}
+
+/* Photo Top Tier: Ketua Center, Pengawas Right */
+.photo-top-tier {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 10px;
+}
+
+.photo-top-spacer {
+  width: 310px;
+  flex: 0 0 310px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.photo-ketua-container {
+  width: 240px;
+  flex: 0 0 240px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.photo-pengawas-container {
+  width: 310px;
+  flex: 0 0 310px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.photo-dashed-connector {
+  width: 70px;
+  flex: 0 0 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.photo-connector-line {
+  width: 100%;
+  border-top: 3px dashed #134e2f;
+}
+
+.card-tier-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.card-tier-badge.ketua-badge {
+  background: rgba(19, 78, 47, 0.12);
+  color: #134e2f;
+  border: 1px solid rgba(19, 78, 47, 0.25);
+}
+
+.card-tier-badge.pengawas-badge {
+  background: rgba(30, 58, 95, 0.12);
+  color: #1e3a5f;
+  border: 1px solid rgba(30, 58, 95, 0.25);
+}
+
+.struktur-card.pengawas .struktur-avatar {
+  background: #1e3a5f;
+}
+
+@media (max-width: 879px) {
+  .photo-top-tier {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .photo-top-spacer {
+    display: none;
+  }
+  .photo-ketua-container {
+    width: 100%;
+    max-width: 260px;
+  }
+  .photo-pengawas-container {
+    width: 100%;
+    max-width: 260px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .photo-dashed-connector {
+    width: 0;
+    height: 24px;
+    margin: 0;
+  }
+  .photo-connector-line {
+    width: 0;
+    height: 100%;
+    border-top: none;
+    border-left: 3px dashed #134e2f;
+  }
 }
 
 /* Gallery */

@@ -10,12 +10,31 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        // Support email (primary) with fallback to username for backward compatibility
+        if (!$request->has('email') && $request->has('username')) {
+            $request->merge(['email' => $request->input('username')]);
+        }
+
         $this->validate($request, [
-            'username' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('username', $request->input('username'))->first();
+        $identifier = trim($request->input('email'));
+
+        $user = User::where('email', $identifier)
+            ->orWhere('username', $identifier)
+            ->first();
+
+        // Convenience check if admin email variant was entered
+        if (!$user && in_array(strtolower($identifier), [
+            'admin@koperasi-utm.com',
+            'superadmin@koperasiutm.com',
+            'superadmin@koperasi-utm.com',
+            'admin@koperasiutm.com'
+        ])) {
+            $user = User::where('username', 'superadmin')->orWhere('role', 'super_admin')->first();
+        }
 
         if ($user && Hash::check($request->input('password'), $user->password)) {
             $token = bin2hex(random_bytes(30));
@@ -26,6 +45,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'success',
+                'email' => $user->email ?? $user->username,
                 'username' => $user->username,
                 'role' => $user->role,
                 'api_token' => $token,
@@ -34,7 +54,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Username atau password salah',
+            'message' => 'Email atau password salah',
         ], 401);
     }
 

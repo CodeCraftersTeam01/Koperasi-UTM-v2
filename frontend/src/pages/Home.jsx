@@ -57,11 +57,27 @@ const Home = () => {
           setSettings(prev => ({ ...prev, ...settingsData }));
           if (settingsData.kategori_tampil) {
             try {
-              const parsed = JSON.parse(settingsData.kategori_tampil);
-              setKategoriTampil(Array.isArray(parsed) ? parsed : []);
+              const parsed = typeof settingsData.kategori_tampil === 'string'
+                ? JSON.parse(settingsData.kategori_tampil)
+                : settingsData.kategori_tampil;
+              setKategoriTampil(Array.isArray(parsed) && parsed.length > 0 ? parsed : [
+                { id: 1, nama: 'Retail', icon: 'fa-shopping-bag', deskripsi: 'Kebutuhan pokok dan perlengkapan perkuliahan sehari-hari.' },
+                { id: 2, nama: 'Konsinyasi', icon: 'fa-handshake', deskripsi: 'Produk titipan hasil kreasi mahasiswa dan UMKM mitra.' },
+                { id: 3, nama: 'Lainnya', icon: 'fa-box', deskripsi: 'Aneka ragam produk dan perlengkapan pendukung lainnya.' }
+              ]);
             } catch {
-              setKategoriTampil([]);
+              setKategoriTampil([
+                { id: 1, nama: 'Retail', icon: 'fa-shopping-bag', deskripsi: 'Kebutuhan pokok dan perlengkapan perkuliahan sehari-hari.' },
+                { id: 2, nama: 'Konsinyasi', icon: 'fa-handshake', deskripsi: 'Produk titipan hasil kreasi mahasiswa dan UMKM mitra.' },
+                { id: 3, nama: 'Lainnya', icon: 'fa-box', deskripsi: 'Aneka ragam produk dan perlengkapan pendukung lainnya.' }
+              ]);
             }
+          } else {
+            setKategoriTampil([
+              { id: 1, nama: 'Retail', icon: 'fa-shopping-bag', deskripsi: 'Kebutuhan pokok dan perlengkapan perkuliahan sehari-hari.' },
+              { id: 2, nama: 'Konsinyasi', icon: 'fa-handshake', deskripsi: 'Produk titipan hasil kreasi mahasiswa dan UMKM mitra.' },
+              { id: 3, nama: 'Lainnya', icon: 'fa-box', deskripsi: 'Aneka ragam produk dan perlengkapan pendukung lainnya.' }
+            ]);
           }
         }
       } catch (err) {

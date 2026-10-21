@@ -3,14 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Kategori;
 
 class KategoriController extends Controller
 {
     public function index()
     {
-        $kategori = Kategori::with('parent')->orderBy('id', 'asc')->get();
-        return response()->json($kategori);
+        $cacheHit = Cache::has('api_kategori');
+        $kategori = Cache::remember('api_kategori', 86400, function () {
+            return Kategori::with('parent')->orderBy('id', 'asc')->get();
+        });
+
+        return response()->json($kategori)
+            ->header('X-Cache', $cacheHit ? 'HIT' : 'MISS')
+            ->header('Cache-Control', 'no-cache, private');
     }
 
     public function store(Request $request)
@@ -31,6 +38,9 @@ class KategoriController extends Controller
         }
 
         $kategori = Kategori::create($data);
+
+        Cache::forget('api_kategori');
+        Cache::forget('api_dashboard_stats');
 
         return response()->json([
             'id' => $kategori->id,
@@ -65,6 +75,9 @@ class KategoriController extends Controller
 
         $kategori->update($data);
 
+        Cache::forget('api_kategori');
+        Cache::forget('api_dashboard_stats');
+
         return response()->json(['message' => 'Kategori berhasil diperbarui']);
     }
 
@@ -78,6 +91,9 @@ class KategoriController extends Controller
 
         $kategori->delete();
 
+        Cache::forget('api_kategori');
+        Cache::forget('api_dashboard_stats');
+
         return response()->json(['message' => 'Kategori berhasil dihapus']);
     }
 
@@ -89,6 +105,9 @@ class KategoriController extends Controller
         ]);
 
         Kategori::whereIn('id', $request->input('ids'))->delete();
+
+        Cache::forget('api_kategori');
+        Cache::forget('api_dashboard_stats');
 
         return response()->json([
             'message' => 'Kategori terpilih berhasil dihapus',

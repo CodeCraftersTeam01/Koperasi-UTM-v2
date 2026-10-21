@@ -64,7 +64,7 @@ class ThrottleLogin
                 Cache::put($attemptKey, $totalAttempts, 120);
 
                 if ($lockDuration > 0) {
-                    Cache::put($lockKey, time() + $lockDuration, ceil($lockDuration / 60));
+                    Cache::put($lockKey, time() + $lockDuration, $lockDuration);
                     return response()->json([
                         'status' => 'error',
                         'message' => $this->getLockMessage($totalAttempts, $lockDuration),
