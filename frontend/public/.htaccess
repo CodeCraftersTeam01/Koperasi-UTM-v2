@@ -6,9 +6,18 @@
     RewriteEngine On
     RewriteBase /
 
+    # Handle Authorization Header (Crucial for cPanel / PHP-FPM / FastCGI)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    <IfModule mod_setenvif.c>
+        SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+    </IfModule>
+
     # 1. Forward API requests to Lumen system/index.php (hosting structure)
     RewriteRule ^api/(.*)$ system/index.php [L,QSA]
     RewriteRule ^api$ system/index.php [L,QSA]
+    RewriteRule ^system/api/(.*)$ system/index.php [L,QSA]
+    RewriteRule ^system/api$ system/index.php [L,QSA]
 
     # 2. Forward upload requests to system/upload if file is not in root upload
     RewriteCond %{REQUEST_URI} ^/upload/(.*)$

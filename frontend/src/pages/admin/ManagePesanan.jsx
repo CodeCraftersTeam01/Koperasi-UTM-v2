@@ -100,10 +100,10 @@ const ManagePesanan = () => {
   const filteredOrders = orders.filter(order => {
     const q = searchQuery.toLowerCase();
     return (
-      order.nama.toLowerCase().includes(q) ||
-      (order.nomor_nota || '').toString().includes(q) ||
-      order.id.toString().includes(q) ||
-      order.whatsapp.includes(q)
+      (order.nama || '').toLowerCase().includes(q) ||
+      (order.nomor_nota || '').toString().toLowerCase().includes(q) ||
+      (order.id || '').toString().includes(q) ||
+      (order.whatsapp || '').includes(q)
     );
   });
 

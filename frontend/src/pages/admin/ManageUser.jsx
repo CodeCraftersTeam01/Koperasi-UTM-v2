@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { apiFetch } from '../../utils/api';
+import { apiFetch, extractApiErrorMessage } from '../../utils/api';
 
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
@@ -76,8 +76,8 @@ const ManageUser = () => {
         setSelectedIds([]);
         fetchUsers();
       } else {
-        const data = await res.json();
-        window.Swal.fire('Gagal', data.error || 'Gagal menghapus admin', 'error');
+        const errorMsg = await extractApiErrorMessage(res, 'Gagal menghapus admin');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       window.Swal.fire('Koneksi Gagal', 'Pastikan server backend berjalan.', 'error');
@@ -131,13 +131,14 @@ const ManageUser = () => {
         });
       }
 
-      const result = await response.json();
       if (response.status === 200 || response.status === 201) {
-        window.Swal.fire('Berhasil', result.message, 'success');
+        const result = await response.json();
+        window.Swal.fire('Berhasil', result.message || 'Data admin berhasil disimpan', 'success');
         handleCloseModal();
         fetchUsers();
       } else {
-        window.Swal.fire('Gagal', result.error || 'Terjadi kesalahan', 'error');
+        const errorMsg = await extractApiErrorMessage(response, 'Gagal menyimpan data admin');
+        window.Swal.fire('Gagal', errorMsg, 'error');
       }
     } catch (err) {
       console.error(err);
@@ -230,7 +231,7 @@ const ManageUser = () => {
             <tbody>
               {loading ? renderSkeletonRows() : users.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Tidak ada data admin</td>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Tidak ada data admin</td>
                 </tr>
               ) : (
                 users.map((u) => (

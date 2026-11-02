@@ -78,15 +78,16 @@ const Login = () => {
 
           <form onSubmit={handleLogin} className="login-form">
             <div className="login-form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email atau Username</label>
               <div className="login-input-wrapper">
                 <i className="fas fa-envelope"></i>
                 <input 
-                  type="email" 
+                  type="text" 
                   id="email" 
                   name="email"
-                  autoComplete="email"
-                  placeholder="Masukkan email" 
+                  inputMode="email"
+                  autoComplete="username"
+                  placeholder="Masukkan email atau username" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required 

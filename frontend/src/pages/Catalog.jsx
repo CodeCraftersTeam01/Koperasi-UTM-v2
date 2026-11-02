@@ -127,9 +127,9 @@ const Catalog = () => {
     const q = searchQuery.toLowerCase();
     filtered = filtered.filter(
       (p) =>
-        p.nama.toLowerCase().includes(q) ||
-        p.deskripsi.toLowerCase().includes(q) ||
-        p.kategori.toLowerCase().includes(q)
+        (p.nama || '').toLowerCase().includes(q) ||
+        (p.deskripsi || '').toLowerCase().includes(q) ||
+        (p.kategori || '').toLowerCase().includes(q)
     );
   }
 
