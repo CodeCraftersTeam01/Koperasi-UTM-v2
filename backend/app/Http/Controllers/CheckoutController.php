@@ -53,8 +53,8 @@ class CheckoutController extends Controller
             </tr>";
         }
 
-        // 2. Save Order to Database
-        $nomorNota = $request->input('nomor_nota') ?: ('NOTA-' . date('YmdHis') . '-' . rand(1000, 9999));
+        // 2. Save Order to Database (ensure nota number fits in VARCHAR(20) column)
+        $nomorNota = $request->input('nomor_nota') ?: ('N' . date('ymdHis') . rand(1000, 9999));
         $order = \App\Models\Order::create([
             'nomor_nota' => $nomorNota,
             'nama' => $nama,

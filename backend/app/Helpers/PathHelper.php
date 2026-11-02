@@ -278,6 +278,11 @@ class PathHelper
 
         $rel = ltrim($relativePath, '/\\');
 
+        // PENTING: Hanya boleh menghapus berkas di dalam folder upload/ agar berkas statis/bawaan (img/, assets/) tidak terhapus tidak sengaja
+        if (!str_starts_with($rel, 'upload/')) {
+            return;
+        }
+
         $candidates = [
             self::publicPath($rel),
             dirname(self::publicPath()) . DIRECTORY_SEPARATOR . $rel,

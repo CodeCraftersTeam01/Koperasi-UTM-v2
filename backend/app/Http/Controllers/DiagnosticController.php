@@ -8,6 +8,11 @@ class DiagnosticController extends Controller
 {
     public function index()
     {
+        // Hanya dapat diakses bila APP_DEBUG aktif untuk mencegah kebocoran informasi path di server produksi
+        if (!env('APP_DEBUG', false)) {
+            return response()->json(['error' => 'Endpoint tidak tersedia.'], 404);
+        }
+
         $uploadDir = PathHelper::uploadDir();
         $galleryDir = PathHelper::uploadDir('gallery');
 

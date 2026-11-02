@@ -156,7 +156,7 @@ class PengurusController extends Controller
         $pengurusList = Pengurus::whereIn('id', $ids)->get();
 
         foreach ($pengurusList as $p) {
-            if ($p->foto) {
+            if ($p->foto && !str_starts_with($p->foto, 'img/')) {
                 PathHelper::deleteFile($p->foto);
             }
             $p->delete();
